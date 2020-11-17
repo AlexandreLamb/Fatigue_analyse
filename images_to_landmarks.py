@@ -34,6 +34,7 @@ for index in range(0,5548):
 		# convertir le rectangle de Dlib en un cadre de sélection de style OpenCV
 		# dessiner le cadre de sélection
 		(x, y, w, h) = face_utils.rect_to_bb(rect)
+		print(shape)
 		euclid_dist_38_42_l = np.linalg.norm(shape[landmarks_eyes_left[1]]-shape[landmarks_eyes_left[5]])
 		euclid_dist_39_41_l = np.linalg.norm(shape[landmarks_eyes_left[2]]-shape[landmarks_eyes_left[4]])
 		euclid_dist_37_40_l = np.linalg.norm(shape[landmarks_eyes_left[0]]-shape[landmarks_eyes_left[3]])
