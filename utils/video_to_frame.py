@@ -14,7 +14,6 @@ success,image = vidcap.read()
 count = 0;
 while success:
   success,image = vidcap.read()
-  print(success)
   if success:
    	cv2.imwrite("data/images/frame%d.jpg" % count, image)
   if cv2.waitKey(10) == 27:
