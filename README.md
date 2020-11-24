@@ -7,7 +7,7 @@ pip install -r requierments.txt
 ```
 ## 2. Create data folder
 ### 2.1 downlaod ressource from the drive
- (https://drive.google.com/drive/folders/1sE6V3zjRnm4mZ49aJVEsO0qn6r4kk9px?usp=sharing)[Lien_ressource_drive]
+[Lien ressource drive](https://drive.google.com/drive/folders/1sE6V3zjRnm4mZ49aJVEsO0qn6r4kk9px?usp=sharing)
 ### 2.1 create the data folder with this arborecense 
 
  * [data](./data)
