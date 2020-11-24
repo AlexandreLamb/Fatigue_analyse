@@ -12,7 +12,7 @@ pip install -r requierments.txt
 
  * [data](./data)
    * [video](./data/video)
-          * [IRBA_extrait_1.mp4](./video/IRBA_extrait_1.mp4)
+       * [IRBA_extrait_1.mp4](./video/IRBA_extrait_1.mp4)
    * [images](./data/image)
    * [shape_predictor](./shape_predictor)
           * [shape_predictor_68_face_landmarks.dat](./data/video/shape_predictor_68_face_landmarks.dat)
