@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+landmarks_eyes_left = np.arange(36,42)
+landmarks_eyes_rigth = np.arange(42,48)
+
 df = pd.read_csv("data.csv")
 
 df["ear_l"] = (df["euclid_dist_38_42_l"]+df["euclid_dist_39_41_l"])/(2*df["euclid_dist_37_40_l"])
