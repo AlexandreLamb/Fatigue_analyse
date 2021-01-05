@@ -15,8 +15,6 @@ CSV file :
 	- description : one row per frame / one row containes coordinates (landmarks_n_x, landmarks_n_y) of the frame
 
 """
-
-
 def make_landmarks_header():
 	csv_header = []
 	for i in range(1,69):
@@ -25,6 +23,34 @@ def make_landmarks_header():
 	return csv_header
 
 
+class ImagesToLandmarks:
+	def __init__(self, shape_predictor_path, images_dir_path):
+		self.detector = dlib.get_frontal_face_detector()
+		self.predictor = dlib.shape_predictor(shape_predictor_path)
+		self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
+		self.images_dir_path = images_dir_path
+		self.number_images = len(os.listdir(images_dir_path))
+		self.file_name = images_dir_path.split("/")[-1]
+
+	def place_landmarks():
+		for index in range(0,number_images):
+			image = cv2.imread(self.images_dir_path+"/frame"+str(index)+".jpg")
+			image = imutils.resize(image, width=600)
+			gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+			# détecter les visages
+			rects = self.detector(gray, 1)
+			# Pour chaque visage détecté, recherchez le repère.
+			for rect in rects:
+				# déterminer les repères du visage for the face region, then
+				# convertir le repère du visage (x, y) en un array NumPy
+				shape = self.predictor(gray, rect)
+				shape = face_utils.shape_to_np(shape)
+				self.df_landmarks.loc[index]= shape.ravel()
+				print("Process "+str(index)+" on "+str(number_images))
+		self.df_landmarks.to_csv("data/data_out/"+file_name+"landmarks.csv",header=True,mode="w")
+
+
+"""
 ap = argparse.ArgumentParser()
 ap.add_argument("-f", "--folder", required=False,
 				help="access path to the images folder to analyze")
@@ -37,8 +63,6 @@ predictor = dlib.shape_predictor("data/shape_predictor/shape_predictor_68_face_l
 
 df_landmarks = pd.DataFrame(columns=make_landmarks_header())
 number_images = len(os.listdir("data/images"))
-
-
 for index in range(0,20):
 	image = cv2.imread("data/images/frame"+str(index)+".jpg")
 	image = imutils.resize(image, width=600)
@@ -56,3 +80,4 @@ for index in range(0,20):
 
 		print("Process "+str(index)+" on "+str(number_images))
 df_landmarks.to_csv("data/landmarks.csv",header=True,mode="w")
+"""
