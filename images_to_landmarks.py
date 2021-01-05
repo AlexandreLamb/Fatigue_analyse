@@ -36,11 +36,11 @@ predictor = dlib.shape_predictor("data/shape_predictor/shape_predictor_68_face_l
 
 
 df_landmarks = pd.DataFrame(columns=make_landmarks_header())
-number_images = len(os.listdir(args["folder"]))
+number_images = len(os.listdir("data/images"))
 
 
-for index in range(0,number_images):
-	image = cv2.imread(str(args["folder"]) + "/frame"+str(index)+".jpg")
+for index in range(0,20):
+	image = cv2.imread("data/images/frame"+str(index)+".jpg")
 	image = imutils.resize(image, width=600)
 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	# détecter les visages

@@ -17,6 +17,8 @@ df["ear_r"] = (df["euclid_dist_44_48_r"]+df["euclid_dist_45_47_r"])/(2*df["eucli
 df["ear"] = (df["ear_l"]+df["ear_r"])/2
 
 df[('ear')].plot()
+
+
 plt.xlabel("frame")
 plt.ylabel("eye aspect ratio")
 plt.show()
