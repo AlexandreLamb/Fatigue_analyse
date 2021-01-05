@@ -24,9 +24,21 @@ class VideoUtils:
 				"video" : cv2.VideoCapture(os.path.join(dir_path,video_name))
 			})
 
-	def transoform_video_to_frames(self,data_dir):
+	def transoform_video_to_frames(self):
 		for video in self.videos:
-			print(video.get("video_name"))
+			print("Writing video : " + str(video.get("video_name")))
+			success, image = video.get("video").read()
+			count = 0;
+			os.mkdir("data/data_in/images/"+video.get("video_name"))
+			while success:
+			  success, image = video.get("video").read()
+			  print(success)
+			  if success:
+			   	cv2.imwrite("data/data_in/images/"+video.get("video_name")+"/frame"+str(count)+".jpg", image)
+			  if cv2.waitKey(10) == 27:
+			      break
+			  count += 1
+
 """
 
 vidcap = cv2.VideoCapture(args["video"])
