@@ -25,19 +25,24 @@ class VideoUtils:
 			})
 
 	def transoform_video_to_frames(self):
+		file_path_tab = []
 		for video in self.videos:
 			print("Writing video : " + str(video.get("video_name")))
-			success, image = video.get("video").read()
-			count = 0;
-			os.mkdir("data/data_in/images/"+video.get("video_name"))
-			while success:
-			  success, image = video.get("video").read()
-			  print(success)
-			  if success:
-			   	cv2.imwrite("data/data_in/images/"+video.get("video_name")+"/frame"+str(count)+".jpg", image)
-			  if cv2.waitKey(10) == 27:
-			      break
-			  count += 1
+			file_path_name = "data/data_in/images/"+video.get("video_name")
+			file_path_tab.append(file_path_name)
+			if(os.path.isdir(file_path_name) == False):
+				success, image = video.get("video").read()
+				count = 0;
+				os.mkdir("data/data_in/images/"+video.get("video_name"))
+				while success:
+				  success, image = video.get("video").read()
+				  print(success)
+				  if success:
+				   	cv2.imwrite("data/data_in/images/"+video.get("video_name")+"/frame"+str(count)+".jpg", image)
+				  if cv2.waitKey(10) == 27:
+				      break
+				  count += 1
+		return file_path_tab
 
 """
 

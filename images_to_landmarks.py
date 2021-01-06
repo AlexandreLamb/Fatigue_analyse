@@ -29,25 +29,30 @@ class ImagesToLandmarks:
 		self.predictor = dlib.shape_predictor(shape_predictor_path)
 		self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
 		self.images_dir_path = images_dir_path
-		self.number_images = len(os.listdir(images_dir_path))
-		self.file_name = images_dir_path.split("/")[-1]
+		#self.number_images = len(os.listdir(images_dir_path))
+		#self.file_name = images_dir_path.split("/")[-1]
 
-	def place_landmarks():
-		for index in range(0,number_images):
-			image = cv2.imread(self.images_dir_path+"/frame"+str(index)+".jpg")
-			image = imutils.resize(image, width=600)
-			gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-			# détecter les visages
-			rects = self.detector(gray, 1)
-			# Pour chaque visage détecté, recherchez le repère.
-			for rect in rects:
-				# déterminer les repères du visage for the face region, then
-				# convertir le repère du visage (x, y) en un array NumPy
-				shape = self.predictor(gray, rect)
-				shape = face_utils.shape_to_np(shape)
-				self.df_landmarks.loc[index]= shape.ravel()
-				print("Process "+str(index)+" on "+str(number_images))
-		self.df_landmarks.to_csv("data/data_out/"+file_name+"landmarks.csv",header=True,mode="w")
+	def place_landmarks(self):
+		for file_dir in self.images_dir_path:
+			number_images = len(os.listdir(file_dir))
+			file_name = file_dir.split("/")[-1]
+			print(file_dir)
+			print(file_name)
+			for index in range(0,number_images):
+				image = cv2.imread(file_dir+"/frame"+str(index)+".jpg")
+				image = imutils.resize(image, width=600)
+				gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+				# détecter les visages
+				rects = self.detector(gray, 1)
+				# Pour chaque visage détecté, recherchez le repère.
+				for rect in rects:
+					# déterminer les repères du visage for the face region, then
+					# convertir le repère du visage (x, y) en un array NumPy
+					shape = self.predictor(gray, rect)
+					shape = face_utils.shape_to_np(shape)
+					self.df_landmarks.loc[index]= shape.ravel()
+					print("Process "+str(index)+" on "+str(number_images))
+			self.df_landmarks.to_csv("data/data_out/"+file_name+"landmarks.csv",header=True,mode="w")
 
 
 """
