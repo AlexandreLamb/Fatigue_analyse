@@ -35,24 +35,24 @@ class ImagesToLandmarks:
 	def place_landmarks(self):
 		for file_dir in self.images_dir_path:
 			number_images = len(os.listdir(file_dir))
-			file_name = file_dir.split("/")[-1]
-			print(file_dir)
-			print(file_name)
-			for index in range(0,number_images):
-				image = cv2.imread(file_dir+"/frame"+str(index)+".jpg")
-				image = imutils.resize(image, width=600)
-				gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-				# détecter les visages
-				rects = self.detector(gray, 1)
-				# Pour chaque visage détecté, recherchez le repère.
-				for rect in rects:
-					# déterminer les repères du visage for the face region, then
-					# convertir le repère du visage (x, y) en un array NumPy
-					shape = self.predictor(gray, rect)
-					shape = face_utils.shape_to_np(shape)
-					self.df_landmarks.loc[index]= shape.ravel()
-					print("Process "+str(index)+" on "+str(number_images))
-			self.df_landmarks.to_csv("data/data_out/"+file_name+"landmarks.csv",header=True,mode="w")
+			file_name = file_dir.split("/")[-1].split(".")[0]
+			file_path_name = "data/data_in/images/"+file_name+"_landmarks.csv"
+			if(os.path.isdir(file_path_name) == False):
+				for index in range(0,number_images):
+					image = cv2.imread(file_dir+"/frame"+str(index)+".jpg")
+					image = imutils.resize(image, width=600)
+					gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+					# détecter les visages
+					rects = self.detector(gray, 1)
+					# Pour chaque visage détecté, recherchez le repère.
+					for rect in rects:
+						# déterminer les repères du visage for the face region, then
+						# convertir le repère du visage (x, y) en un array NumPy
+						shape = self.predictor(gray, rect)
+						shape = face_utils.shape_to_np(shape)
+						self.df_landmarks.loc[index]= shape.ravel()
+						print("Process "+str(index)+" on "+str(number_images))
+				self.df_landmarks.to_csv(file_path_name,header=True,mode="w")
 
 
 """
