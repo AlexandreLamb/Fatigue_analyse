@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
+"""
 landmarks_eyes_left = np.arange(36,42)
 landmarks_eyes_rigth = np.arange(42,48)
 
@@ -22,3 +22,32 @@ df[('ear')].plot()
 plt.xlabel("frame")
 plt.ylabel("eye aspect ratio")
 plt.show()
+"""
+
+class AnalyseData():
+    def __init__(self, csv_path):
+        self.df_landmarks = pd.read_csv(csv_path)
+        self.df_measure = pd.DataFrame(dtype=float  )
+
+    def measure_euclid_dist(self, landmarks_1, landmarks_2):
+        x_1 = "landmarks_"+str(landmarks_1)+"_x"
+        y_1 = "landmarks_"+str(landmarks_1)+"_y"
+        x_2 = "landmarks_"+str(landmarks_2)+"_x"
+        y_2 = "landmarks_"+str(landmarks_2)+"_y"
+        a = self.df_landmarks[[x_1,y_1]].rename(columns={x_1 : "x", y_1 :"y"})
+        b = self.df_landmarks[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
+        return (a-b).apply(np.linalg.norm,axis=1)
+
+    def measure_ear(self): # calculate
+        self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
+        self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        self.df_measure["ear"] = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
+
+    def plot_measure(self, measure):
+        self.df_measure[(measure)].plot()
+        plt.xlabel("frame")
+        plt.ylabel(measure)
+        plt.show()
+ad = AnalyseData("data/data_out/IRBA_extrait_1.mp4landmarks.csv")
+ad.measure_ear()
+ad.plot_measure("ear")
