@@ -14,7 +14,7 @@ class Coordinatore() :
     def __init__(self, path_provide) :
         self.path_provide = path_provide
 
-    def analyze(self):
+    def create_csv_landmarks(self):
         videoUtils = VideoUtils()
 
         if(os.path.isfile(self.path_provide)):

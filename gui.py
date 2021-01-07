@@ -44,7 +44,7 @@ class MainWindows(tk.Tk):
 
     def analyse(self):
         coordinator = Coordinatore(self.path)
-        coordinator.analyze()
+        coordinator.create_csv_landmarks()
 
 window = MainWindows()
 window.mainloop()
