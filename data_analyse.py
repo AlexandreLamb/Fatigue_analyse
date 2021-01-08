@@ -50,12 +50,37 @@ class AnalyseData():
         self.df_measure["eyebrowns_nose_r"] = (self.measure_euclid_dist(25,36))
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
         print(self.df_measure)
+
     def plot_measure(self, measure):
-        self.df_measure.plot(x="frame",y=measure)
+        discontinuities_frame  = self.find_discontinuities()
+        print(discontinuities_frame[0][1])
+        for index in discontinuities_frame:
+            plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
+
+
+        #plt.plot(self.df_measure[self.df_measure["frame"].between(357,374)]["frame"], self.df_measure[self.df_measure["frame"].between(357,374)][measure])
+        #plt.plot(self.df_measure[self.df_measure["frame"].between(500,600)]["frame"], self.df_measure[self.df_measure["frame"].between(500,600)][measure])
+
         plt.xlabel("frame")
         plt.ylabel(measure)
         plt.show()
 
+    def find_discontinuities(self):
+        cmp = 0
+        discontinuities_frame = [0]
+        for index, row in self.df_measure.iterrows():
+            if(row['frame'] != cmp) :
+                discontinuities_frame.append(cmp-1)
+                discontinuities_frame.append(row['frame'])
+                cmp = row['frame']
+            cmp = cmp + 1
+        discontinuities_frame.append( cmp-1)
+
+        result = zip(discontinuities_frame[::2], discontinuities_frame[1::2])
+        return list(result)
+
+
 ad = AnalyseData("data/data_out/IRBA_extrait_1.mp4landmarks.csv")
-ad.measure_eyebrows_nose()
-ad.plot_measure("eyebrowns_nose")
+ad.find_discontinuities()
+ad.measure_ear()
+ad.plot_measure("ear")
