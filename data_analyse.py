@@ -39,6 +39,22 @@ class AnalyseData():
         b = self.df_landmarks[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
         return (a-b).apply(np.linalg.norm,axis=1)
 
+   
+   #not finished
+    def measure_yawning_frequency(self):
+        self.df_measure["mouth"] = (self.measure_euclid_dist(62,68) + self.measure_euclid_dist(63,67) + self.measure_euclid_dist(64,68)) / (2*self.measure_euclid_dist(61,65))
+        #find the value that indicates a yawning 
+        #if this value is reached, add +1 on the frequency count
+
+    #not finished
+    def measure_blinking_frequency(self):
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        #when this measurement equals 0, we have a blink
+        #if this happens, we add +1 on the blinking count
+
+
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -83,4 +99,6 @@ class AnalyseData():
 ad = AnalyseData("data/data_out/IRBA_extrait_1.mp4landmarks.csv")
 ad.find_discontinuities()
 ad.measure_ear()
+ad.measure_yawning_frequency()
 ad.plot_measure("ear")
+ad.plot_measure("mouth")
