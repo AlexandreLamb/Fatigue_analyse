@@ -26,8 +26,9 @@ plt.show()
 
 class AnalyseData():
     def __init__(self, csv_path):
-        self.df_landmarks = pd.read_csv(csv_path)
+        self.df_landmarks = pd.read_csv(csv_path).rename(columns={"Unnamed: 0" : "frame"})
         self.df_measure = pd.DataFrame()
+        self.df_measure["frame"] = self.df_landmarks["frame"]
 
     def measure_euclid_dist(self, landmarks_1, landmarks_2):
         x_1 = "landmarks_"+str(landmarks_1)+"_x"
@@ -44,15 +45,17 @@ class AnalyseData():
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
 
     def measure_eyebrows_nose(self):
+        print(self.df_landmarks)
         self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
         self.df_measure["eyebrowns_nose_r"] = (self.measure_euclid_dist(25,36))
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
-
+        print(self.df_measure)
     def plot_measure(self, measure):
-        self.df_measure[(measure)].plot()
+        self.df_measure.plot(x="frame",y=measure)
         plt.xlabel("frame")
         plt.ylabel(measure)
         plt.show()
+
 ad = AnalyseData("data/data_out/IRBA_extrait_1.mp4landmarks.csv")
 ad.measure_eyebrows_nose()
 ad.plot_measure("eyebrowns_nose")
