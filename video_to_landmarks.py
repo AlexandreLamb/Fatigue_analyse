@@ -77,11 +77,10 @@ class VideoToLandmarks:
             while success:
                 success, image = video.get("video").read()
                 if success:
-                    print(type(image))
                     self.place_landmarks(image,count)
                     count += 1
             self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
 
     def load_and_transform(self):
         self.load_data_video()
-        #self.transoform_videos_to_landmarks()
+        self.transoform_videos_to_landmarks()
