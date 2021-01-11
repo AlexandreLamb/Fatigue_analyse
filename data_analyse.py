@@ -39,11 +39,11 @@ class AnalyseData():
         b = self.df_landmarks[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
         return (a-b).apply(np.linalg.norm,axis=1)
 
-   
+
    #not finished
     def measure_yawning_frequency(self):
         self.df_measure["mouth"] = (self.measure_euclid_dist(62,68) + self.measure_euclid_dist(63,67) + self.measure_euclid_dist(64,68)) / (2*self.measure_euclid_dist(61,65))
-        #find the value that indicates a yawning 
+        #find the value that indicates a yawning
         #if this value is reached, add +1 on the frequency count
 
     #not finished
@@ -72,11 +72,6 @@ class AnalyseData():
         print(discontinuities_frame[0][1])
         for index in discontinuities_frame:
             plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
-
-
-        #plt.plot(self.df_measure[self.df_measure["frame"].between(357,374)]["frame"], self.df_measure[self.df_measure["frame"].between(357,374)][measure])
-        #plt.plot(self.df_measure[self.df_measure["frame"].between(500,600)]["frame"], self.df_measure[self.df_measure["frame"].between(500,600)][measure])
-
         plt.xlabel("frame")
         plt.ylabel(measure)
         plt.show()
@@ -91,7 +86,6 @@ class AnalyseData():
                 cmp = row['frame']
             cmp = cmp + 1
         discontinuities_frame.append( cmp-1)
-
         result = zip(discontinuities_frame[::2], discontinuities_frame[1::2])
         return list(result)
 
@@ -100,5 +94,4 @@ ad = AnalyseData("data/data_out/IRBA_extrait_1.mp4landmarks.csv")
 ad.find_discontinuities()
 ad.measure_ear()
 ad.measure_yawning_frequency()
-ad.plot_measure("ear")
 ad.plot_measure("mouth")

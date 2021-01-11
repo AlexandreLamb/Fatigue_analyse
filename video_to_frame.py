@@ -36,27 +36,9 @@ class VideoUtils:
 				os.mkdir("data/data_in/images/"+video.get("video_name"))
 				while success:
 				  success, image = video.get("video").read()
-				  print(success)
 				  if success:
 				   	cv2.imwrite("data/data_in/images/"+video.get("video_name")+"/frame"+str(count)+".jpg", image)
 				  if cv2.waitKey(10) == 27:
 				      break
 				  count += 1
 		return file_path_tab
-
-"""
-
-vidcap = cv2.VideoCapture(args["video"])
-
-success,image = vidcap.read()
-
-
-count = 0;
-while success:
-  success,image = vidcap.read()
-  if success:
-   	cv2.imwrite("data/images/frame%d.jpg" % count, image)
-  if cv2.waitKey(10) == 27:
-      break
-  count += 1
-"""
