@@ -1,0 +1,75 @@
+from imutils import face_utils
+import argparse
+import imutils
+import dlib
+import cv2
+import numpy as np
+import pandas as pd
+import os
+
+SHAPE_PREDICTOR_PATH = "data/data_in/shape_predictor/shape_predictor_68_face_landmarks.dat"
+
+def make_landmarks_header():
+    csv_header = []
+    for i in range(1,69):
+        csv_header.append("landmarks_"+str(i)+"_x")
+        csv_header.append("landmarks_"+str(i)+"_y")
+    return csv_header
+
+class VideoToLandmarks:
+    def __init__(self, path):
+        self.detector = dlib.get_frontal_face_detector()
+        self.predictor = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
+        self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
+        self.path = path
+        self.videos = []
+
+    def load_data_video(self):
+        print("loading video at path : "  + self.path)
+        if(os.path.isdir(self.path)):
+            for video_name in os.listdir(self.path):
+                print("load video : " + video_name)
+                print(os.path.join(self.path,video_name))
+                self.videos.append({
+                "video_name" : video_name,
+                "video" : cv2.VideoCapture(os.path.join(self.path,video_name))
+                })
+            else:
+                print("loading video : " + self.path.split("/")[-1])
+                self.videos.append({
+                "video_name" : self.path.split("/")[-1],
+                "video" : cv2.VideoCapture(self.path)
+                })
+
+    def place_landmarks(self, image, count):
+        print("place landmarks on image " + str(count))
+        #image = cv2.imread(image)
+        image = imutils.resize(image, width=600)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # détecter les visages
+        rects = self.detector(gray, 1)
+        # Pour chaque visage détecté, recherchez le repère.
+        for rect in rects:
+            # déterminer les repères du visage for the face region, then
+            # convertir le repère du visage (x, y) en un array NumPy
+            shape = self.predictor(gray, rect)
+            shape = face_utils.shape_to_np(shape)
+            self.df_landmarks.loc[count]= shape.ravel()
+
+    def transoform_videos_to_landmarks(self):
+        for video in self.videos:
+            print("Writing video : " + str(video.get("video_name")))
+            csv_path_name = "data/data_out/"+video.get("video_name")+"_landmarks.csv"
+            success, image = video.get("video").read()
+            count = 0;
+            while success:
+                success, image = video.get("video").read()
+                if success:
+                    print(type(image))
+                    self.place_landmarks(image,count)
+                    count += 1
+            self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
+
+    def load_and_transform(self):
+        self.load_data_video()
+        self.transoform_videos_to_landmarks()

@@ -1,6 +1,7 @@
 
 import math
 import tkinter as tk
+from tkinter import filedialog
 import tkinter.ttk as ttk
 from coordinator import Coordinatore
 
