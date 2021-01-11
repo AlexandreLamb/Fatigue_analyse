@@ -21,25 +21,31 @@ class VideoToLandmarks:
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
         self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
+        self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps"])
         self.path = path
         self.videos = []
 
     def load_data_video(self):
-        print("loading video at path : "  + self.path)
+        print("loading at path : "  + self.path)
         if(os.path.isdir(self.path)):
             for video_name in os.listdir(self.path):
-                print("load video : " + video_name)
-                print(os.path.join(self.path,video_name))
+                print("loading video : " + video_name)
+                cap = cv2.VideoCapture(os.path.join(self.path,video_name))
                 self.videos.append({
+                    "video_name" : video_name,
+                    "video" : cap
+                })
+                self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
+        else:
+            print("loading video : " + self.path.split("/")[-1])
+            video_name =  self.path.split("/")[-1]
+            cap = cv2.VideoCapture(os.path.join(self.path))
+            self.videos.append({
                 "video_name" : video_name,
-                "video" : cv2.VideoCapture(os.path.join(self.path,video_name))
-                })
-            else:
-                print("loading video : " + self.path.split("/")[-1])
-                self.videos.append({
-                "video_name" : self.path.split("/")[-1],
-                "video" : cv2.VideoCapture(self.path)
-                })
+                "video" : cap
+            })
+            self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
+        self.df_videos_infos.to_csv("data/data_out/videos_infos.csv", mode="a")
 
     def place_landmarks(self, image, count):
         print("place landmarks on image " + str(count))
@@ -72,4 +78,4 @@ class VideoToLandmarks:
 
     def load_and_transform(self):
         self.load_data_video()
-        self.transoform_videos_to_landmarks()
+        #self.transoform_videos_to_landmarks()
