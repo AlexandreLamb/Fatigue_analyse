@@ -24,11 +24,19 @@ plt.ylabel("eye aspect ratio")
 plt.show()
 """
 
+VIDEOS_INFOS_PATH = "data/data_out/videos_infos.csv"
+
+def parse_path_to_name(path):
+    name_with_extensions = path.split("/")[-1]
+    name = name_with_extensions.split(".")[0]
+    return name
+
 class AnalyseData():
     def __init__(self, csv_path):
         self.df_landmarks = pd.read_csv(csv_path).rename(columns={"Unnamed: 0" : "frame"})
-        self.df_measure = pd.DataFrame()
-        self.df_measure["frame"] = self.df_landmarks["frame"]
+        self.df_measure = pd.DataFrame( self.df_landmarks["frame"])
+        self.df_videos_infos = pd.read_csv(VIDEOS_INFOS_PATH)
+        self.video_name = parse_path_to_name(csv_path)
 
     def measure_euclid_dist(self, landmarks_1, landmarks_2):
         x_1 = "landmarks_"+str(landmarks_1)+"_x"
@@ -69,10 +77,11 @@ class AnalyseData():
 
     def plot_measure(self, measure):
         discontinuities_frame  = self.find_discontinuities()
-        print(discontinuities_frame[0][1])
+        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        print(video_fps[0])
         for index in discontinuities_frame:
-            plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
-        plt.xlabel("frame")
+            plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
+        plt.xlabel("sec")
         plt.ylabel(measure)
         plt.show()
 
@@ -90,7 +99,7 @@ class AnalyseData():
         return list(result)
 
 
-ad = AnalyseData("data/data_out/IRBA_extrait_1.mp4landmarks.csv")
+ad = AnalyseData("data/data_out/IRBA_extrait_1.csv")
 ad.find_discontinuities()
 ad.measure_ear()
 ad.measure_yawning_frequency()

@@ -15,8 +15,11 @@ def make_landmarks_header():
         csv_header.append("landmarks_"+str(i)+"_x")
         csv_header.append("landmarks_"+str(i)+"_y")
     return csv_header
-def parse_video_name_extension(name):
-    return name.split(".")[0]
+
+def parse_path_to_name(path):
+    name_with_extensions = path.split("/")[-1]
+    name = name_with_extensions.split(".")[0]
+    return name
 
 class VideoToLandmarks:
     def __init__(self, path):
@@ -34,17 +37,18 @@ class VideoToLandmarks:
             for video_name in os.listdir(self.path):
                 print("loading video : " + video_name)
                 cap = cv2.VideoCapture(os.path.join(self.path,video_name))
+                video_name = parse_path_to_name(video_name)
                 self.videos.append({
-                    "video_name" : parse_video_name_extension(video_name),
+                    "video_name" : video_name,
                     "video" : cap
                 })
                 self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
         else:
             print("loading video : " + self.path.split("/")[-1])
-            video_name =  self.path.split("/")[-1]
             cap = cv2.VideoCapture(os.path.join(self.path))
+            video_name = parse_path_to_name(video_name)
             self.videos.append({
-                "video_name" : parse_video_name_extension(video_name),
+                "video_name" : video_name,
                 "video" : cap
             })
             self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
@@ -71,7 +75,7 @@ class VideoToLandmarks:
     def transoform_videos_to_landmarks(self):
         for video in self.videos:
             print("Writing video : " + str(video.get("video_name")))
-            csv_path_name = "data/data_out/"+video.get("video_name")+"_landmarks.csv"
+            csv_path_name = "data/data_out/"+video.get("video_name")+".csv"
             success, image = video.get("video").read()
             count = 0;
             while success:
@@ -83,4 +87,4 @@ class VideoToLandmarks:
 
     def load_and_transform(self):
         self.load_data_video()
-        self.transoform_videos_to_landmarks()
+        #self.transoform_videos_to_landmarks()
