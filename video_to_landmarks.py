@@ -15,6 +15,8 @@ def make_landmarks_header():
         csv_header.append("landmarks_"+str(i)+"_x")
         csv_header.append("landmarks_"+str(i)+"_y")
     return csv_header
+def parse_video_name_extension(name):
+    return name.split(".")[0]
 
 class VideoToLandmarks:
     def __init__(self, path):
@@ -24,6 +26,7 @@ class VideoToLandmarks:
         self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps"])
         self.path = path
         self.videos = []
+        self.video_infos_path = "data/data_out/videos_infos.csv"
 
     def load_data_video(self):
         print("loading at path : "  + self.path)
@@ -32,7 +35,7 @@ class VideoToLandmarks:
                 print("loading video : " + video_name)
                 cap = cv2.VideoCapture(os.path.join(self.path,video_name))
                 self.videos.append({
-                    "video_name" : video_name,
+                    "video_name" : parse_video_name_extension(video_name),
                     "video" : cap
                 })
                 self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
@@ -41,15 +44,18 @@ class VideoToLandmarks:
             video_name =  self.path.split("/")[-1]
             cap = cv2.VideoCapture(os.path.join(self.path))
             self.videos.append({
-                "video_name" : video_name,
+                "video_name" : parse_video_name_extension(video_name),
                 "video" : cap
             })
             self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
-        self.df_videos_infos.to_csv("data/data_out/videos_infos.csv", mode="a")
+        if os.path.isfile(self.video_infos_path) :
+            self.df_videos_infos.to_csv(self.video_infos_path, mode="a", header=False)
+        else :
+            self.df_videos_infos.to_csv(self.video_infos_path, mode="w")
+
 
     def place_landmarks(self, image, count):
         print("place landmarks on image " + str(count))
-        #image = cv2.imread(image)
         image = imutils.resize(image, width=600)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # détecter les visages
