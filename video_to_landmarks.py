@@ -32,7 +32,7 @@ class VideoToLandmarks:
         self.video_infos_path = "data/data_out/videos_infos.csv"
 
     def load_data_video(self):
-        print("loading at path : "  + self.path)
+        print("loading at path : "  + str(self.path))
         if(os.path.isdir(self.path)):
             for video_name in os.listdir(self.path):
                 print("loading video : " + video_name)

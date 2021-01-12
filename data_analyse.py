@@ -74,8 +74,8 @@ class AnalyseData():
         #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
         #when this measurement equals 0, we have a blink
         #if this happens, we add +1 on the blinking count
-    
-    
+
+
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -87,11 +87,27 @@ class AnalyseData():
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
         #print(self.df_measure)
 
-    def plot_measure(self, measure):
+    def measure_perclos(self, percent, threshold):
+        self.df_measure["eye_area_l"] = (self.measure_euclid_dist(37, 40) / 2) * ((self.measure_euclid_dist(38, 42) + self.measure_euclid_dist(39,41)) /2) * np.pi
+        self.df_measure["eye_area_r"] = (self.measure_euclid_dist(43, 46) / 2) * ((self.measure_euclid_dist(44, 48) + self.measure_euclid_dist(45,47)) /2) * np.pi
+        self.df_measure["eye_area"] = (self.df_measure["eye_area_l"] + self.df_measure["eye_area_r"])/2
+        max_eye_area = self.df_measure["eye_area"].max()
+        self.df_measure["eye_area_theshold"] = pd.DataFrame(threshold*np.arange(self.df_measure["frame"].max()/threshold))
+        eye_area_mean = []
+        for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
+            eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
+        self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
+        print(self.df_measure)
+
+    def plot_measure(self, measure, axis_x = "frame"):
         discontinuities_frame  = self.find_discontinuities()
         video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
-        for index in discontinuities_frame:
-            plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
+        #print(float(video_fps))
+        if axis_x == "frame" :
+            for index in discontinuities_frame:
+                plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/float(video_fps), self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
+        else :
+            plt.plot(self.df_measure[axis_x], self.df_measure[measure])
         plt.xlabel("sec")
         plt.ylabel(measure)
         plt.show()
@@ -110,12 +126,8 @@ class AnalyseData():
         return list(result)
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
-ad.find_discontinuities()
-ad.measure_ear()
-#ad.measure_blinking()
-ad.measure_blinking2()
-ad.measure_blinking3()
-ad.plot_measure("eye_l")
-ad.plot_measure("eye_r")
-
+ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
+#ad.measure_ear()
+#ad.plot_measure("ear")
+ad.measure_perclos(1,10)
+ad.plot_measure("eye_area_mean_over_10_frame","eye_area_theshold")
