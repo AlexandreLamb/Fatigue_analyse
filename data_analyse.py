@@ -55,25 +55,37 @@ class AnalyseData():
         #if this value is reached, add +1 on the frequency count
 
     #not finished
-    def measure_blinking_frequency(self):
+    def measure_blinking(self):
         self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
         #when this measurement equals 0, we have a blink
         #if this happens, we add +1 on the blinking count
 
+    def measure_blinking2(self):
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
+        #self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
+        #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        #when this measurement equals 0, we have a blink
+        #if this happens, we add +1 on the blinking count
 
+    def measure_blinking3(self):
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        #when this measurement equals 0, we have a blink
+        #if this happens, we add +1 on the blinking count
+    
+    
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
 
     def measure_eyebrows_nose(self):
-        print(self.df_landmarks)
         self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
         self.df_measure["eyebrowns_nose_r"] = (self.measure_euclid_dist(25,36))
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
-        print(self.df_measure)
+        #print(self.df_measure)
 
     def plot_measure(self, measure):
         discontinuities_frame  = self.find_discontinuities()
@@ -98,8 +110,12 @@ class AnalyseData():
         return list(result)
 
 
-ad = AnalyseData("data/data_out/IRBA_extrait_1.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
 ad.find_discontinuities()
 ad.measure_ear()
-ad.measure_yawning_frequency()
-ad.plot_measure("mouth")
+#ad.measure_blinking()
+ad.measure_blinking2()
+ad.measure_blinking3()
+ad.plot_measure("eye_l")
+ad.plot_measure("eye_r")
+

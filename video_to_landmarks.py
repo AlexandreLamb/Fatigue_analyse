@@ -87,4 +87,4 @@ class VideoToLandmarks:
 
     def load_and_transform(self):
         self.load_data_video()
-        &self.transoform_videos_to_landmarks()
+        self.transoform_videos_to_landmarks()
