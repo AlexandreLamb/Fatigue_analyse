@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.signal import find_peaks
 """
 landmarks_eyes_left = np.arange(36,42)
 landmarks_eyes_rigth = np.arange(42,48)
@@ -70,18 +71,14 @@ class AnalyseData():
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #blinking_measure = np.array((self.df_measure["eye_r"] +self.df_measure["eye_l"])/2)
+        #we select the values that are below 3.0
         blinking_measures = np.array(self.df_measure[self.df_measure["eye"] < 3.00]["eye"])
-        #to finish
-        self.df_measure['min_eye'] = self.df_measure[(self.df_measure.data.shift(1) > self.df_measure.data["eye"]) & (self.df_measure.data.shift(-1) > self.df_measure.data)]
-        blinking_frequency = blinking_frequency +1  
-        #change 
-        #for i in blinking_measure:
-            #if i <= 3.0:
-                #if i >= 2.0
-        #df['max'] = df.data[(df.data.shift(1) < df.data) & (df.data.shift(-1) < df.data)]
-  
-    
+        #self.df_measure['min_eye'] = self.df_measure[(self.df_measure.data.shift(1) > self.df_measure.data["eye"]) & (self.df_measure.data.shift(-1) > self.df_measure.data)]
+        peaks = find_peaks(blinking_measures)
+        blinking_frequency = len(peaks[0])
+        print(blinking_frequency)
+ 
+       
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
