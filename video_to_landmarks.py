@@ -46,7 +46,7 @@ class VideoToLandmarks:
         else:
             print("loading video : " + self.path.split("/")[-1])
             cap = cv2.VideoCapture(os.path.join(self.path))
-            video_name = parse_path_to_name(video_name)
+            video_name = parse_path_to_name(self.path)
             self.videos.append({
                 "video_name" : video_name,
                 "video" : cap
@@ -87,4 +87,4 @@ class VideoToLandmarks:
 
     def load_and_transform(self):
         self.load_data_video()
-        #self.transoform_videos_to_landmarks()
+        self.transoform_videos_to_landmarks()
