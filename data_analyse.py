@@ -92,7 +92,7 @@ class AnalyseData():
         self.df_measure["eye_area_r"] = (self.measure_euclid_dist(43, 46) / 2) * ((self.measure_euclid_dist(44, 48) + self.measure_euclid_dist(45,47)) /2) * np.pi
         self.df_measure["eye_area"] = (self.df_measure["eye_area_l"] + self.df_measure["eye_area_r"])/2
         max_eye_area = self.df_measure["eye_area"].max()
-        self.df_measure["eye_area_theshold"] = pd.DataFrame(threshold*np.arange(self.df_measure["frame"].max()/threshold))
+        self.df_measure["eye_area_theshold"] = pd.DataFrame(np.arange(self.df_measure["frame"].max()/threshold))
         eye_area_mean = []
         for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
             eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
@@ -106,9 +106,10 @@ class AnalyseData():
         if axis_x == "frame" :
             for index in discontinuities_frame:
                 plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/float(video_fps), self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
+            plt.xlabel("sec")
         else :
             plt.plot(self.df_measure[axis_x], self.df_measure[measure])
-        plt.xlabel("sec")
+            plt.xlabel(axis_x)
         plt.ylabel(measure)
         plt.show()
 
@@ -129,5 +130,5 @@ class AnalyseData():
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
 #ad.measure_ear()
 #ad.plot_measure("ear")
-ad.measure_perclos(1,10)
-ad.plot_measure("eye_area_mean_over_10_frame","eye_area_theshold")
+ad.measure_perclos(1,30)
+ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
