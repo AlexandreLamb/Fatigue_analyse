@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 import tkinter.ttk as ttk
 from coordinator import Coordinatore
+import tkinter.filedialog 
 
 class MainWindows(tk.Tk):
     def __init__(self):
