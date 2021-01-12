@@ -54,27 +54,33 @@ class AnalyseData():
         #find the value that indicates a yawning
         #if this value is reached, add +1 on the frequency count
 
-    #not finished
+    #function that displays the blinking 
     def measure_blinking(self):
-        self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
-        self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        #self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
+        #self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        #self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #when this measurement equals 0, we have a blink
-        #if this happens, we add +1 on the blinking count
 
-    def measure_blinking2(self):
-        self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
-        #self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
-        #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #when this measurement equals 0, we have a blink
-        #if this happens, we add +1 on the blinking count
+    #function that computes the number of blinks
+    def blinking_frequency(self):
 
-    def measure_blinking3(self):
-        self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
-        #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #when this measurement equals 0, we have a blink
-        #if this happens, we add +1 on the blinking count
-    
+        blinking_frequency = 0
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
+        self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        #blinking_measure = np.array((self.df_measure["eye_r"] +self.df_measure["eye_l"])/2)
+        blinking_measures = np.array(self.df_measure[self.df_measure["eye"] < 3.00]["eye"])
+        #to finish
+        self.df_measure['min_eye'] = self.df_measure[(self.df_measure.data.shift(1) > self.df_measure.data["eye"]) & (self.df_measure.data.shift(-1) > self.df_measure.data)]
+        blinking_frequency = blinking_frequency +1  
+        #change 
+        #for i in blinking_measure:
+            #if i <= 3.0:
+                #if i >= 2.0
+        #df['max'] = df.data[(df.data.shift(1) < df.data) & (df.data.shift(-1) < df.data)]
+  
     
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
@@ -114,8 +120,8 @@ ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
 ad.find_discontinuities()
 ad.measure_ear()
 #ad.measure_blinking()
-ad.measure_blinking2()
-ad.measure_blinking3()
-ad.plot_measure("eye_l")
-ad.plot_measure("eye_r")
-
+ad.measure_blinking()
+ad.blinking_frequency()
+#ad.measure_blinking3()
+ad.plot_measure("eye")
+#ad.plot_measure("eye_r")
