@@ -78,7 +78,6 @@ class AnalyseData():
     def plot_measure(self, measure):
         discontinuities_frame  = self.find_discontinuities()
         video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
-        print(video_fps[0])
         for index in discontinuities_frame:
             plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
         plt.xlabel("sec")
