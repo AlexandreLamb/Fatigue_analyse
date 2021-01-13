@@ -97,10 +97,9 @@ class AnalyseData():
         self.df_measure["eye_area_theshold"] = pd.DataFrame(np.arange(self.df_measure["frame"].max()/threshold))
         eye_area_mean = []
         for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
-            if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
-            else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
+            if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
+            else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean())
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
-        print(self.df_measure)
 
     def plot_measure(self, measure, axis_x = "frame"):
         discontinuities_frame  = self.find_discontinuities()
@@ -133,5 +132,5 @@ class AnalyseData():
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
 #ad.measure_ear()
 #ad.plot_measure("ear")
-ad.measure_mean_eye_area(30)
+ad.measure_mean_eye_area(30, percent = True)
 ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
