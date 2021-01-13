@@ -48,10 +48,9 @@ class AnalyseData():
         b = self.df_landmarks[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
         return (a-b).apply(np.linalg.norm,axis=1)
 
-
    #not finished
     def measure_yawning_frequency(self):
-        self.df_measure["mouth"] = (self.measure_euclid_dist(62,68) + self.measure_euclid_dist(63,67) + self.measure_euclid_dist(64,68)) / (2*self.measure_euclid_dist(61,65))
+        self.df_measure["mouth"] = (self.measure_euclid_dist(63,67))
         #find the value that indicates a yawning
         #if this value is reached, add +1 on the frequency count
 
@@ -72,11 +71,15 @@ class AnalyseData():
         #we select the values that are below 3.0
         self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["frame"]
         #find the blinking frequency for each minute
+        b_frequency_list = []
         for i in range(0,int(self.df_measure["frame"].max()/threshold)):
             blinking_measures2 = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
             peaks= find_peaks(np.array(blinking_measures2), height=3.0)
-            self.df_measure["blinking_frequence"] = len(peaks[0])
-        print(self.df_measure["blinking_frequence"])
+            b_frequency_list.append(len(peaks[0]))
+        self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
+        #print(self.df_measure["blinking_frequency"])
+        
+            
  
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
@@ -102,7 +105,7 @@ class AnalyseData():
             if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
             else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
-        print(self.df_measure)
+        #print(self.df_measure)
 
     def plot_measure(self, measure, axis_x = "frame"):
         discontinuities_frame  = self.find_discontinuities()
@@ -118,11 +121,12 @@ class AnalyseData():
         plt.ylabel(measure)
         plt.show()
 
-    def plot_points_measure(self, measure):
+    def plot_blink_measure(self, measure):
         discontinuities_frame  = self.find_discontinuities()
         video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        #problem with x axis 
         for index in discontinuities_frame:
-            plt.scatter(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
+            plt.plot(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
         plt.xlabel("sec")
         plt.ylabel(measure)
         plt.show()
@@ -142,12 +146,15 @@ class AnalyseData():
 
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
 #ad.measure_ear()
 #ad.plot_measure("ear")
 ad.measure_mean_eye_area(30)
-ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
+#ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 ad.measure_blinking()
 ad.blinking_frequency(1500)
+ad.plot_measure("blinking_frequency")
+ad.measure_yawning_frequency()
+
 
 
