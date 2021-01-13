@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.signal import find_peaks
 """
 landmarks_eyes_left = np.arange(36,42)
 landmarks_eyes_rigth = np.arange(42,48)
@@ -54,28 +55,29 @@ class AnalyseData():
         #find the value that indicates a yawning
         #if this value is reached, add +1 on the frequency count
 
-    #not finished
+    #function that displays the blinking 
     def measure_blinking(self):
-        self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
-        self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        #self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
+        #self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
+        #self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #when this measurement equals 0, we have a blink
-        #if this happens, we add +1 on the blinking count
 
-    def measure_blinking2(self):
-        self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
-        #self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
-        #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #when this measurement equals 0, we have a blink
-        #if this happens, we add +1 on the blinking count
-
-    def measure_blinking3(self):
-        self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
-        #self.df_measure["eye2"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #when this measurement equals 0, we have a blink
-        #if this happens, we add +1 on the blinking count
-
-
+    #function that computes the number of blinks
+    def blinking_frequency(self, threshold):
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
+        self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        #we select the values that are below 3.0
+        self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["frame"]
+        #find the blinking frequency for each minute
+        for i in range(0,int(self.df_measure["frame"].max()/threshold)):
+            blinking_measures2 = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
+            peaks= find_peaks(np.array(blinking_measures2), height=3.0)
+            self.df_measure["blinking_frequence"] = len(peaks[0])
+        print(self.df_measure["blinking_frequence"])
+ 
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -116,6 +118,15 @@ class AnalyseData():
         plt.ylabel(measure)
         plt.show()
 
+    def plot_points_measure(self, measure):
+        discontinuities_frame  = self.find_discontinuities()
+        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        for index in discontinuities_frame:
+            plt.scatter(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
+        plt.xlabel("sec")
+        plt.ylabel(measure)
+        plt.show()
+
     def find_discontinuities(self):
         cmp = 0
         discontinuities_frame = [0]
@@ -130,8 +141,13 @@ class AnalyseData():
         return list(result)
 
 
+
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
 #ad.measure_ear()
 #ad.plot_measure("ear")
 ad.measure_mean_eye_area(30)
 ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
+ad.measure_blinking()
+ad.blinking_frequency(1500)
+
+
