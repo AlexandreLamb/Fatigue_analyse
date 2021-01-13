@@ -63,20 +63,21 @@ class AnalyseData():
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        self.df_measure["blinking"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["eye"]
 
     #function that computes the number of blinks
-    def blinking_frequency(self):
-
-        blinking_frequency = 0
+    def blinking_frequency(self, threshold):
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
         #we select the values that are below 3.0
-        blinking_measures = np.array(self.df_measure[self.df_measure["eye"] < 3.00]["eye"])
-        #self.df_measure['min_eye'] = self.df_measure[(self.df_measure.data.shift(1) > self.df_measure.data["eye"]) & (self.df_measure.data.shift(-1) > self.df_measure.data)]
-        peaks = find_peaks(blinking_measures)
-        blinking_frequency = len(peaks[0])
-        print(blinking_frequency)
+        self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["frame"]
+        #find the blinking frequency for each minute
+        for i in range(0,int(self.df_measure["frame"].max()/threshold)):
+            blinking_measures2 = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
+            peaks= find_peaks(np.array(blinking_measures2), height=3.0)
+            self.df_measure["blinking_frequence"] = len(peaks[0])
+        print(self.df_measure["blinking_frequence"])
  
        
     def measure_ear(self): # calculate
@@ -99,6 +100,15 @@ class AnalyseData():
         plt.ylabel(measure)
         plt.show()
 
+    def plot_points_measure(self, measure):
+        discontinuities_frame  = self.find_discontinuities()
+        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        for index in discontinuities_frame:
+            plt.scatter(self.df_measure[self.df_measure["frame"].between(index[0],index[1])]["frame"]/video_fps[0], self.df_measure[self.df_measure["frame"].between(index[0],index[1])][measure])
+        plt.xlabel("sec")
+        plt.ylabel(measure)
+        plt.show()
+
     def find_discontinuities(self):
         cmp = 0
         discontinuities_frame = [0]
@@ -116,9 +126,7 @@ class AnalyseData():
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
 ad.find_discontinuities()
 ad.measure_ear()
-#ad.measure_blinking()
 ad.measure_blinking()
-ad.blinking_frequency()
-#ad.measure_blinking3()
-ad.plot_measure("eye")
-#ad.plot_measure("eye_r")
+ad.blinking_frequency(1500)
+
+
