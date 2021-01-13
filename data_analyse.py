@@ -55,7 +55,7 @@ class AnalyseData():
         #find the value that indicates a yawning
         #if this value is reached, add +1 on the frequency count
 
-    #function that displays the blinking 
+    #function that displays the blinking
     def measure_blinking(self):
         #self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         #self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -77,7 +77,7 @@ class AnalyseData():
             peaks= find_peaks(np.array(blinking_measures2), height=3.0)
             self.df_measure["blinking_frequence"] = len(peaks[0])
         print(self.df_measure["blinking_frequence"])
- 
+
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -97,10 +97,21 @@ class AnalyseData():
     def measure_mean_eye_area(self, threshold, percent = False):
         self.measure_eye_area()
         self.df_measure["eye_area_theshold"] = pd.DataFrame(np.arange(self.df_measure["frame"].max()/threshold))
+        max_eye_area = self.df_measure["eye_area"].max()
         eye_area_mean = []
         for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
             if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
             else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean())
+        self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
+
+    def measure_mean_eye_area_curve(self, threshold, percent = False):
+        self.measure_eye_area()
+        self.df_measure["eye_area_theshold"] = pd.DataFrame(np.arange(self.df_measure["frame"].max()/threshold))
+        max_eye_area = self.df_measure["eye_area"].max()
+        eye_area_mean = []
+        for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
+            if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
+            else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
 
     def plot_measure(self, measure, axis_x = "frame"):
@@ -144,9 +155,6 @@ class AnalyseData():
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
 #ad.measure_ear()
 #ad.plot_measure("ear")
-ad.measure_mean_eye_area(30, percent = True)
-ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
-ad.measure_blinking()
-ad.blinking_frequency(1500)
-
-
+threshold = ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 60
+ad.measure_mean_eye_area_curve(threshold)
+ad.plot_measure("eye_area_mean_over_"+str(threshold)+"_frame", "eye_area_theshold")

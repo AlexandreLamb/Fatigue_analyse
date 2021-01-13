@@ -64,12 +64,14 @@ class VideoToLandmarks:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # détecter les visages
         rects = self.detector(gray, 1)
+        print(rects)
         # Pour chaque visage détecté, recherchez le repère.
         for rect in rects:
             # déterminer les repères du visage for the face region, then
             # convertir le repère du visage (x, y) en un array NumPy
             shape = self.predictor(gray, rect)
             shape = face_utils.shape_to_np(shape)
+            print(shape)
             self.df_landmarks.loc[count]= shape.ravel()
 
     def transoform_videos_to_landmarks(self):
@@ -88,3 +90,6 @@ class VideoToLandmarks:
     def load_and_transform(self):
         self.load_data_video()
         self.transoform_videos_to_landmarks()
+
+vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_Go-NoGo_H71.mp4")
+vl.load_and_transform()
