@@ -155,6 +155,6 @@ class AnalyseData():
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
 #ad.measure_ear()
 #ad.plot_measure("ear")
-threshold = ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 60
-ad.measure_mean_eye_area_curve(threshold)
-ad.plot_measure("eye_area_mean_over_"+str(threshold)+"_frame", "eye_area_theshold")
+threshold = ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30
+ad.measure_eye_area()
+ad.plot_measure("eye_area")
