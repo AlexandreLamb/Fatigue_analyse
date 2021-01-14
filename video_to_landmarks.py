@@ -31,6 +31,15 @@ class VideoToLandmarks:
         self.videos = []
         self.video_infos_path = "data/data_out/videos_infos.csv"
 
+    def check_if_video_already_exists(self, name):
+        if os.path.exists(self.video_infos_path):
+            video_infos = pd.read_csv(self.video_infos_path)
+            if name in video_infos["video_name"]:
+                return True
+            else:
+                return False
+        else return False
+
     def load_data_video(self):
         print("loading at path : "  + str(self.path))
         if(os.path.isdir(self.path)):
@@ -42,7 +51,8 @@ class VideoToLandmarks:
                     "video_name" : video_name,
                     "video" : cap
                 })
-                self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
+                if self.check_if_video_already_exists(video_name):
+                    self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
         else:
             print("loading video : " + self.path.split("/")[-1])
             cap = cv2.VideoCapture(os.path.join(self.path))
@@ -51,7 +61,8 @@ class VideoToLandmarks:
                 "video_name" : video_name,
                 "video" : cap
             })
-            self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
+            if self.check_if_video_already_exists(video_name):
+                self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
         if os.path.isfile(self.video_infos_path) :
             self.df_videos_infos.to_csv(self.video_infos_path, mode="a", header=False)
         else :
