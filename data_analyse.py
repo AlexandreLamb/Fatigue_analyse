@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.signal import find_peaks
+from itertools import groupby
 """
 landmarks_eyes_left = np.arange(36,42)
 landmarks_eyes_rigth = np.arange(42,48)
@@ -49,10 +50,28 @@ class AnalyseData():
         return (a-b).apply(np.linalg.norm,axis=1)
 
    #not finished
-    def measure_yawning_frequency(self):
+    def measure_yawning_frequency(self, threshold):
         self.df_measure["mouth"] = (self.measure_euclid_dist(63,67))
         #find the value that indicates a yawning
-        #if this value is reached, add +1 on the frequency count
+        #we select the values that are above 30
+        self.df_measure["mouth_frame"] = self.df_measure[self.df_measure["mouth"] > (38)]["frame"]
+        #we select only the highest peak
+        y_frequency_list = []
+        for i in range(0,int(self.df_measure["frame"].max()/threshold)):
+            yawning_measures = self.df_measure[self.df_measure["mouth_frame"].between(i*threshold,threshold*(i+1))]["mouth"]
+            yawning_array = (np.array(yawning_measures))
+            peaks= find_peaks(yawning_array, height = 30, distance = 5)
+            x = peaks[0]
+            v = np.diff(x)
+            w = [x[0] for x in groupby(v)]
+            #print(len(w))
+            if len(x) != 0:
+                y = max(x)
+                y_frequency_list.append(y)
+        self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
+        #print(self.df_measure["yawning_frequency"])
+
+
 
     #function that displays the blinking 
     def measure_blinking(self):
@@ -79,8 +98,6 @@ class AnalyseData():
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
         #print(self.df_measure["blinking_frequency"])
         
-            
- 
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -146,15 +163,17 @@ class AnalyseData():
 
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
-#ad.measure_ear()
-#ad.plot_measure("ear")
+ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
+ad.measure_ear()
+ad.plot_measure("ear")
 ad.measure_mean_eye_area(30)
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 ad.measure_blinking()
-ad.blinking_frequency(1500)
-ad.plot_measure("blinking_frequency")
-ad.measure_yawning_frequency()
+#ad.blinking_frequency(1500)
+#ad.plot_measure("blinking_frequency")
+ad.measure_yawning_frequency(1500)
+#ad.plot_measure("mouth")
+
 
 
 
