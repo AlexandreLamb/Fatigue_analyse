@@ -8,17 +8,7 @@ import pandas as pd
 import os
 from log import logging
 from face_recognitions import FaceRecognitionHOG, FaceRecognitionCNN
-def make_landmarks_header():
-    csv_header = []
-    for i in range(1,69):
-        csv_header.append("landmarks_"+str(i)+"_x")
-        csv_header.append("landmarks_"+str(i)+"_y")
-    return csv_header
-
-def parse_path_to_name(path):
-    name_with_extensions = path.split("/")[-1]
-    name = name_with_extensions.split(".")[0]
-    return name
+from utils import make_landmarks_header, parse_path_to_name
 
 SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
 
