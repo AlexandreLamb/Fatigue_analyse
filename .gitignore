@@ -2,3 +2,4 @@ data/data_in/
 code_test/
 test_space.py
 __pycache__/
+loggin.log
