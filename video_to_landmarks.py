@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import os
-from log import logging
+from logger import logging
 from face_recognitions import FaceRecognitionHOG, FaceRecognitionCNN
 from utils import make_landmarks_header, parse_path_to_name
 

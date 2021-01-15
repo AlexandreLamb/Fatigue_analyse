@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import cv2
 import numpy as np
-from log import logging
+from logger import logging
 
 class FaceRecognitionCNN:
     def __init__(self):

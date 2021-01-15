@@ -1,6 +1,6 @@
 import dlib
 import cv2
-from log import logging
+from logger import logging
 from imutils import face_utils
 import imutils
 
