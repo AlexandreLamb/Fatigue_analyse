@@ -6,9 +6,8 @@ import cv2
 import numpy as np
 import pandas as pd
 import os
-
-SHAPE_PREDICTOR_PATH = "data/data_in/shape_predictor/shape_predictor_68_face_landmarks.dat"
-
+from log import logging
+from face_recognitions import FaceRecognitionHOG, FaceRecognitionCNN
 def make_landmarks_header():
     csv_header = []
     for i in range(1,69):
@@ -21,15 +20,19 @@ def parse_path_to_name(path):
     name = name_with_extensions.split(".")[0]
     return name
 
+SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
+
 class VideoToLandmarks:
     def __init__(self, path):
-        self.detector = dlib.get_frontal_face_detector()
-        self.predictor = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
         self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
         self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps"])
         self.path = path
-        self.videos = []
         self.video_infos_path = "data/data_out/videos_infos.csv"
+        self.videos = []
+        self.face_recognitions = {
+                                    "hog" : FaceRecognitionHOG(),
+                                    "cnn" : FaceRecognitionCNN()
+        }
 
     def check_if_video_already_exists(self, name):
         if os.path.exists(self.video_infos_path):
@@ -41,10 +44,10 @@ class VideoToLandmarks:
         else return False
 
     def load_data_video(self):
-        print("loading at path : "  + str(self.path))
+        logging.info("loading at path : "  + str(self.path))
         if(os.path.isdir(self.path)):
             for video_name in os.listdir(self.path):
-                print("loading video : " + video_name)
+                logging.info("loading video : " + video_name)
                 cap = cv2.VideoCapture(os.path.join(self.path,video_name))
                 video_name = parse_path_to_name(video_name)
                 self.videos.append({
@@ -68,39 +71,29 @@ class VideoToLandmarks:
         else :
             self.df_videos_infos.to_csv(self.video_infos_path, mode="w")
 
-
-    def place_landmarks(self, image, count):
-        print("place landmarks on image " + str(count))
-        image = imutils.resize(image, width=600)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # détecter les visages
-        rects = self.detector(gray, 1)
-        print(rects)
-        # Pour chaque visage détecté, recherchez le repère.
-        for rect in rects:
-            # déterminer les repères du visage for the face region, then
-            # convertir le repère du visage (x, y) en un array NumPy
-            shape = self.predictor(gray, rect)
-            shape = face_utils.shape_to_np(shape)
-            print(shape)
-            self.df_landmarks.loc[count]= shape.ravel()
-
-    def transoform_videos_to_landmarks(self):
+    def transoform_videos_to_landmarks(self, face_recognition_type):
         for video in self.videos:
             print("Writing video : " + str(video.get("video_name")))
             csv_path_name = "data/data_out/"+video.get("video_name")+".csv"
             success, image = video.get("video").read()
             count = 0;
             while success:
-                success, image = video.get("video").read()
+                success, img = video.get("video").read()
                 if success:
-                    self.place_landmarks(image,count)
+                    marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
+                    print(marks.ravel())
+                    if len(marks) > 0:
+                        self.df_landmarks.loc[count] = marks
+                    else:
+                        logging.info("No face detect on image "+str(count))
                     count += 1
             self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
 
     def load_and_transform(self):
         self.load_data_video()
-        self.transoform_videos_to_landmarks()
+        self.transoform_videos_to_landmarks("hog")
 
-vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_Go-NoGo_H71.mp4")
+
+
+vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.mp4")
 vl.load_and_transform()
