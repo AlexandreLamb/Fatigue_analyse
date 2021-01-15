@@ -1,8 +1,16 @@
+import dlib
+import cv2
+from log import logging
+from imutils import face_utils
+import imutils
+
+SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
+
 class FaceRecognitionHOG:
     def __init__(self):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
-    def place_landmarks_hog(self, image, count):
+    def place_landmarks(self, image, count):
         logging.info("place landmarks on image " + str(count))
         image = imutils.resize(image, width=600)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -15,4 +23,4 @@ class FaceRecognitionHOG:
             # convertir le repère du visage (x, y) en un array NumPy
             marks = self.predictor(gray, rect)
             marks = face_utils.shape_to_np(marks)
-            return marks
+            return marks.ravel()

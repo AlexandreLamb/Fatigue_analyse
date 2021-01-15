@@ -1,3 +1,9 @@
+import tensorflow as tf
+from tensorflow import keras
+import cv2
+import numpy as np
+from log import logging
+
 class FaceRecognitionCNN:
     def __init__(self):
         self.model_face_detector= "data/data_in/models/res10_300x300_ssd_iter_140000.caffemodel"
@@ -76,13 +82,15 @@ class FaceRecognitionCNN:
         marks = marks.astype(np.uint)
         return marks
 
-    def place_landmarks_dnn(self, img, count) :
+    def place_landmarks(self, img, count) :
         logging.info("place landmarks on image "+str(count))
         rects = self.face_detection_dnn(img)
         if len(rects) == 1 :
             marks = self.detect_landmarks_dnn(img,rects[0])
             return marks
-        else:
-            logging.info("Detect more than 1 face on img number " +str(count))
+        elif len(rects) >= 1:
+            logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
             marks = self.detect_landmarks_dnn(img,rects[0])
-            return marks
+            return marks.ravel()
+        else :
+            return []
