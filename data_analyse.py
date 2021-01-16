@@ -53,7 +53,7 @@ class AnalyseData():
     def measure_yawning_frequency(self, threshold):
         self.df_measure["mouth"] = (self.measure_euclid_dist(63,67))
         #find the value that indicates a yawning
-        #we select the values that are above 30
+        #we select the values that are above 38
         self.df_measure["mouth_frame"] = self.df_measure[self.df_measure["mouth"] > (38)]["frame"]
         #we select only the highest peak
         y_frequency_list = []
@@ -64,14 +64,10 @@ class AnalyseData():
             x = peaks[0]
             v = np.diff(x)
             w = [x[0] for x in groupby(v)]
-            #print(len(w))
             if len(x) != 0:
-                y = max(x)
-                y_frequency_list.append(y)
+                y_frequency_list.append(len(w))
         self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
-        #print(self.df_measure["yawning_frequency"])
-
-
+        print(self.df_measure["yawning_frequency"])
 
     #function that displays the blinking 
     def measure_blinking(self):
@@ -163,17 +159,23 @@ class AnalyseData():
 
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
+#ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
+ad = AnalyseData("data/data_out/yawning_test.csv")
+#EAR measure
 ad.measure_ear()
-ad.plot_measure("ear")
+#ad.plot_measure("ear")
+
+#mean eye are measure
 ad.measure_mean_eye_area(30)
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
-ad.measure_blinking()
-#ad.blinking_frequency(1500)
-#ad.plot_measure("blinking_frequency")
-ad.measure_yawning_frequency(1500)
-#ad.plot_measure("mouth")
 
+#blinking measure
+ad.blinking_frequency(1500)
+#ad.plot_measure("blinking_frequency")
+
+#yawning measure
+ad.measure_yawning_frequency(1500)
+ad.plot_measure("yawning_frequency")
 
 
 
