@@ -49,7 +49,7 @@ class AnalyseData():
         b = self.df_landmarks[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
         return (a-b).apply(np.linalg.norm,axis=1)
 
-   #not finished
+    #not finished
     def measure_yawning_frequency(self, threshold):
         self.df_measure["mouth"] = (self.measure_euclid_dist(63,67))
         #find the value that indicates a yawning
@@ -61,14 +61,13 @@ class AnalyseData():
             yawning_measures = self.df_measure[self.df_measure["mouth_frame"].between(i*threshold,threshold*(i+1))]["mouth"]
             yawning_array = (np.array(yawning_measures))
             peaks= find_peaks(yawning_array, height = 30, distance = 5)
-            x = peaks[0]
-            v = np.diff(x)
-            w = [x[0] for x in groupby(v)]
-            if len(x) != 0:
-                y_frequency_list.append(len(w))
+            peaks_values = peaks[0]
+            peaks_cleaned = np.diff(peaks_values)
+            peaks_highest = [peaks_values[0] for peaks_values in groupby(peaks_cleaned)]
+            if len(peaks_values) != 0:
+                y_frequency_list.append(len(peaks_highest))
         self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
-        print(self.df_measure["yawning_frequency"])
-
+    
     #function that displays the blinking 
     def measure_blinking(self):
         #self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
@@ -92,8 +91,23 @@ class AnalyseData():
             peaks= find_peaks(np.array(blinking_measures2), height=3.0)
             b_frequency_list.append(len(peaks[0]))
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
-        #print(self.df_measure["blinking_frequency"])
-        
+
+    # def blinking_duration(self, threshold):
+    #     self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+    #     self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
+    #     self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+    #     #we select the values that are below 3.0
+    #     self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["frame"]
+    #     self.df_measure["test"] = self.df_measure["eye"][(self.df_measure["eye"]).between(2.0,3.0)]
+    #     #find the blinking frequency for each minute
+    #     b_frequency_list = []
+    #     for i in range(0,int(self.df_measure["frame"].max()/threshold)):
+    #         blinking_measures2 = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
+    #         peaks= find_peaks(np.array(blinking_measures2))
+    #         print(peaks)
+    #         #b_frequency_list.append(len(peaks[0]))
+    #     #self.df_measure["blinking_duration"] = pd.DataFrame(b_frequency_list)
+
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
@@ -105,6 +119,13 @@ class AnalyseData():
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
         #print(self.df_measure)
 
+    def nose_wrinkles(self):
+        self.df_measure["eyebrow_eye_l"] = (self.measure_euclid_dist(22,40))
+        self.df_measure["eyebrow_eye_r"] = (self.measure_euclid_dist(23,43))
+        self.df_measure["eyebrow_eye"]   = (self.df_measure["eyebrow_eye_l"] + self.df_measure["eyebrow_eye_r"])/ 2
+
+    #upper face TO DO
+        
     def measure_eye_area(self):
         self.df_measure["eye_area_l"] = (self.measure_euclid_dist(37, 40) / 2) * ((self.measure_euclid_dist(38, 42) + self.measure_euclid_dist(39,41)) /2) * np.pi
         self.df_measure["eye_area_r"] = (self.measure_euclid_dist(43, 46) / 2) * ((self.measure_euclid_dist(44, 48) + self.measure_euclid_dist(45,47)) /2) * np.pi
@@ -159,8 +180,8 @@ class AnalyseData():
 
 
 
-#ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
-ad = AnalyseData("data/data_out/yawning_test.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
+#ad = AnalyseData("data/data_out/yawning_test.csv")
 #EAR measure
 ad.measure_ear()
 #ad.plot_measure("ear")
@@ -173,9 +194,17 @@ ad.measure_mean_eye_area(30)
 ad.blinking_frequency(1500)
 #ad.plot_measure("blinking_frequency")
 
+#blinking duration
+# ad.blinking_duration(1500)
+# ad.plot_measure("eye")
+
+#nose wrinkles
+ad.nose_wrinkles()
+ad.plot_measure("eyebrow_eye")
+
 #yawning measure
 ad.measure_yawning_frequency(1500)
-ad.plot_measure("yawning_frequency")
+#ad.plot_measure("yawning_frequency")
 
 
 
