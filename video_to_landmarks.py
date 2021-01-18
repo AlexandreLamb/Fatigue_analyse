@@ -15,7 +15,7 @@ SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat
 class VideoToLandmarks:
     def __init__(self, path):
         self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
-        self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps"])
+        self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps","frame_count"])
         self.path = path
         self.video_infos_path = "data/data_out/videos_infos.csv"
         self.videos = []
@@ -46,17 +46,28 @@ class VideoToLandmarks:
                     "video" : cap
                 })
                 if self.check_if_video_already_exists(video_name):
-                    self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
+                    self.df_videos_infos = self.df_videos_infos.append({
+                                                                        'video_name' : video_name,
+                                                                        'fps' : cap.get(cv2.CAP_PROP_FPS),
+                                                                        'frame_count' : cap.get(cv2.CAP_PROP_FRAME_COUNT)
+                                                                        },
+                                                                        ignore_index=True)
         else:
             logging.info("loading video : " + self.path.split("/")[-1])
             cap = cv2.VideoCapture(os.path.join(self.path))
+            print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             video_name = parse_path_to_name(self.path)
             self.videos.append({
                 "video_name" : video_name,
                 "video" : cap
             })
             if self.check_if_video_already_exists(video_name):
-                self.df_videos_infos = self.df_videos_infos.append({'video_name' : video_name, 'fps' : cap.get(cv2.CAP_PROP_FPS)}, ignore_index=True)
+                self.df_videos_infos = self.df_videos_infos.append({
+                                                                    'video_name' : video_name,
+                                                                    'fps' : cap.get(cv2.CAP_PROP_FPS),
+                                                                    'frame_count' : cap.get(cv2.CAP_PROP_FRAME_COUNT)
+                                                                    },
+                                                                    ignore_index=True))
         if os.path.isfile(self.video_infos_path) :
             self.df_videos_infos.to_csv(self.video_infos_path, mode="a", header=False)
         else :
@@ -68,10 +79,13 @@ class VideoToLandmarks:
             cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
         cv2.imwrite("data/data_out/landmarks_pics/image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
 
+    def progression_of_place_landmarks(self, video_name):
+        fps = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["fps"]
+
     def transoform_videos_to_landmarks(self, face_recognition_type, save_image):
         for video in self.videos:
             logging.info("Writing video : " + str(video.get("video_name")))
-            csv_path_name = "data/data_out/"+video.get("video_name")+".csv"
+            csv_path_name = "data/data_out/"+video.get("video_name")+"_"+str(face_recognition_type)+".csv"
             success, image = video.get("video").read()
             count = 0;
             while success:
@@ -89,7 +103,7 @@ class VideoToLandmarks:
 
     def load_and_transform(self):
         self.load_data_video()
-        self.transoform_videos_to_landmarks("cnn", False)
+        self.transoform_videos_to_landmarks("hog", False)
 
 
 
