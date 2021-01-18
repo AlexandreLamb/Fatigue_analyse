@@ -64,7 +64,7 @@ class FaceRecognitionCNN:
         for mark in marks:
             cv2.circle(np.array(image), (mark[0], mark[1]), 2, color, -1, cv2.LINE_AA)
 
-    def detect_landmarks_dnn(self, img, face):
+    def detect_landmarks_cnn(self, img, face):
         offset_y = int(abs((face[3] - face[1]) * 0.1))
         box_moved = self.move_box(face, [0, offset_y])
         facebox = self.get_square_box(box_moved)
@@ -86,11 +86,11 @@ class FaceRecognitionCNN:
         logging.info("place landmarks on image "+str(count))
         rects = self.face_detection_dnn(img)
         if len(rects) == 1 :
-            marks = self.detect_landmarks_dnn(img,rects[0])
-            return marks
+            marks = self.detect_landmarks_cnn(img,rects[0])
+            return marks.ravel()
         elif len(rects) >= 1:
             logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
-            marks = self.detect_landmarks_dnn(img,rects[0])
+            marks = self.detect_landmarks_cnn(img,rects[0])
             return marks.ravel()
         else :
             return []

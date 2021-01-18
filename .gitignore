@@ -1,4 +1,5 @@
 data/data_in/
+data/data_out/landmarks_pics
 code_test/
 test_space.py
 __pycache__/

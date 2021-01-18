@@ -12,15 +12,20 @@ class FaceRecognitionHOG:
         self.predictor = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
     def place_landmarks(self, image, count):
         logging.info("place landmarks on image " + str(count))
-        image = imutils.resize(image, width=600)
+        #image = imutils.resize(image, width=600)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # détecter les visages
         rects = self.detector(gray, 1)
         #print(rects)
         # Pour chaque visage détecté, recherchez le repère.
-        for rect in rects:
-            # déterminer les repères du visage for the face region, then
-            # convertir le repère du visage (x, y) en un array NumPy
-            marks = self.predictor(gray, rect)
+        if len(rects) == 1 :
+            marks = self.predictor(gray, rects[0])
             marks = face_utils.shape_to_np(marks)
             return marks.ravel()
+        elif len(rects) >= 1:
+            logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
+            marks = self.predictor(gray, rects[0])
+            marks = face_utils.shape_to_np(marks)
+            return marks.ravel()
+        else :
+            return []

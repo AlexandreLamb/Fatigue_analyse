@@ -31,7 +31,8 @@ class VideoToLandmarks:
                 return True
             else:
                 return False
-        else return False
+        else:
+            return False
 
     def load_data_video(self):
         logging.info("loading at path : "  + str(self.path))
@@ -61,7 +62,13 @@ class VideoToLandmarks:
         else :
             self.df_videos_infos.to_csv(self.video_infos_path, mode="w")
 
-    def transoform_videos_to_landmarks(self, face_recognition_type):
+    def save_landmarks_pics(self, marks, img, face_recognition_type, count):
+        marks_pair = list(zip(marks[::2],marks[1::2]))
+        for mark in marks_pair:
+            cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
+        cv2.imwrite("data/data_out/landmarks_pics/image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
+
+    def transoform_videos_to_landmarks(self, face_recognition_type, save_image):
         for video in self.videos:
             logging.info("Writing video : " + str(video.get("video_name")))
             csv_path_name = "data/data_out/"+video.get("video_name")+".csv"
@@ -71,8 +78,9 @@ class VideoToLandmarks:
                 success, img = video.get("video").read()
                 if success:
                     marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
-                    print(marks.ravel())
                     if len(marks) > 0:
+                        if save_image:
+                            self.save_landmarks_pics(marks, img, face_recognition_type, count)
                         self.df_landmarks.loc[count] = marks
                     else:
                         logging.info("No face detect on image "+str(count))
@@ -81,7 +89,7 @@ class VideoToLandmarks:
 
     def load_and_transform(self):
         self.load_data_video()
-        self.transoform_videos_to_landmarks("hog")
+        self.transoform_videos_to_landmarks("cnn", False)
 
 
 
