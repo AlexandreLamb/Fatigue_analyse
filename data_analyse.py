@@ -125,6 +125,9 @@ class AnalyseData():
         self.df_measure["eyebrow_eye"]   = (self.df_measure["eyebrow_eye_l"] + self.df_measure["eyebrow_eye_r"])/ 2
 
     #upper face TO DO
+
+    def jaw_dropping(self):
+        self.df_measure["jaw_dropping"] = (self.measure_euclid_dist(52,9))
         
     def measure_eye_area(self):
         self.df_measure["eye_area_l"] = (self.measure_euclid_dist(37, 40) / 2) * ((self.measure_euclid_dist(38, 42) + self.measure_euclid_dist(39,41)) /2) * np.pi
@@ -201,6 +204,10 @@ ad.blinking_frequency(1500)
 #nose wrinkles
 ad.nose_wrinkles()
 ad.plot_measure("eyebrow_eye")
+
+#jaw dropping
+ad.jaw_dropping()
+ad.plot_measure("jaw_dropping")
 
 #yawning measure
 ad.measure_yawning_frequency(1500)
