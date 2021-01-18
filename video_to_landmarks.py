@@ -28,11 +28,11 @@ class VideoToLandmarks:
         if os.path.exists(self.video_infos_path):
             video_infos = pd.read_csv(self.video_infos_path)
             if name in video_infos["video_name"]:
-                return True
-            else:
                 return False
+            else:
+                return True
         else:
-            return False
+            return True
 
     def load_data_video(self):
         logging.info("loading at path : "  + str(self.path))
@@ -55,7 +55,6 @@ class VideoToLandmarks:
         else:
             logging.info("loading video : " + self.path.split("/")[-1])
             cap = cv2.VideoCapture(os.path.join(self.path))
-            print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             video_name = parse_path_to_name(self.path)
             self.videos.append({
                 "video_name" : video_name,
@@ -67,7 +66,7 @@ class VideoToLandmarks:
                                                                     'fps' : cap.get(cv2.CAP_PROP_FPS),
                                                                     'frame_count' : cap.get(cv2.CAP_PROP_FRAME_COUNT)
                                                                     },
-                                                                    ignore_index=True))
+                                                                    ignore_index=True)
         if os.path.isfile(self.video_infos_path) :
             self.df_videos_infos.to_csv(self.video_infos_path, mode="a", header=False)
         else :
@@ -79,8 +78,11 @@ class VideoToLandmarks:
             cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
         cv2.imwrite("data/data_out/landmarks_pics/image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
 
-    def progression_of_place_landmarks(self, video_name):
-        fps = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["fps"]
+    def progression_of_place_landmarks(self, count, video_name):
+        frame_count = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"]
+        os.system("clear")
+        print(str(count)+ " on " + str(frame_count[0]) + " frame analyse")
+
 
     def transoform_videos_to_landmarks(self, face_recognition_type, save_image):
         for video in self.videos:
@@ -98,6 +100,7 @@ class VideoToLandmarks:
                         self.df_landmarks.loc[count] = marks
                     else:
                         logging.info("No face detect on image "+str(count))
+                    self.progression_of_place_landmarks(count, video.get("video_name"))
                     count += 1
             self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
 
