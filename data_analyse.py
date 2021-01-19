@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 import pandas as pd
 from scipy.signal import find_peaks
 from itertools import groupby
@@ -124,7 +125,162 @@ class AnalyseData():
         self.df_measure["eyebrow_eye_r"] = (self.measure_euclid_dist(23,43))
         self.df_measure["eyebrow_eye"]   = (self.df_measure["eyebrow_eye_l"] + self.df_measure["eyebrow_eye_r"])/ 2
 
-    #upper face TO DO
+    def eyes_angle(self):
+
+        #right eye
+        #angle 1
+        #vector 1
+        r1_v1_p1_x1 = "landmarks_"+str(45)+"_x"
+        r1_v1_p1_y1 = "landmarks_"+str(45)+"_y"
+        r1_v1_p2_x2 = "landmarks_"+str(43)+"_x"
+        r1_v1_p2_y2 = "landmarks_"+str(43)+"_y"
+        r1_v1_p1_x = (self.df_landmarks[[r1_v1_p1_x1,r1_v1_p1_y1]])["landmarks_45_x"]
+        r1_v1_p1_y = (self.df_landmarks[[r1_v1_p1_x1,r1_v1_p1_y1]])["landmarks_45_y"]
+        r1_v1_p2_x = (self.df_landmarks[[r1_v1_p2_x2,r1_v1_p2_y2]])["landmarks_43_x"]
+        r1_v1_p2_y = (self.df_landmarks[[r1_v1_p2_x2,r1_v1_p2_y2]])["landmarks_43_y"]
+
+        #vector 2
+        r1_v2_p1_x1 = "landmarks_"+str(43)+"_x"
+        r1_v2_p1_y1 = "landmarks_"+str(43)+"_y"
+        r1_v2_p2_x2 = "landmarks_"+str(46)+"_x"
+        r1_v2_p2_y2 = "landmarks_"+str(46)+"_y"
+        r1_v2_p1_x = (self.df_landmarks[[r1_v2_p1_x1,r1_v2_p1_y1]])["landmarks_43_x"]
+        r1_v2_p1_y = (self.df_landmarks[[r1_v2_p1_x1,r1_v2_p1_y1]])["landmarks_43_y"]
+        r1_v2_p2_x = (self.df_landmarks[[r1_v2_p2_x2,r1_v2_p2_y2]])["landmarks_46_x"]
+        r1_v2_p2_y = (self.df_landmarks[[r1_v2_p2_x2,r1_v2_p2_y2]])["landmarks_46_y"]
+
+        # Get nicer vector form
+        r1_vA = [(r1_v1_p1_x - r1_v1_p2_x), ( r1_v1_p1_y - r1_v1_p2_y)]
+        r1_vB = [(r1_v2_p1_x - r1_v2_p2_x), ( r1_v2_p1_y - r1_v2_p2_y)]
+        # Get dot prod
+        r1_dot_prod = r1_vA[0]*r1_vB[0]+r1_vA[1]*r1_vB[1]
+        # Get magnitudes
+        r1_magA = (r1_vA[0]*r1_vA[0]+r1_vA[1]*r1_vA[1])**0.5
+        r1_magB = (r1_vB[0]*r1_vB[0]+r1_vB[1]*r1_vB[1])**0.5
+        # Get angle in radians and then convert to degrees
+        r_angle1_array = r1_dot_prod/r1_magB/r1_magA
+        for i in range(0,len(r_angle1_array)):
+            r_angle1_measures = r_angle1_array[i]
+            print(r_angle1_measures)
+            r_angle1 = math.acos(r_angle1_measures)
+            
+        #angle 2
+        #vector 1
+        r2_v1_p1_x1 = "landmarks_"+str(46)+"_x"
+        r2_v1_p1_y1 = "landmarks_"+str(46)+"_y"
+        r2_v1_p2_x2 = "landmarks_"+str(47)+"_x"
+        r2_v1_p2_y2 = "landmarks_"+str(47)+"_y"
+        r2_v1_p1_x = (self.df_landmarks[[r2_v1_p1_x1,r2_v1_p1_y1]])["landmarks_46_x"]
+        r2_v1_p1_y = (self.df_landmarks[[r2_v1_p1_x1,r2_v1_p1_y1]])["landmarks_46_y"]
+        r2_v1_p2_x = (self.df_landmarks[[r2_v1_p2_x2,r2_v1_p2_y2]])["landmarks_47_x"]
+        r2_v1_p2_y = (self.df_landmarks[[r2_v1_p2_x2,r2_v1_p2_y2]])["landmarks_47_y"]
+        
+        #vector 2
+        r2_v2_p1_x1 = "landmarks_"+str(47)+"_x"
+        r2_v2_p1_y1 = "landmarks_"+str(47)+"_y"
+        r2_v2_p2_x2 = "landmarks_"+str(43)+"_x"
+        r2_v2_p2_y2 = "landmarks_"+str(43)+"_y"
+        r2_v2_p1_x = (self.df_landmarks[[r2_v2_p1_x1,r2_v2_p1_y1]])["landmarks_47_x"]
+        r2_v2_p1_y = (self.df_landmarks[[r2_v2_p1_x1,r2_v2_p1_y1]])["landmarks_47_y"]
+        r2_v2_p2_x = (self.df_landmarks[[r2_v2_p2_x2,r2_v2_p2_y2]])["landmarks_43_x"]
+        r2_v2_p2_y = (self.df_landmarks[[r2_v2_p2_x2,r2_v2_p2_y2]])["landmarks_43_y"]
+
+        # Get nicer vector form
+        r2_vA = [(r2_v1_p1_x - r2_v1_p2_x), ( r2_v1_p1_y - r2_v1_p2_y)]
+        r2_vB = [(r2_v2_p1_x - r2_v2_p2_x), ( r2_v2_p1_y - r2_v2_p2_y)]
+        # Get dot prod
+        r2_dot_prod = r2_vA[0]*r2_vB[0]+r2_vA[1]*r2_vB[1]
+        # Get magnitudes
+        r2_magA = (r2_vA[0]*r2_vA[0]+r2_vA[1]*r2_vA[1])**0.5
+        r2_magB = (r2_vB[0]*r2_vB[0]+r2_vB[1]*r2_vB[1])**0.5
+        # Get angle in radians and then convert to degrees
+        r_angle2_array = r2_dot_prod/r2_magB/r2_magA
+        for i in range(0,len(r_angle2_array)):
+            r_angle2_measures = r_angle2_array[i]
+            r_angle2 = math.acos(r_angle2_measures)
+
+        """""""""""""""""""""""""""""""""""
+        """""""""""""""""""""""""""""""""""
+
+        #left eye
+        #angle 1
+        #vector 1
+        l1_v1_p1_x1 = "landmarks_"+str(38)+"_x"
+        l1_v1_p1_y1 = "landmarks_"+str(38)+"_y"
+        l1_v1_p2_x2 = "landmarks_"+str(40)+"_x"
+        l1_v1_p2_y2 = "landmarks_"+str(40)+"_y"
+        l1_v1_p1_x = (self.df_landmarks[[l1_v1_p1_x1,l1_v1_p1_y1]])["landmarks_38_x"]
+        l1_v1_p1_y = (self.df_landmarks[[l1_v1_p1_x1,l1_v1_p1_y1]])["landmarks_38_y"]
+        l1_v1_p2_x = (self.df_landmarks[[l1_v1_p2_x2,l1_v1_p2_y2]])["landmarks_40_x"]
+        l1_v1_p2_y = (self.df_landmarks[[l1_v1_p2_x2,l1_v1_p2_y2]])["landmarks_40_y"]
+
+        #vector 2
+        l1_v2_p1_x1 = "landmarks_"+str(40)+"_x"
+        l1_v2_p1_y1 = "landmarks_"+str(40)+"_y"
+        l1_v2_p2_x2 = "landmarks_"+str(37)+"_x"
+        l1_v2_p2_y2 = "landmarks_"+str(37)+"_y"
+        l1_v2_p1_x = (self.df_landmarks[[l1_v2_p1_x1,l1_v2_p1_y1]])["landmarks_40_x"]
+        l1_v2_p1_y = (self.df_landmarks[[l1_v2_p1_x1,l1_v2_p1_y1]])["landmarks_40_y"]
+        l1_v2_p2_x = (self.df_landmarks[[l1_v2_p2_x2,l1_v2_p2_y2]])["landmarks_37_x"]
+        l1_v2_p2_y = (self.df_landmarks[[l1_v2_p2_x2,l1_v2_p2_y2]])["landmarks_37_y"]
+
+        # Get nicer vector form
+        l1_vA = [(l1_v1_p1_x - l1_v1_p2_x), ( l1_v1_p1_y - l1_v1_p2_y)]
+        l1_vB = [(l1_v2_p1_x - l1_v2_p2_x), ( l1_v2_p1_y - l1_v2_p2_y)]
+        # Get dot prod
+        l1_dot_prod = l1_vA[0]*l1_vB[0]+l1_vA[1]*l1_vB[1]
+        # Get magnitudes
+        l1_magA = (l1_vA[0]*l1_vA[0]+l1_vA[1]*l1_vA[1])**0.5
+        l1_magB = (l1_vB[0]*l1_vB[0]+l1_vB[1]*l1_vB[1])**0.5
+        # Get angle in radians and then convert to degrees
+        l_angle1_array = l1_dot_prod/l1_magB/l1_magA
+        for i in range(0,len(l_angle1_array)):
+            l_angle1_measures = l_angle1_array[i]
+            l_angle1 = math.acos(l_angle1_measures)
+
+        #angle 2
+        #vector 1
+        l2_v1_p1_x1 = "landmarks_"+str(37)+"_x"
+        l2_v1_p1_y1 = "landmarks_"+str(37)+"_y"
+        l2_v1_p2_x2 = "landmarks_"+str(42)+"_x"
+        l2_v1_p2_y2 = "landmarks_"+str(42)+"_y"
+        l2_v1_p1_x = (self.df_landmarks[[l2_v1_p1_x1,l2_v1_p1_y1]])["landmarks_37_x"]
+        l2_v1_p1_y = (self.df_landmarks[[l2_v1_p1_x1,l2_v1_p1_y1]])["landmarks_37_y"]
+        l2_v1_p2_x = (self.df_landmarks[[l2_v1_p2_x2,l2_v1_p2_y2]])["landmarks_42_x"]
+        l2_v1_p2_y = (self.df_landmarks[[l2_v1_p2_x2,l2_v1_p2_y2]])["landmarks_42_y"]
+        
+        #vector 2
+        l2_v2_p1_x1 = "landmarks_"+str(42)+"_x"
+        l2_v2_p1_y1 = "landmarks_"+str(42)+"_y"
+        l2_v2_p2_x2= "landmarks_"+str(40)+"_x"
+        l2_v2_p2_y2 = "landmarks_"+str(40)+"_y"
+        l2_v2_p1_x = (self.df_landmarks[[l2_v2_p1_x1,l2_v2_p1_y1]])["landmarks_42_x"]
+        l2_v2_p1_y = (self.df_landmarks[[l2_v2_p1_x1,l2_v2_p1_y1]])["landmarks_42_y"]
+        l2_v2_p2_x = (self.df_landmarks[[l2_v2_p2_x2,l2_v2_p2_y2]])["landmarks_40_x"]
+        l2_v2_p2_y = (self.df_landmarks[[l2_v2_p2_x2,l2_v2_p2_y2]])["landmarks_40_y"]
+
+        # Get nicer vector form
+        l2_vA = [(l2_v1_p1_x - l2_v1_p2_x), ( l2_v1_p1_y - l2_v1_p2_y)]
+        l2_vB = [(l2_v2_p1_x - l2_v2_p2_x), ( l2_v2_p1_y - l2_v2_p2_y)]
+        # Get dot prod
+        l2_dot_prod = l2_vA[0]*l2_vB[0]+l2_vA[1]*l2_vB[1]
+        # Get magnitudes
+        l2_magA = (l2_vA[0]*l2_vA[0]+l2_vA[1]*l2_vA[1])**0.5
+        l2_magB = (l2_vB[0]*l2_vB[0]+l2_vB[1]*l2_vB[1])**0.5
+        # Get angle in radians and then convert to degrees
+        l_angle2_array = l2_dot_prod/l2_magB/l2_magA
+        for i in range(0,len(l_angle2_array)):
+            l_angle2_measures = l_angle2_array[i]
+            l_angle2 = math.acos(l_angle2_measures)
+
+        # #mean for each angle
+        # for i in range(0,len(l_angle2)):
+        #     angle1 = r_angle1[i] + l_angle1[i]
+        #     angle2 = r_angle2[i] + l_angle2[i]
+        #     print(angle1)
+
+       
+        
 
     def jaw_dropping(self):
         self.df_measure["jaw_dropping"] = (self.measure_euclid_dist(52,9))
@@ -194,7 +350,7 @@ ad.measure_mean_eye_area(30)
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 
 #blinking measure
-ad.blinking_frequency(1500)
+#ad.blinking_frequency(1500)
 #ad.plot_measure("blinking_frequency")
 
 #blinking duration
@@ -203,15 +359,17 @@ ad.blinking_frequency(1500)
 
 #nose wrinkles
 ad.nose_wrinkles()
-ad.plot_measure("eyebrow_eye")
+#ad.plot_measure("eyebrow_eye")
 
 #jaw dropping
 ad.jaw_dropping()
-ad.plot_measure("jaw_dropping")
+#ad.plot_measure("jaw_dropping")
 
 #yawning measure
-ad.measure_yawning_frequency(1500)
+#ad.measure_yawning_frequency(1500)
 #ad.plot_measure("yawning_frequency")
+
+ad.eyes_angle()
 
 
 
