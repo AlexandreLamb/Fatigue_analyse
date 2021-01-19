@@ -159,10 +159,11 @@ class AnalyseData():
         r1_magB = (r1_vB[0]*r1_vB[0]+r1_vB[1]*r1_vB[1])**0.5
         # Get angle in radians and then convert to degrees
         r_angle1_array = r1_dot_prod/r1_magB/r1_magA
+        r_angle1_list = []
         for i in range(0,len(r_angle1_array)):
             r_angle1_measures = r_angle1_array[i]
-            print(r_angle1_measures)
             r_angle1 = math.acos(r_angle1_measures)
+            r_angle1_list.append(r_angle1)
             
         #angle 2
         #vector 1
@@ -195,9 +196,11 @@ class AnalyseData():
         r2_magB = (r2_vB[0]*r2_vB[0]+r2_vB[1]*r2_vB[1])**0.5
         # Get angle in radians and then convert to degrees
         r_angle2_array = r2_dot_prod/r2_magB/r2_magA
+        r_angle2_list = []
         for i in range(0,len(r_angle2_array)):
             r_angle2_measures = r_angle2_array[i]
             r_angle2 = math.acos(r_angle2_measures)
+            r_angle2_list.append(r_angle2)
 
         """""""""""""""""""""""""""""""""""
         """""""""""""""""""""""""""""""""""
@@ -234,9 +237,11 @@ class AnalyseData():
         l1_magB = (l1_vB[0]*l1_vB[0]+l1_vB[1]*l1_vB[1])**0.5
         # Get angle in radians and then convert to degrees
         l_angle1_array = l1_dot_prod/l1_magB/l1_magA
+        l_angle1_list = []
         for i in range(0,len(l_angle1_array)):
             l_angle1_measures = l_angle1_array[i]
             l_angle1 = math.acos(l_angle1_measures)
+            l_angle1_list.append(l_angle1)
 
         #angle 2
         #vector 1
@@ -269,19 +274,26 @@ class AnalyseData():
         l2_magB = (l2_vB[0]*l2_vB[0]+l2_vB[1]*l2_vB[1])**0.5
         # Get angle in radians and then convert to degrees
         l_angle2_array = l2_dot_prod/l2_magB/l2_magA
+        l_angle2_list = []
         for i in range(0,len(l_angle2_array)):
             l_angle2_measures = l_angle2_array[i]
             l_angle2 = math.acos(l_angle2_measures)
-
-        # #mean for each angle
-        # for i in range(0,len(l_angle2)):
-        #     angle1 = r_angle1[i] + l_angle1[i]
-        #     angle2 = r_angle2[i] + l_angle2[i]
-        #     print(angle1)
-
-       
+            l_angle2_list.append(l_angle2)
+            
+        #mean for the angle 2
+        angle2_list = [r_angle2_list, l_angle2_list]
+        list2 =  [sum(x) for x in zip(*angle2_list)]
+        angle2 = [x / 2 for x in list2]
         
+        #mean for the angle 1
+        angle1_list = [r_angle1_list, l_angle1_list]
+        list1 =  [sum(x) for x in zip(*angle1_list)]
+        angle1 = [x / 2 for x in list1]
+        
+        self.df_measure["angle1"] = angle1  #isn't suppose to increase
+        self.df_measure["angle2"] = angle2  #is suppose to increase
 
+        
     def jaw_dropping(self):
         self.df_measure["jaw_dropping"] = (self.measure_euclid_dist(52,9))
         
@@ -370,6 +382,8 @@ ad.jaw_dropping()
 #ad.plot_measure("yawning_frequency")
 
 ad.eyes_angle()
+ad.plot_measure("angle1")
+ad.plot_measure("angle2")
 
 
 
