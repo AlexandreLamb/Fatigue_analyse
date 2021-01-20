@@ -1,2 +1,9 @@
 combiner les videos
 choix des cameras
+
+
+ajouter les ecarts types pour dispertions
+possibiliter de mettre plsuierus groupes de videos eten et comparer
+plus des grtaph sortir un csv des mesures
+analyser pvt 63 - 68 
+50 cm de dsitance camera visage
