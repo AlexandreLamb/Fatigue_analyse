@@ -72,11 +72,11 @@ class VideoToLandmarks:
         else :
             self.df_videos_infos.to_csv(self.video_infos_path, mode="w")
 
-    def save_landmarks_pics(self, marks, img, face_recognition_type, count):
+    def save_landmarks_pics(self, marks, img, face_recognition_type, coun, video_name):
         marks_pair = list(zip(marks[::2],marks[1::2]))
         for mark in marks_pair:
             cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
-        cv2.imwrite("data/data_out/landmarks_pics/image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
+        cv2.imwrite("data/data_out/landmarks_pics/"++"_image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
 
     def progression_of_place_landmarks(self, count, video_name):
         frame_count = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"]
@@ -86,8 +86,9 @@ class VideoToLandmarks:
 
     def transoform_videos_to_landmarks(self, face_recognition_type, save_image):
         for video in self.videos:
-            logging.info("Writing video : " + str(video.get("video_name")))
-            csv_path_name = "data/data_out/"+video.get("video_name")+"_"+str(face_recognition_type)+".csv"
+            video_name = video.get("video_name")
+            logging.info("Writing video : " + str(video_name))
+            csv_path_name = "data/data_out/"+video_name+"_"+str(face_recognition_type)+".csv"
             success, image = video.get("video").read()
             count = 0;
             while success:
@@ -96,19 +97,19 @@ class VideoToLandmarks:
                     marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
                     if len(marks) > 0:
                         if save_image:
-                            self.save_landmarks_pics(marks, img, face_recognition_type, count)
+                            self.save_landmarks_pics(marks, img, face_recognition_type, count, video_name)
                         self.df_landmarks.loc[count] = marks
                     else:
                         logging.info("No face detect on image "+str(count))
-                    self.progression_of_place_landmarks(count, video.get("video_name"))
+                    self.progression_of_place_landmarks(count, video_name)
                     count += 1
             self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
 
     def load_and_transform(self):
         self.load_data_video()
-        self.transoform_videos_to_landmarks("cnn", False)
+        self.transoform_videos_to_landmarks("hog", False)
 
 
 
-vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.mp4")
+vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_Go-NoGo_H71.mp4")
 vl.load_and_transform()

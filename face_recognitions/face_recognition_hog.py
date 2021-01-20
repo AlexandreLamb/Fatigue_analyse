@@ -12,7 +12,7 @@ class FaceRecognitionHOG:
         self.predictor = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
     def place_landmarks(self, image, count):
         logging.info("place landmarks on image " + str(count))
-        image = imutils.resize(image, width=300)
+        #image = imutils.resize(image, width=300)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # détecter les visages
         rects = self.detector(gray, 1)
