@@ -4,28 +4,6 @@ import math
 import pandas as pd
 from scipy.signal import find_peaks
 from itertools import groupby
-"""
-landmarks_eyes_left = np.arange(36,42)
-landmarks_eyes_rigth = np.arange(42,48)
-
-
-def compute_ear():
-
-
-
-df = pd.read_csv("data/landmarks.csv")
-
-df["ear_l"] = (df["euclid_dist_38_42_l"]+df["euclid_dist_39_41_l"])/(2*df["euclid_dist_37_40_l"])
-df["ear_r"] = (df["euclid_dist_44_48_r"]+df["euclid_dist_45_47_r"])/(2*df["euclid_dist_43_46_r"])
-df["ear"] = (df["ear_l"]+df["ear_r"])/2
-
-df[('ear')].plot()
-
-
-plt.xlabel("frame")
-plt.ylabel("eye aspect ratio")
-plt.show()
-"""
 
 VIDEOS_INFOS_PATH = "data/data_out/videos_infos.csv"
 
@@ -99,8 +77,8 @@ class AnalyseData():
         #first, we get the distances for each eye and do the mean of it 
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
-        self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        self.df_measure["eyes_frame"] = self.df_measure["eye"]["frame"]
+        self.df_measure["eye"]   = (self.df_measure["eye_r"] + self.df_measure["eye_l"])/2
+        self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(0,10.0)]["frame"]
         #we get the percentage for the PERCLOS measure (either 80 or 70)
         percentage1 = percentage 
         percentage2 = 100 - percentage
@@ -108,15 +86,24 @@ class AnalyseData():
         for i in range(0,int(self.df_measure["frame"].max()/threshold)):
             #find the highest distance aka the largest pupil
             pupil_measures = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
-            peaks = find_peaks(np.array(pupil_measures))
-            peaks_values = peaks[0]
-            peaks_cleaned = np.diff(peaks_values)
-            peaks_highest = [peaks_values[0] for peaks_values in groupby(peaks_cleaned)]
-            largest_pupil = peaks_highest.max()
+            measures_array = np.array(pupil_measures)
+            highest_value = max(measures_array)
+            #peaks = find_peaks(np.array(pupil_measures))
+            # peaks_values = peaks[0]
+            # peaks_cleaned = np.diff(peaks_values)
+            # peak_highest = ([peaks_values[0] for peaks_values in groupby(peaks_cleaned)])
+            #peaks_highest = max(peaks[2])
+            #peak_lowest = ([peaks_values[len(peaks_cleaned)] for peaks_values in groupby(peaks_cleaned)]).min()
+            borne1 = (percentage1 * highest_value)/100
+            borne2 = (percentage2 * highest_value)/100
 
+    def measure_microsleep(self):
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
+        self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        #if distance = 0 alors si ça dure plus de x secondes/frames on comptabilise 1
 
-
-    #def measure_eyebrows_nose(self):
+    def measure_eyebrows_nose(self):
         self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
         self.df_measure["eyebrowns_nose_r"] = (self.measure_euclid_dist(25,36))
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
@@ -375,12 +362,15 @@ ad.jaw_dropping()
 #ad.plot_measure("jaw_dropping")
 
 #yawning measure
-ad.measure_yawning_frequency(1500)
+#ad.measure_yawning_frequency(1500)
 #ad.plot_measure("yawning_frequency")
 
-ad.eyes_angle()
+#ad.eyes_angle()
 # ad.plot_measure("angle1")
 # ad.plot_measure("angle2")
+
+ad.measure_perclos(1500, 80)
+#ad.plot_measure("eye")
 
 
 
