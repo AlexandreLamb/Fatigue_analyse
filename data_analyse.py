@@ -71,9 +71,6 @@ class AnalyseData():
     
     #function that displays the blinking 
     def measure_blinking(self):
-        #self.df_measure["eye_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
-        #self.df_measure["eye_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
-        #self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
@@ -93,28 +90,33 @@ class AnalyseData():
             b_frequency_list.append(len(peaks[0]))
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
 
-    # def blinking_duration(self, threshold):
-    #     self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
-    #     self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
-    #     self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-    #     #we select the values that are below 3.0
-    #     self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["frame"]
-    #     self.df_measure["test"] = self.df_measure["eye"][(self.df_measure["eye"]).between(2.0,3.0)]
-    #     #find the blinking frequency for each minute
-    #     b_frequency_list = []
-    #     for i in range(0,int(self.df_measure["frame"].max()/threshold)):
-    #         blinking_measures2 = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
-    #         peaks= find_peaks(np.array(blinking_measures2))
-    #         print(peaks)
-    #         #b_frequency_list.append(len(peaks[0]))
-    #     #self.df_measure["blinking_duration"] = pd.DataFrame(b_frequency_list)
-
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
 
-    def measure_eyebrows_nose(self):
+    def measure_perclos(self, threshold, percentage):
+        #first, we get the distances for each eye and do the mean of it 
+        self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
+        self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
+        self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
+        self.df_measure["eyes_frame"] = self.df_measure["eye"]["frame"]
+        #we get the percentage for the PERCLOS measure (either 80 or 70)
+        percentage1 = percentage 
+        percentage2 = 100 - percentage
+        #find the the 4 timestamps needed for the perclos measure BY MINUTE
+        for i in range(0,int(self.df_measure["frame"].max()/threshold)):
+            #find the highest distance aka the largest pupil
+            pupil_measures = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
+            peaks = find_peaks(np.array(pupil_measures))
+            peaks_values = peaks[0]
+            peaks_cleaned = np.diff(peaks_values)
+            peaks_highest = [peaks_values[0] for peaks_values in groupby(peaks_cleaned)]
+            largest_pupil = peaks_highest.max()
+
+
+
+    #def measure_eyebrows_nose(self):
         self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
         self.df_measure["eyebrowns_nose_r"] = (self.measure_euclid_dist(25,36))
         self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
@@ -293,7 +295,6 @@ class AnalyseData():
         self.df_measure["angle1"] = angle1  #isn't suppose to increase
         self.df_measure["angle2"] = angle2  #is suppose to increase
 
-        
     def jaw_dropping(self):
         self.df_measure["jaw_dropping"] = (self.measure_euclid_dist(52,9))
         
@@ -362,12 +363,8 @@ ad.measure_mean_eye_area(30)
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 
 #blinking measure
-#ad.blinking_frequency(1500)
+ad.blinking_frequency(1500)
 #ad.plot_measure("blinking_frequency")
-
-#blinking duration
-# ad.blinking_duration(1500)
-# ad.plot_measure("eye")
 
 #nose wrinkles
 ad.nose_wrinkles()
@@ -378,12 +375,12 @@ ad.jaw_dropping()
 #ad.plot_measure("jaw_dropping")
 
 #yawning measure
-#ad.measure_yawning_frequency(1500)
+ad.measure_yawning_frequency(1500)
 #ad.plot_measure("yawning_frequency")
 
 ad.eyes_angle()
-ad.plot_measure("angle1")
-ad.plot_measure("angle2")
+# ad.plot_measure("angle1")
+# ad.plot_measure("angle2")
 
 
 
