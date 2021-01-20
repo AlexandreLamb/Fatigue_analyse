@@ -41,35 +41,25 @@ class DataFormator:
     def merge_csv(self, csv_array_path):
         count_divide_dict = {}
         df_array = paths_to_df(csv_array_path)
-        self.df_merge = df_array[0]
-        self.df_merge.set_index("frame")
+        self.df_merge = df_array[0].rename(columns={"Unnamed: 0" : "frame"})
+        #self.df_merge.set_index("frame")
         for df in df_array[1:]:
             for frame in df["frame"]:
                 if self.df_merge[self.df_merge["frame"] == frame].empty:
                     self.df_merge =  self.df_merge.append(df[df["frame"] == frame])
                 else: 
-                    print(self.df_merge.loc[self.df_merge["frame"] == frame, self.df_merge.columns != "frame"] + df.loc[df["frame"] == frame, df.columns != "frame"])
+                    #print(self.df_merge.loc[self.df_merge["frame"] == frame, self.df_merge.columns != "frame"] + df.loc[df["frame"] == frame, df.columns != "frame"])
                 if count_divide_dict.get(frame) == None :
-                    count_divide_dict.update({frame, 1})
+                    #count_divide_dict.update({frame, 1})
+                    count_divide_dict[frame] = 1
                 else :
                     count_divide_dict.update({frame, count_divide_dict.get(frame)+1})
-        self.df_merge.sort_values(by="frame")
+                print(count_divide_dict)
+                self.df_merge.sort_values(by="frame")
         for frame, divider in count_divide_dict.items():
             self.df_merge[self.df_merge["frame"] == frame] / divider
-        self.df_merge[self.df_merge["frame"]]
+       
         
 df = DataFormator()
-df.load_csv("DESFAM_Semaine 2-Vendredi_Go-NoGo_H69")
-#df.fusion_csv(mode = "mean")
-
-def measure_euclid_dist(landmarks_1, landmarks_2, df):
-        x_1 = "landmarks_"+str(landmarks_1)+"_x"
-        y_1 = "landmarks_"+str(landmarks_1)+"_y"
-        x_2 = "landmarks_"+str(landmarks_2)+"_x"
-        y_2 = "landmarks_"+str(landmarks_2)+"_y"
-        a = df[[x_1,y_1]].rename(columns={x_1 : "x", y_1 :"y"})
-        b = df[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
-        return (a-b).apply(np.linalg.norm,axis=1)
-
-print(measure_euclid_dist(38, 42, df.df_csv_files.get("cnn")))
-print(measure_euclid_dist(38, 42, df.df_csv_files.get("hog")))
+csv_array = ["data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69_hog.csv"]
+df.merge_csv(csv_array)

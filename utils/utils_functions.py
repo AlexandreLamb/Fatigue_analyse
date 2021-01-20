@@ -15,5 +15,5 @@ def parse_path_to_name(path):
 def paths_to_df(csv_array):
     df_array = []
     for path in csv_array:
-        df_array.append(pd.read_csv(path))
+        df_array.append(pd.read_csv(path).rename(columns={"Unnamed: 0" : "frame"}))
     return df_array
