@@ -168,8 +168,10 @@ class AnalyseData():
             else : 
                 axes[axe_number].plot(self.df_measure[measure.get("axis_x")]/float(video_fps), self.df_measure[measure.get("measure")])
             axes[axe_number].set(xlabel=measure.get("axis_x"), ylabel=measure.get("measure"))
-      
         plt.show()
+    
+    def compute_std(self, measure_name):
+        self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
 
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
