@@ -38,6 +38,7 @@ class AnalyseData():
         self.df_measure = pd.DataFrame( self.df_landmarks["frame"])
         self.df_videos_infos = pd.read_csv(VIDEOS_INFOS_PATH)
         self.video_name = parse_path_to_name(csv_path)
+        self.measures_computes = []
 
     def measure_euclid_dist(self, landmarks_1, landmarks_2):
         x_1 = "landmarks_"+str(landmarks_1)+"_x"
@@ -82,6 +83,7 @@ class AnalyseData():
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
+        self.measures_computes.append({"measure" : "ear" , "axis_x" : "frame"})
 
     def measure_eyebrows_nose(self):
         self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
@@ -103,6 +105,7 @@ class AnalyseData():
             if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
             else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean())
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
+        self.measures_computes.append({"measure" : "eye_area_mean_over_"+str(threshold)+"_frame" , "axis_x" : "eye_area_theshold"})
 
     def measure_mean_eye_area_curve(self, threshold, percent = False):
         self.measure_eye_area()
@@ -149,12 +152,22 @@ class AnalyseData():
         discontinuities_frame.append( cmp-1)
         result = zip(discontinuities_frame[::2], discontinuities_frame[1::2])
         return list(result)
-
-
+    ##TODO : Make DF for corespondance of measure and axis : ex : ear -> sec, mean_eaye_area -> threeshold  
+    def plot_multiple_measures(self):
+        number_subplot = len(self.measures_computes)
+        fig, axes = plt.subplots(number_subplot) 
+        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        
+        for axe_number, measure in enumerate(self.measures_computes):
+            
+            axes[axe_number].plot(self.df_measure[measure.get("axis_x")]/float(video_fps), self.df_measure[measure.get("measure")])
+            axes[axe_number].set(xlabel=measure.get("axis_x"), ylabel=measure.get("measure"))
+        plt.show()
 
 ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69.csv")
-#ad.measure_ear()
-#ad.plot_measure("ear")
-threshold = ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30
-ad.measure_eye_area()
-ad.plot_measure("eye_area")
+threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
+
+ad.measure_ear()
+ad.measure_mean_eye_area(threshold)
+
+ad.plot_multiple_measures()
