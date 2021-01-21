@@ -110,6 +110,10 @@ class VideoToLandmarks:
         self.transoform_videos_to_landmarks("hog", False)
 
 
-
-vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_Go-NoGo_H71.mp4")
-vl.load_and_transform()
+video_night = ["data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H63.mov", 
+ "data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H64.mov",
+ "data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H66.mov",
+ "data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H68.mov"]
+for path in video_night:
+    vl = VideoToLandmarks(path)
+    vl.load_and_transform()
