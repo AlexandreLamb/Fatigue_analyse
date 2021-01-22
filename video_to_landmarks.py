@@ -96,8 +96,7 @@ class VideoToLandmarks:
                 if success:
                     marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
                     if len(marks) > 0:
-                        if save_image:
-                            self.save_landmarks_pics(marks, img, face_recognition_type, count, video_name)
+                        
                         self.df_landmarks.loc[count] = marks
                     else:
                         logging.info("No face detect on image "+str(count))
@@ -110,10 +109,6 @@ class VideoToLandmarks:
         self.transoform_videos_to_landmarks("hog", False)
 
 
-video_night = ["data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H63.mov", 
- "data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H64.mov",
- "data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H66.mov",
- "data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H68.mov"]
-for path in video_night:
-    vl = VideoToLandmarks(path)
-    vl.load_and_transform()
+
+vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H63.mov")
+vl.load_and_transform()
