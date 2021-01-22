@@ -2,35 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.signal import find_peaks
-"""
-landmarks_eyes_left = np.arange(36,42)
-landmarks_eyes_rigth = np.arange(42,48)
-
-
-def compute_ear():
-
-
-
-df = pd.read_csv("data/landmarks.csv")
-
-df["ear_l"] = (df["euclid_dist_38_42_l"]+df["euclid_dist_39_41_l"])/(2*df["euclid_dist_37_40_l"])
-df["ear_r"] = (df["euclid_dist_44_48_r"]+df["euclid_dist_45_47_r"])/(2*df["euclid_dist_43_46_r"])
-df["ear"] = (df["ear_l"]+df["ear_r"])/2
-
-df[('ear')].plot()
-
-
-plt.xlabel("frame")
-plt.ylabel("eye aspect ratio")
-plt.show()
-"""
+from utils_functions import parse_path_to_name
 
 VIDEOS_INFOS_PATH = "data/data_out/videos_infos.csv"
-
-def parse_path_to_name(path):
-    name_with_extensions = path.split("/")[-1]
-    name = name_with_extensions.split(".")[0]
-    return name
 
 class AnalyseData():
     def __init__(self, csv_path):
@@ -48,7 +22,6 @@ class AnalyseData():
         a = self.df_landmarks[[x_1,y_1]].rename(columns={x_1 : "x", y_1 :"y"})
         b = self.df_landmarks[[x_2,y_2]].rename(columns={x_2 : "x", y_2 :"y"})
         return (a-b).apply(np.linalg.norm,axis=1)
-
 
    #not finished
     def measure_yawning_frequency(self):
