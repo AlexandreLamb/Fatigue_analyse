@@ -82,6 +82,7 @@ class AnalyseData():
         #we get the percentage for the PERCLOS measure (either 80 or 70)
         percentage1 = percentage 
         percentage2 = 100 - percentage
+        perclos_list = []
         #find the the 4 timestamps needed for the perclos measure BY MINUTE
         for i in range(0,int(self.df_measure["frame"].max()/threshold)):
             #find the highest distance aka the largest pupil
@@ -96,12 +97,32 @@ class AnalyseData():
             #peak_lowest = ([peaks_values[len(peaks_cleaned)] for peaks_values in groupby(peaks_cleaned)]).min()
             borne1 = (percentage1 * highest_value)/100
             borne2 = (percentage2 * highest_value)/100
+            if (pupil_measures < borne1):
+                t1 = pupil_measures["frame"][0]
+            if (pupil_measures < borne2):
+                t2 = pupil_measures["frame"][0]
+            if (pupil_measures > borne2):
+                t3 = pupil_measures["frame"][0]
+            if (pupil_measures > borne1):
+                t4 = pupil_measures["frame"][0]
+            perclos = (t3 - t2)/(t4 - t1)
+            perclos_list.append(perclos)
+        self.df_measure["perclos"] = pd.DataFrame(perclos_list)
+            
+            
 
-    def measure_microsleep(self):
+    def measure_microsleep(self, microsleep):
+        frames_per_second = (int(self.df_measure["frame"].max()))/60
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #if distance = 0 alors si ça dure plus de x secondes/frames on comptabilise 1
+        self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,2.5)]["frame"]
+        #print(self.df_measure["eye"])
+        for i in range(0,int(self.df_measure["frame"].max())):
+                microsleep_frequency = 0
+                microsleep_measures = self.df_measure[self.df_measure["eyes_frame"].between(i,i+1)]["frame"]
+                if (microsleep_measures > (microsleep * frames_per_second)):
+                    microsleep_frequency = microsleep_frequency + 1
 
     def measure_eyebrows_nose(self):
         self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
@@ -370,6 +391,9 @@ ad.jaw_dropping()
 # ad.plot_measure("angle2")
 
 ad.measure_perclos(1500, 80)
+#ad.plot_measure("eye")
+
+ad.measure_microsleep()
 #ad.plot_measure("eye")
 
 
