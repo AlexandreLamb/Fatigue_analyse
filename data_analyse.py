@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.signal import find_peaks
-from utils_functions import parse_path_to_name
+from utils import parse_path_to_name
 
 VIDEOS_INFOS_PATH = "data/data_out/videos_infos.csv"
 
@@ -127,7 +127,7 @@ class AnalyseData():
         discontinuities_frame.append( cmp-1)
         result = zip(discontinuities_frame[::2], discontinuities_frame[1::2])
         return list(result)
-    
+    ##TODO : Show multiple curves on SAME graph
     ##TODO : Make DF for corespondance of measure and axis : ex : ear -> sec, mean_eaye_area -> threeshold  
     def plot_multiple_measures(self):
         number_subplot = len(self.measures_computes)
