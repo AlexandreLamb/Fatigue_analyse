@@ -5,13 +5,9 @@ import pandas as pd
 from scipy.signal import find_peaks
 from itertools import groupby
 from operator import itemgetter
+from utils import parse_path_to_name
 
 VIDEOS_INFOS_PATH = "data/data_out/videos_infos.csv"
-
-def parse_path_to_name(path):
-    name_with_extensions = path.split("/")[-1]
-    name = name_with_extensions.split(".")[0]
-    return name
 
 class AnalyseData():
     def __init__(self, csv_path):
@@ -19,6 +15,7 @@ class AnalyseData():
         self.df_measure = pd.DataFrame( self.df_landmarks["frame"])
         self.df_videos_infos = pd.read_csv(VIDEOS_INFOS_PATH)
         self.video_name = parse_path_to_name(csv_path)
+        self.measures_computes = []
 
     def measure_euclid_dist(self, landmarks_1, landmarks_2):
         x_1 = "landmarks_"+str(landmarks_1)+"_x"
@@ -50,6 +47,14 @@ class AnalyseData():
         self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
     
     #function that displays the blinking 
+
+   #not finished
+    def measure_yawning_frequency(self):
+        self.df_measure["mouth"] = (self.measure_euclid_dist(62,68) + self.measure_euclid_dist(63,67) + self.measure_euclid_dist(64,68)) / (2*self.measure_euclid_dist(61,65))
+        #find the value that indicates a yawning
+        #if this value is reached, add +1 on the frequency count
+
+    #function that displays the blinking
     def measure_blinking(self):
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
         self.df_measure["eye_r"] = (self.measure_euclid_dist(45,47))
@@ -72,10 +77,13 @@ class AnalyseData():
             b_frequency_list.append(len(peaks[0]))
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
 
+
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
+        self.df_measure["ear_std"] = self.df_measure["ear"].std()
+        self.measures_computes.append({"measure" : "ear" , "axis_x" : "frame"})
 
     def measure_perclos(self, threshold, percentage):
         #first, we get the distances for each eye and do the mean of it 
@@ -323,12 +331,24 @@ class AnalyseData():
     def measure_mean_eye_area(self, threshold, percent = False):
         self.measure_eye_area()
         self.df_measure["eye_area_theshold"] = pd.DataFrame(np.arange(self.df_measure["frame"].max()/threshold))
+        max_eye_area = self.df_measure["eye_area"].max()
+        eye_area_mean = []
+        for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
+            if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
+            else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i*threshold,threshold*(i+1))]["eye_area"].mean())
+        self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
+        self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame_std"] = self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"].std()
+        self.measures_computes.append({"measure" : "eye_area_mean_over_"+str(threshold)+"_frame" , "axis_x" : "eye_area_theshold"})
+
+    def measure_mean_eye_area_curve(self, threshold, percent = False):
+        self.measure_eye_area()
+        self.df_measure["eye_area_theshold"] = pd.DataFrame(np.arange(self.df_measure["frame"].max()/threshold))
+        max_eye_area = self.df_measure["eye_area"].max()
         eye_area_mean = []
         for i in range(0,len(np.arange(self.df_measure["frame"].max()/threshold))):
             if percent : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean()*100/max_eye_area)
             else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
-        #print(self.df_measure)
 
     def plot_measure(self, measure, axis_x = "frame"):
         discontinuities_frame  = self.find_discontinuities()
@@ -371,9 +391,31 @@ class AnalyseData():
         discontinuities_frame.append( cmp-1)
         result = zip(discontinuities_frame[::2], discontinuities_frame[1::2])
         return list(result)
+     
+    ##TODO : Show multiple curves on SAME graph
+    ##TODO : Make DF for corespondance of measure and axis : ex : ear -> sec, mean_eaye_area -> threeshold  
+    def plot_multiple_measures(self):
+        number_subplot = len(self.measures_computes)
+        fig, axes = plt.subplots(number_subplot) 
+        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        
+        for axe_number, measure in enumerate(self.measures_computes):
+            
+            if measure.get("measure")+"_std" in self.df_measure.columns:   
+                axes[axe_number].errorbar(x = self.df_measure[measure.get("axis_x")]/float(video_fps), y = self.df_measure[measure.get("measure")], yerr = self.df_measure[measure.get("measure")], ecolor ='g'  )
+            else : 
+                axes[axe_number].plot(self.df_measure[measure.get("axis_x")]/float(video_fps), self.df_measure[measure.get("measure")])
+            axes[axe_number].set(xlabel=measure.get("axis_x"), ylabel=measure.get("measure"))
+        plt.show()
+    
+    def compute_std(self, measure_name):
+        self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
+
+      
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H66_hog.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
+threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
 #ad.measure_ear()
@@ -409,5 +451,4 @@ ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
 ad.measure_microsleep(1)
 ad.plot_measure("microsleep_measure")
 
-
-
+   
