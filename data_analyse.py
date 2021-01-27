@@ -332,10 +332,14 @@ class AnalyseData():
 
     def plot_measure(self, measure, axis_x = "frame"):
         discontinuities_frame  = self.find_discontinuities()
-        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        #c est ca qui merde
+        video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"])
+        print(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"])
+        print(video_fps)
+        
         if axis_x == "frame" :
             for index in discontinuities_frame:
-                plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/float(video_fps), self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
+                plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0], self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
             plt.xlabel("sec")
         else :
             plt.plot(self.df_measure[axis_x], self.df_measure[measure])
@@ -344,10 +348,10 @@ class AnalyseData():
         plt.show()
     
     def plot_multi_measure(self, measures, axis_x = "frame"):
-        video_fps = self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]
+        video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"])
         for measure in measures:
             if axis_x == "frame" :      
-                plt.plot(self.df_measure[axis_x]/float(video_fps), self.df_measure[measure])
+                plt.plot(self.df_measure[axis_x]/video_fps[0], self.df_measure[measure])
                 plt.xlabel("sec")
             else :
                 plt.plot(self.df_measure[axis_x], self.df_measure[measure])
@@ -369,7 +373,7 @@ class AnalyseData():
         return list(result)
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H66_hog.csv")
 
 #EAR measure
 #ad.measure_ear()
@@ -380,30 +384,30 @@ ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 
 #blinking measure
-#ad.blinking_frequency(1500)
-#ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+ad.blinking_frequency(1500)
+ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 
 #nose wrinkles
-#ad.nose_wrinkles()
-#ad.plot_measure("eyebrow_eye")
+ad.nose_wrinkles()
+ad.plot_measure("eyebrow_eye")
 
 #jaw dropping
-#ad.jaw_dropping()
-#ad.plot_measure("jaw_dropping")
+ad.jaw_dropping()
+ad.plot_measure("jaw_dropping")
 
 #yawning measure ==>THERE IS AN ERROR => TO SOLVE
 #ad.measure_yawning_frequency(1500)
 #ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
 
 #ad.eyes_angle()
-#ad.plot_multi_measure(["left_angle1","left_angle2"])
-#ad.plot_multi_measure(["right_angle1","right_angle2"])
+ad.plot_multi_measure(["left_angle1","left_angle2"])
+ad.plot_multi_measure(["right_angle1","right_angle2"])
 
-#ad.measure_perclos(1500, 80)
-#ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
+ad.measure_perclos(1500, 80)
+ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
 
-#ad.measure_microsleep(1)
-#ad.plot_measure("microsleep_measure")
+ad.measure_microsleep(1)
+ad.plot_measure("microsleep_measure")
 
 
 
