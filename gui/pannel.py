@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
 from PIL import ImageTk, Image
 import pandas as pd
 import os
@@ -13,19 +14,19 @@ from utils import parse_path_to_name
 import random
 class Pannel(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent, width=400, height=800, bg='green')
+        tk.Frame.__init__(self, parent, width=400, height=800, bg='gray')
         tk.Frame.pack(self, side="left")
         tk.Frame.pack_propagate(self,0)
         
         self.pannel_title = tk.StringVar()
         self.pannel_title.set("Bibliothèque")
-        self.pannel_label = tk.Label(self, textvariable=self.pannel_title)
+        self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=2, width=18)
         self.pannel_label.pack(side="top", pady=(10,0))
               
         self.frame_contenaire_to_analyse = tk.Frame(self, width=300, height=200)
         self.frame_contenaire_to_analyse.pack(pady=(50,0))
         
-        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, bg='red', scrollregion=(0,0,0,500))
+        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=350, height=200, bg='light gray', scrollregion=(0,0,0,500))
         
         self.scrollbar_to_analyse = tk.Scrollbar(self.frame_contenaire_to_analyse, orient=tk.VERTICAL)
         self.scrollbar_to_analyse.pack(side=tk.RIGHT, fill= Y)
@@ -43,7 +44,8 @@ class Pannel(tk.Frame):
         self.frame_contenaire_analyse = tk.Frame(self, width=300, height=200)
         self.frame_contenaire_analyse.pack(pady=(100,0))
         
-        self.contenaire_videos_analyse = tk.Canvas(self.frame_contenaire_analyse, width=300, height=200, bg='yellow', scrollregion=(0,0,0,500))
+        #videos déja présentes
+        self.contenaire_videos_analyse = tk.Canvas(self.frame_contenaire_analyse, width=350, height=200, bg='light gray', scrollregion=(0,0,0,500))
         
         self.scrollbar_analyse = tk.Scrollbar(self.frame_contenaire_analyse, orient=tk.VERTICAL)
         self.scrollbar_analyse.pack(side=tk.RIGHT, fill= Y)
@@ -71,6 +73,10 @@ class Pannel(tk.Frame):
             item_label = tk.Checkbutton(self.contenaire_videos_to_analyse, variable= state, textvariable=item_text)
         
             self.contenaire_videos_to_analyse.create_window(150,25*len(self.check_buttons_to_analyse_state), window = item_label)
+
+        if (parse_path_to_name(file_path) in list(self.video_analyse)) == True:
+            messagebox.showinfo(title="Alerte", message="Vidéo déjà chargée")
+
     
     def get_videos_analyse(self):
         data_path = "data/data_out/"
