@@ -27,13 +27,14 @@ class VideoToLandmarks:
     def check_if_video_already_exists(self, name):
         if os.path.exists(self.video_infos_path):
             video_infos = pd.read_csv(self.video_infos_path)
-            if name in video_infos["video_name"]:
+            if name in list(video_infos["video_name"]):
                 return False
             else:
                 return True
         else:
             return True
     ##TODO: save filepaht in video infos csv
+    ##TODO: Blindage video infos a tester 
     def load_data_video(self):
         logging.info("loading at path : "  + str(self.path))
         if(os.path.isdir(self.path)):
