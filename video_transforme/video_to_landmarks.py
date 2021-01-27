@@ -6,8 +6,10 @@ import cv2
 import numpy as np
 import pandas as pd
 import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from logger import logging
-from video_transforme.face_recognitions import FaceRecognitionHOG, FaceRecognitionCNN
+from video_transforme.face_recognitions import FaceRecognitionHOG
 from utils import make_landmarks_header, parse_path_to_name
 
 SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
@@ -21,7 +23,7 @@ class VideoToLandmarks:
         self.videos = []
         self.face_recognitions = {
                                     "hog" : FaceRecognitionHOG(),
-                                    "cnn" : FaceRecognitionCNN()
+                                   # "cnn" : FaceRecognitionCNN()
         }
 
     def check_if_video_already_exists(self, name):
