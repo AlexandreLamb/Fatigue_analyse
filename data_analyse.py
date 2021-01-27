@@ -414,7 +414,7 @@ class AnalyseData():
       
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H64_hog.csv")
+ad = AnalyseData("data/data_out/df_merge_pvt.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
@@ -424,34 +424,34 @@ threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_
 #mean eye are measure
 #ad.measure_mean_eye_area(30)
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
-
+##TODO: probleme with function blinking frequency
 #blinking measure
-ad.blinking_frequency(1500)
-ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+#ad.blinking_frequency(1500)
+#ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 
 #nose wrinkles
-ad.nose_wrinkles()
-ad.plot_measure("eyebrow_eye")
+#ad.nose_wrinkles()
+#ad.plot_measure("eyebrow_eye")
 
-ad.measure_eyebrow_nose()
-ad.plot_measure("eyebrow_nose")
+#ad.measure_eyebrow_nose()
+#ad.plot_measure("eyebrow_nose")
 
 #jaw dropping
-ad.jaw_dropping()
-ad.plot_measure("jaw_dropping")
+#ad.jaw_dropping()
+#ad.plot_measure("jaw_dropping")
 
-#yawning measure ==>THERE IS AN ERROR => TO SOLVE
+##TODO: yawning measure ==>THERE IS AN ERROR => TO SOLVE
 #ad.measure_yawning_frequency(1500)
 #ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
 
-#ad.eyes_angle()
+ad.eyes_angle()
 ad.plot_multi_measure(["left_angle1","left_angle2"])
 ad.plot_multi_measure(["right_angle1","right_angle2"])
 
 ad.measure_perclos(1500, 80)
 ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
-
-ad.measure_microsleep(1)
-ad.plot_measure("microsleep_measure")
+##TODO: probleme with function microsleep -> not working
+#ad.measure_microsleep(1)
+#ad.plot_measure("microsleep_measure")
 
    

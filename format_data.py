@@ -72,3 +72,4 @@ class DataFormator:
 df = DataFormator()
 csv_array = ["data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H63_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H64_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H66_hog.csv"]
 df.merge_csv(csv_array)
+## TODO:  add video anme and stuff in csv video infos
