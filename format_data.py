@@ -67,10 +67,8 @@ class DataFormator:
             print("frame : ", frame)
             print("divider : ", divider)
             self.df_merge.loc[frame] = self.df_merge.loc[frame].divide(divider)
-        self.df_merge.to_csv("data/data_out/df_merge_test.csv")
+        self.df_merge.to_csv("data/data_out/df_merge_pvt.csv")
     
-        """
 df = DataFormator()
-csv_array = ["data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H69_hog.csv"]
+csv_array = ["data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H63_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H64_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H66_hog.csv"]
 df.merge_csv(csv_array)
-"""
