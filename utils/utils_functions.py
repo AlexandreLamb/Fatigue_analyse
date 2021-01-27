@@ -17,3 +17,4 @@ def paths_to_df(csv_array):
     for path in csv_array:
         df_array.append(pd.read_csv(path).rename(columns={"Unnamed: 0" : "frame"}))
     return df_array
+
