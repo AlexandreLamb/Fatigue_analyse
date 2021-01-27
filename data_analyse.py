@@ -138,10 +138,10 @@ class AnalyseData():
                     microsleep_frequency = microsleep_frequency + 1
         self.df_measure["microsleep_measure"] = microsleep_frequency 
   
-    def measure_eyebrows_nose(self):
-        self.df_measure["eyebrowns_nose_l"] = (self.measure_euclid_dist(20,32))
-        self.df_measure["eyebrowns_nose_r"] = (self.measure_euclid_dist(25,36))
-        self.df_measure["eyebrowns_nose"]   = (self.df_measure["eyebrowns_nose_r"] + self.df_measure["eyebrowns_nose_r"])/ 2
+    def measure_eyebrow_nose(self):
+        self.df_measure["eyebrow_nose_l"] = (self.measure_euclid_dist(20,32))
+        self.df_measure["eyebrow_nose_r"] = (self.measure_euclid_dist(25,36))
+        self.df_measure["eyebrow_nose"]   = (self.df_measure["eyebrow_nose_r"] + self.df_measure["eyebrow_nose_r"])/ 2
 
     def nose_wrinkles(self):
         self.df_measure["eyebrow_eye_l"] = (self.measure_euclid_dist(22,40))
@@ -414,7 +414,7 @@ class AnalyseData():
       
 
 
-ad = AnalyseData("data/data_out/DESFAM_Semaine 2-Vendredi_Go-NoGo_H64.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H64_hog.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
@@ -432,6 +432,9 @@ ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 #nose wrinkles
 ad.nose_wrinkles()
 ad.plot_measure("eyebrow_eye")
+
+ad.measure_eyebrow_nose()
+ad.plot_measure("eyebrow_nose")
 
 #jaw dropping
 ad.jaw_dropping()
