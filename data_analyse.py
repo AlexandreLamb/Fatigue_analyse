@@ -44,6 +44,9 @@ class AnalyseData():
             peaks_highest = [peaks_values[0] for peaks_values in groupby(peaks_cleaned)]
             if (len(peaks_values) != 0):
                 y_frequency_list.append(len(peaks_highest))
+                print(y_frequency_list)
+            else: 
+                y_frequency_list.append(0)
         self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
     
     #function that displays the blinking
@@ -407,9 +410,7 @@ class AnalyseData():
         self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
 
       
-
-
-ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H64_hog.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H63_hog.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
@@ -421,8 +422,8 @@ threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 
 #blinking measure
-ad.blinking_frequency(1500)
-ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+#ad.blinking_frequency(1500)
+#ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 #ad.plot_measure("eye")
 
 #nose wrinkles
@@ -436,9 +437,9 @@ ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 #ad.jaw_dropping()
 #ad.plot_measure("jaw_dropping")
 
-##TODO: yawning measure ==>THERE IS AN ERROR => TO SOLVE
-#ad.measure_yawning_frequency(1500)
-#ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
+
+ad.measure_yawning_frequency(1500)
+ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
 
 # ad.eyes_angle()
 # ad.plot_multi_measure(["left_angle1","left_angle2"])
@@ -446,7 +447,7 @@ ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 
 # ad.measure_perclos(1500, 80)
 # ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
-##TODO: probleme with function microsleep -> not working
+
 #ad.measure_microsleep(1)
 #ad.plot_measure("microsleep_measure")
 
