@@ -46,14 +46,6 @@ class AnalyseData():
                 y_frequency_list.append(len(peaks_highest))
         self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
     
-    #function that displays the blinking 
-
-   #not finished
-    def measure_yawning_frequency(self):
-        self.df_measure["mouth"] = (self.measure_euclid_dist(62,68) + self.measure_euclid_dist(63,67) + self.measure_euclid_dist(64,68)) / (2*self.measure_euclid_dist(61,65))
-        #find the value that indicates a yawning
-        #if this value is reached, add +1 on the frequency count
-
     #function that displays the blinking
     def measure_blinking(self):
         self.df_measure["eye_l"] = (self.measure_euclid_dist(39,41))
@@ -65,17 +57,20 @@ class AnalyseData():
         self.df_measure["eye_l"] = self.measure_euclid_dist(39,41)
         self.df_measure["eye_r"] = self.measure_euclid_dist(45,47)
         self.df_measure["eye"]   = (self.df_measure["eye_r"] +self.df_measure["eye_l"])/2
-        #we select the values that are below 3.0
-        self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,3.0)]["frame"]
+        #we select the values that are below 8
+        self.df_measure["eyes_frame"] = self.df_measure[self.df_measure["eye"].between(2.0,8.0)]["frame"]
+        #print(self.df_measure["eyes_frame"])
         #we decide the axis we want for the display
         self.df_measure["blinking_frequency_axis"] = pd.DataFrame(np.arange((self.df_measure["frame"].max()/threshold)))
         #find the blinking frequency for each minute
         b_frequency_list = []
         for i in range(0,int(self.df_measure["frame"].max()/threshold)):
             blinking_measures = self.df_measure[self.df_measure["eyes_frame"].between(i*threshold,threshold*(i+1))]["eye"]
-            peaks= find_peaks(np.array(blinking_measures), height=3.0)
+            peaks= find_peaks(np.array(blinking_measures))
             b_frequency_list.append(len(peaks[0]))
+            #print(b_frequency_list)
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
+        #print(self.df_measure["blinking_frequency"])
 
 
     def measure_ear(self): # calculate
@@ -414,7 +409,7 @@ class AnalyseData():
       
 
 
-ad = AnalyseData("data/data_out/df_merge_pvt.csv")
+ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H64_hog.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
@@ -424,10 +419,11 @@ threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_
 #mean eye are measure
 #ad.measure_mean_eye_area(30)
 #ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
-##TODO: probleme with function blinking frequency
+
 #blinking measure
-#ad.blinking_frequency(1500)
-#ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+ad.blinking_frequency(1500)
+ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+#ad.plot_measure("eye")
 
 #nose wrinkles
 #ad.nose_wrinkles()
@@ -444,12 +440,12 @@ threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_
 #ad.measure_yawning_frequency(1500)
 #ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
 
-ad.eyes_angle()
-ad.plot_multi_measure(["left_angle1","left_angle2"])
-ad.plot_multi_measure(["right_angle1","right_angle2"])
+# ad.eyes_angle()
+# ad.plot_multi_measure(["left_angle1","left_angle2"])
+# ad.plot_multi_measure(["right_angle1","right_angle2"])
 
-ad.measure_perclos(1500, 80)
-ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
+# ad.measure_perclos(1500, 80)
+# ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
 ##TODO: probleme with function microsleep -> not working
 #ad.measure_microsleep(1)
 #ad.plot_measure("microsleep_measure")
