@@ -357,10 +357,12 @@ class AnalyseData():
         
         if axis_x == "frame" :
             for index in discontinuities_frame:
-                plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0], self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
+                plt.scatter(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0], self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
+                #plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0], self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])
             plt.xlabel("sec")
         else :
-            plt.plot(self.df_measure[axis_x], self.df_measure[measure])
+            plt.scatter(self.df_measure[axis_x], self.df_measure[measure])
+            #plt.plot(self.df_measure[axis_x], self.df_measure[measure])
             plt.xlabel(axis_x)
         plt.ylabel(measure)
         plt.show()
@@ -410,7 +412,7 @@ class AnalyseData():
         self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
 
       
-ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H63_hog.csv")
+ad = AnalyseData("data/data_out/df_merge_pvt.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
@@ -418,12 +420,12 @@ threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_
 #ad.plot_measure("ear")
 
 #mean eye are measure
-#ad.measure_mean_eye_area(30)
-#ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
+ad.measure_mean_eye_area(30)
+ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 
 #blinking measure
-#ad.blinking_frequency(1500)
-#ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+ad.blinking_frequency(1500)
+ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
 #ad.plot_measure("eye")
 
 #nose wrinkles
@@ -438,15 +440,15 @@ threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_
 #ad.plot_measure("jaw_dropping")
 
 
-ad.measure_yawning_frequency(1500)
-ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
+#ad.measure_yawning_frequency(1500)
+#ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
 
 # ad.eyes_angle()
 # ad.plot_multi_measure(["left_angle1","left_angle2"])
 # ad.plot_multi_measure(["right_angle1","right_angle2"])
 
-# ad.measure_perclos(1500, 80)
-# ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
+ad.measure_perclos(1500, 80)
+ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
 
 #ad.measure_microsleep(1)
 #ad.plot_measure("microsleep_measure")
