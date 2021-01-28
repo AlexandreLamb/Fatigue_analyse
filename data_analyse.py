@@ -414,41 +414,40 @@ ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H63_hog.csv")
 threshold = int(ad.df_videos_infos[ad.df_videos_infos["video_name"] == ad.video_name]["fps"].item() * 30)
 
 #EAR measure
-#ad.measure_ear()
-#ad.plot_measure("ear")
+ad.measure_ear()
+ad.plot_measure("ear")
 
 #mean eye are measure
-#ad.measure_mean_eye_area(30)
-#ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
+ad.measure_mean_eye_area(30)
+ad.plot_measure("eye_area_mean_over_30_frame", "eye_area_theshold")
 
 #blinking measure
-#ad.blinking_frequency(1500)
-#ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
-#ad.plot_measure("eye")
+ad.blinking_frequency(1500)
+ad.plot_measure("blinking_frequency", axis_x = "blinking_frequency_axis")
+ad.plot_measure("eye")
 
 #nose wrinkles
-#ad.nose_wrinkles()
-#ad.plot_measure("eyebrow_eye")
+ad.nose_wrinkles()
+ad.plot_measure("eyebrow_eye")
 
-#ad.measure_eyebrow_nose()
-#ad.plot_measure("eyebrow_nose")
+ad.measure_eyebrow_nose()
+ad.plot_measure("eyebrow_nose")
 
 #jaw dropping
-#ad.jaw_dropping()
-#ad.plot_measure("jaw_dropping")
-
+ad.jaw_dropping()
+ad.plot_measure("jaw_dropping")
 
 ad.measure_yawning_frequency(1500)
 ad.plot_measure("yawning_frequency", axis_x = "yawning_frequency_axis")
 
-# ad.eyes_angle()
-# ad.plot_multi_measure(["left_angle1","left_angle2"])
-# ad.plot_multi_measure(["right_angle1","right_angle2"])
+ad.eyes_angle()
+ad.plot_multi_measure(["left_angle1","left_angle2"])
+ad.plot_multi_measure(["right_angle1","right_angle2"])
 
-# ad.measure_perclos(1500, 80)
-# ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
+ad.measure_perclos(1500, 80)
+ad.plot_measure("perclos_measure", axis_x = "perclos_axis")
 
-#ad.measure_microsleep(1)
-#ad.plot_measure("microsleep_measure")
+ad.measure_microsleep(1)
+ad.plot_measure("microsleep_measure")
 
    
