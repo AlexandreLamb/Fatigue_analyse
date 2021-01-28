@@ -14,19 +14,19 @@ from utils import parse_path_to_name
 import random
 class Pannel(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent, width=350, height=700, bg='gray')
+        tk.Frame.__init__(self, parent, width=300, height=700, bg='gray')
         tk.Frame.pack(self, side="left")
         tk.Frame.pack_propagate(self,0)
         
         self.pannel_title = tk.StringVar()
         self.pannel_title.set("Bibliothèque")
         self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=2, width=18)
-        self.pannel_label.pack(side="top", pady=(10,0))
+        self.pannel_label.pack(side="top", pady=(10,0), padx=(10,10))
               
         self.frame_contenaire_to_analyse = tk.Frame(self, width=300, height=200)
-        self.frame_contenaire_to_analyse.pack(pady=(50,0))
+        self.frame_contenaire_to_analyse.pack(pady=(10,0), padx=(10,10))
         
-        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, bg='light gray', scrollregion=(0,0,0,500))
+        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, bg='gray94', scrollregion=(0,0,0,500))
         
         self.scrollbar_to_analyse = tk.Scrollbar(self.frame_contenaire_to_analyse, orient=tk.VERTICAL)
         self.scrollbar_to_analyse.pack(side=tk.RIGHT, fill= Y)
@@ -35,25 +35,29 @@ class Pannel(tk.Frame):
         self.contenaire_videos_to_analyse.config(yscrollcommand=self.scrollbar_to_analyse.set)
         self.contenaire_videos_to_analyse.pack()
         
-        self.import_video_button = tk.Button(self, text ="Importer vidéos", command=self.add_item)
+        self.import_video_button = tk.Button(self, text ="Importer vidéos", bd=5, height=2, width=18, command=self.add_item)
         self.import_video_button.pack(side="top", pady=(5,0), padx=(0,0))
         
-        self.analyse_button = tk.Button(self, text="Transform", command= lambda: self.event_generate("<<TRANSFORM>>"))
+        self.analyse_button = tk.Button(self, text="Transformer", bd=5, height=2, width=18, command= lambda: self.event_generate("<<TRANSFORM>>"))
         self.analyse_button.pack(side="top", pady=(5,0), padx =(0,0))
         
 
         self.frame_contenaire_analyse = tk.Frame(self, width=300, height=200)
-        self.frame_contenaire_analyse.pack(pady=(100,0))
+        self.frame_contenaire_analyse.pack(pady=(20,0), padx=(10,10))
         
         #videos déja présentes
-        self.contenaire_videos_analyse = tk.Canvas(self.frame_contenaire_analyse, width=300, height=150, bg='light gray', scrollregion=(0,0,0,500))
+        self.contenaire_videos_analyse = tk.Canvas(self.frame_contenaire_analyse, width=300, height=200, bg='gray94',scrollregion=(0,0,500,500))
         
         self.scrollbar_analyse = tk.Scrollbar(self.frame_contenaire_analyse, orient=tk.VERTICAL)
         self.scrollbar_analyse.pack(side=tk.RIGHT, fill= Y)
         self.scrollbar_analyse.config(command=self.contenaire_videos_analyse.yview)
-        
-        self.contenaire_videos_analyse.config(yscrollcommand=self.scrollbar_analyse.set)
-        self.contenaire_videos_analyse.pack()
+
+        self.scrollbar_analyse2 = tk.Scrollbar(self.frame_contenaire_analyse, orient=tk.HORIZONTAL)
+        self.scrollbar_analyse2.pack(side=tk.BOTTOM, fill= X)
+        self.scrollbar_analyse2.config(command=self.contenaire_videos_analyse.xview)
+   
+        self.contenaire_videos_analyse.config(yscrollcommand=self.scrollbar_analyse.set, xscrollcommand=self.scrollbar_analyse2.set)
+        self.contenaire_videos_analyse.pack(side=LEFT,expand=True,fill=BOTH)
 
         self.check_buttons_to_analyse_state =  [] 
         self.check_buttons_analyse_state =  []   
