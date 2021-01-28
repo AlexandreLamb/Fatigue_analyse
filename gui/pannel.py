@@ -14,7 +14,7 @@ from utils import parse_path_to_name
 import random
 class Pannel(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent, width=300, height=700, bg='gray')
+        tk.Frame.__init__(self, parent, width=300, height=700, bg='gray80')
         tk.Frame.pack(self, side="left")
         tk.Frame.pack_propagate(self,0)
         
@@ -26,14 +26,18 @@ class Pannel(tk.Frame):
         self.frame_contenaire_to_analyse = tk.Frame(self, width=300, height=200)
         self.frame_contenaire_to_analyse.pack(pady=(10,0), padx=(10,10))
         
-        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, bg='gray94', scrollregion=(0,0,0,500))
+        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, bg='gray94', scrollregion=(0,0,500,500))
         
         self.scrollbar_to_analyse = tk.Scrollbar(self.frame_contenaire_to_analyse, orient=tk.VERTICAL)
         self.scrollbar_to_analyse.pack(side=tk.RIGHT, fill= Y)
         self.scrollbar_to_analyse.config(command=self.contenaire_videos_to_analyse.yview)
+
+        self.scrollbar_to_analyse2 = tk.Scrollbar(self.frame_contenaire_to_analyse, orient=tk.HORIZONTAL)
+        self.scrollbar_to_analyse2.pack(side=tk.BOTTOM, fill= X)
+        self.scrollbar_to_analyse2.config(command=self.contenaire_videos_to_analyse.xview)
         
-        self.contenaire_videos_to_analyse.config(yscrollcommand=self.scrollbar_to_analyse.set)
-        self.contenaire_videos_to_analyse.pack()
+        self.contenaire_videos_to_analyse.config(yscrollcommand=self.scrollbar_to_analyse.set, xscrollcommand=self.scrollbar_to_analyse2.set)
+        self.contenaire_videos_to_analyse.pack(side=LEFT,expand=True,fill=BOTH)
         
         self.import_video_button = tk.Button(self, text ="Importer vidéos", bd=5, height=2, width=18, command=self.add_item)
         self.import_video_button.pack(side="top", pady=(5,0), padx=(0,0))
