@@ -342,7 +342,7 @@ class AnalyseData():
             else : eye_area_mean.append(self.df_measure[self.df_measure["frame"].between(i,threshold*(i+1))]["eye_area"].mean())
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
 
-    def plot_measure(self, measure, axis_x = "frame"):
+    def plot_measure(self, measure, title, axis_x = "frame"):
         fig = Figure(figsize=(5,4))
         plt = fig.add_subplot(111)
         discontinuities_frame  = self.find_discontinuities()
@@ -355,11 +355,12 @@ class AnalyseData():
             plt.set_xlabel("Time (in sec)")
         else :
             plt.plot(self.df_measure[axis_x], self.df_measure[measure])
-            plt.set_xlabel(axis_x)
-        plt.set_ylabel(measure)
+            plt.set_xlabel(axis_x, fontsize=10)
+        plt.set_ylabel(measure,  fontsize=10)
+        plt.set_title(title, fontsize=15)
         return fig
     
-    def plot_multi_measure(self, measures, axis_x = "frame"):
+    def plot_multi_measure(self, measures, title, axis_x = "frame"):
         fig = Figure(figsize=(5,4))
         plt = fig.add_subplot(111)
         video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"])
@@ -369,8 +370,9 @@ class AnalyseData():
                 plt.set_xlabel("Time (in sec)")
             else :
                 plt.plot(self.df_measure[axis_x], self.df_measure[measure])
-                plt.set_xlabel(axis_x)
-        plt.set_ylabel(measure)
+                plt.set_xlabel(axis_x, fontsize=10)
+        plt.set_ylabel(measure, fontsize=10)
+        plt.set_title(title, fontsize=15)
         return fig
 
     def find_discontinuities(self):

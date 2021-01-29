@@ -40,14 +40,14 @@ class Pannel_results(tk.Frame):
 
         ####
         data_analyse.nose_wrinkles()
-        nose_wrinkles_graph = data_analyse.plot_measure("eyebrow_eye")
+        nose_wrinkles_graph = data_analyse.plot_measure("eyebrow_eye", "Nose wrinkles")
         canvas = FigureCanvasTkAgg(nose_wrinkles_graph, master=self)
         canvas.get_tk_widget().pack(pady=(5,0))
         canvas.draw()
         
         ####
         data_analyse.jaw_dropping()
-        jaw_dropping_graph = data_analyse.plot_measure("jaw_dropping")
+        jaw_dropping_graph = data_analyse.plot_measure("jaw_dropping", "Jaw dropping")
         canvas = FigureCanvasTkAgg(jaw_dropping_graph, master=self)
         canvas.get_tk_widget().pack(pady=(5,0))
         canvas.draw()
