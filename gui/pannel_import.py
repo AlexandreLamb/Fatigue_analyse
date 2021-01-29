@@ -9,11 +9,9 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils import parse_path_to_name
-from data_analyse import AnalyseData
-
-
 import random
-class Pannel(tk.Frame):
+
+class Pannel_import(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent, width=300, height=700, bg='gray80')
         tk.Frame.pack(self, side="left")
@@ -63,19 +61,6 @@ class Pannel(tk.Frame):
    
         self.contenaire_videos_analyse.config(yscrollcommand=self.scrollbar_analyse.set, xscrollcommand=self.scrollbar_analyse2.set)
         self.contenaire_videos_analyse.pack(side=LEFT,expand=True,fill=BOTH)
-
-        #fenêtre qui va afficher les graphiques 
-        tk.Frame.__init__(self, parent, width=700, height=700, bg='gray70', highlightbackground="black", highlightthickness=2)
-        tk.Frame.pack(self, side="left")
-        tk.Frame.pack_propagate(self,0)
-        
-        self.pannel_title = tk.StringVar()
-        self.pannel_title.set("Résultats:")
-        self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=8, height=1, width=18)
-        self.pannel_label.pack(side="top", pady=(10,0), padx=(0,0))
-
-        self.get_graphs_analyse()
-        
 
         self.check_buttons_to_analyse_state =  [] 
         self.check_buttons_analyse_state =  []   
@@ -137,7 +122,4 @@ class Pannel(tk.Frame):
         for item in items:
             item.destroy()
     
-    # def get_graphs_analyse(self):
-    #     nose_wrinkles_graph = AnalyseData.nose_wrinkles()
-    #     nose_wrinkles_graph = AnalyseData.plot_measure("eyebrow_eye")
-        
+ 
