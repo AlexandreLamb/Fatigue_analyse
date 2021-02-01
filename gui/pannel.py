@@ -9,7 +9,7 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils import parse_path_to_name
-from data_analyse import AnalyseData
+#from data_analyse import AnalyseData
 
 
 import random
@@ -74,7 +74,7 @@ class Pannel(tk.Frame):
         self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=8, height=1, width=18)
         self.pannel_label.pack(side="top", pady=(10,0), padx=(0,0))
 
-        self.get_graphs_analyse()
+        #self.get_graphs_analyse()
         
 
         self.check_buttons_to_analyse_state =  [] 

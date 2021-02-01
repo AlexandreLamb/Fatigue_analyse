@@ -5,6 +5,7 @@ from tkinter import filedialog
 import tkinter.ttk as ttk
 import tkinter.filedialog 
 from pannel import Pannel
+from pannel_measure import MeasurePannel
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -17,6 +18,8 @@ class MainWindows(tk.Frame):
         self.pannel = Pannel(parent)
         self.pannel.bind("<<TRANSFORM>>", lambda e: self.analyse_video(self.pannel))
         self.video_reader = None
+        
+        self.measure_pannel = MeasurePannel(parent)
         
     def analyse_video(self, pannel):
         video_to_analyse = [val.get("file_path") for index, val in enumerate(pannel.check_buttons_to_analyse_state) if val.get("state").get()]
