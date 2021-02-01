@@ -14,16 +14,16 @@ from utils import parse_path_to_name
 
 import random
 class MeasurePannel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, video_name):
         tk.Frame.__init__(self, parent, width=400, height=700, bg='gray80')
         tk.Frame.pack(self, side="right")
         tk.Frame.pack_propagate(self,0)
         
         self.pannel_title = tk.StringVar()
-        self.pannel_title.set("Measure")
+        self.pannel_title.set("Measure on \n test")
         self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=2, width=18)
         self.pannel_label.pack(side="top", pady=(10,0), padx=(10,10))
-        self.validate_button = tk.Button(self, text="Meeasure", bd=5, height=2, width=18, command= lambda: self.plot_info())
+        self.validate_button = tk.Button(self, text="Compute", bd=5, height=2, width=18, command= lambda: self.plot_info())
         self.validate_button.pack(side=tk.BOTTOM)
         self.check_buttons_measure_state = []
         self.add_measure("yawning_frequency")
