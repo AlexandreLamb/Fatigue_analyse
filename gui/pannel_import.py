@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from tkinter import filedialog
-from tkinter import messagebox
-from PIL import ImageTk, Image
 import pandas as pd
 import os
 import sys

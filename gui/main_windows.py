@@ -43,10 +43,14 @@ class MainWindows(tk.Frame):
             
         if(self.pannel_measure == None):
             self.pannel_measure = MeasurePannel(parent, parse_path_to_name(self.path_video_analyse))
-            self.pannel_measure.bind("<<COMPUTE>>", lambda e: self.plot_graphs(self.pannel_measure))
+            self.pannel_measure.bind("<<COMPUTE>>", lambda e: self.plot_graphs(parent, self.pannel_measure))
+        else : 
+            self.pannel_measure.update_title(parse_path_to_name(self.path_video_analyse))
     
-    def plot_graphs(self, pannel):
-        self.pannel_result.plot_graphs_analyse()
+    def plot_graphs(self, parent, pannel):
+        if(self.pannel_result == None):
+            self.pannel_result = Pannel_results(parent)
+        self.pannel_result.plot_graphs_analyse(self.path_video_analyse, pannel.check_buttons_measure_state)
     
 
 root = tk.Tk()

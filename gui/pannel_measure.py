@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
-from PIL import ImageTk, Image
 import pandas as pd
 import os
 import sys
@@ -20,22 +19,22 @@ class MeasurePannel(tk.Frame):
         tk.Frame.pack_propagate(self,0)
         
         self.pannel_title = tk.StringVar()
-        self.pannel_title.set("Measure on \n test")
-        self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=2, width=18)
+        self.pannel_title.set("Measure on \n"+video_name)
+        self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=4, width=50)
         self.pannel_label.pack(side="top", pady=(10,0), padx=(10,10))
-        self.validate_button = tk.Button(self, text="Compute", bd=5, height=2, width=18, command= lambda: self.plot_info())
+        self.validate_button = tk.Button(self, text="Compute", bd=5, height=2, width=18, command = lambda: self.event_generate("<<COMPUTE>>"))
         self.validate_button.pack(side=tk.BOTTOM)
         self.check_buttons_measure_state = []
-        self.add_measure("yawning_frequency")
+        self.add_measure("yawning_frequency", "threshold (sec)")
         self.add_measure("blinking_frequency", "threshold (sec)")
         self.add_measure("ear")
         self.add_measure("perclos_measure","threshold (sec)", "percentage")
         self.add_measure("microsleep_measure","threshold (sec)")
         self.add_measure("eyebrow_nose")
-        self.add_measure("eyebrow_eye", "threshold (sec)")
+        self.add_measure("eyebrow_eye")
         self.add_measure("eye_area")
         self.add_measure("eye_area_mean_over_","threshold (sec)")
-        
+        self.add_measure("eye_angle")
 
     """
     def add_measure(self, measure_name):
@@ -49,7 +48,8 @@ class MeasurePannel(tk.Frame):
         item_frame.pack_propagate(0)
         self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state})
 """
-    
+    def update_title(self, video_name):
+         self.pannel_title.set("Measure on \n"+video_name)
     def add_measure(self, measure_name, input_name_1 = None, input_name_2 = None):
         
         item_frame = tk.Frame(self, width=350, height=50, bg="yellow")
@@ -58,16 +58,27 @@ class MeasurePannel(tk.Frame):
         state = tk.IntVar()
         item_label = tk.Checkbutton(item_frame, variable= state, textvariable=item_title)
         
-        if(input_name_1 != None):
+        if((input_name_1 == None) and (input_name_2 == None)):
+            self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state })
+
+        elif((input_name_1 != None) and (input_name_2 == None)):
             item_input = tk.StringVar()
             item_input.set(input_name_1 + " : ")
             label_input_1 = tk.Label(item_frame, textvariable=item_input)
             
             ent_1 = tk.Entry(item_frame, width = 5)    
             ent_1.insert(0, "0")
-            self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state, "input_1": input_name_1, "input_2" : input_name_2, "ent_1" :ent_1})
+            self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state, "input_1": input_name_1,  "ent_1" :ent_1})
         
-        if(input_name_2 != None):
+        elif((input_name_1 != None) and (input_name_2 != None)):
+            print("test")
+            item_input = tk.StringVar()
+            item_input.set(input_name_1 + " : ")
+            label_input_1 = tk.Label(item_frame, textvariable=item_input)
+            
+            ent_1 = tk.Entry(item_frame, width = 5)    
+            ent_1.insert(0, "0")
+            
             item_input_2 = tk.StringVar()
             item_input_2.set(input_name_2 + " : ")
             label_input_2 = tk.Label(item_frame, textvariable=item_input_2)
@@ -75,16 +86,21 @@ class MeasurePannel(tk.Frame):
             ent_2 = tk.Entry(item_frame, width = 5)    
             ent_2.insert(0, "0")
             self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state, "input_1": input_name_1, "input_2" : input_name_2, "ent_1" :ent_1, "ent_2":ent_2})
-        if(input_name_1 == None):
+       
+        if((input_name_1 == None) and (input_name_2 == None)):
             item_label.pack(side="top", pady=(12,0))
         else:
             item_label.pack(side="top")
-        if(input_name_1 != None):
+            
+        if((input_name_1 != None) and (input_name_2 == None)):
             label_input_1.pack(side="left", padx=(20,0))
             ent_1.pack(side="left", padx=(20,0))
-        if(input_name_2 != None):
+        if((input_name_1 != None) and (input_name_2 != None)):
+            label_input_1.pack(side="left", padx=(20,0))
+            ent_1.pack(side="left", padx=(20,0))
             label_input_2.pack(side="left", padx=(20,0))
             ent_2.pack(side="left", padx=(20,0))
+        
         item_frame.pack(pady=(10,0))
         item_frame.pack_propagate(0)
         
