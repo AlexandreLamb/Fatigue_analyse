@@ -18,7 +18,7 @@ class Pannel_import(tk.Frame):
         tk.Frame.pack_propagate(self,0)
         
         self.pannel_title = tk.StringVar()
-        self.pannel_title.set("Bibliothèque")
+        self.pannel_title.set("Videos:")
         self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=2, width=18)
         self.pannel_label.pack(side="top", pady=(10,0), padx=(10,10))
               
@@ -38,13 +38,12 @@ class Pannel_import(tk.Frame):
         self.contenaire_videos_to_analyse.config(yscrollcommand=self.scrollbar_to_analyse.set, xscrollcommand=self.scrollbar_to_analyse2.set)
         self.contenaire_videos_to_analyse.pack(side=LEFT,expand=True,fill=BOTH)
         
-        self.import_video_button = tk.Button(self, text ="Importer vidéos", bd=5, height=2, width=18, command=self.add_item)
+        self.import_video_button = tk.Button(self, text ="Import video", bd=5, height=2, width=18, command=self.add_item)
         self.import_video_button.pack(side="top", pady=(5,0), padx=(0,0))
         
-        self.analyse_button = tk.Button(self, text="Transformer", bd=5, height=2, width=18, command= lambda: self.event_generate("<<TRANSFORM>>"))
+        self.analyse_button = tk.Button(self, text="Transform", bd=5, height=2, width=18, command= lambda: self.event_generate("<<TRANSFORM>>"))
         self.analyse_button.pack(side="top", pady=(5,0), padx =(0,0))
         
-
         self.frame_contenaire_analyse = tk.Frame(self, width=300, height=200)
         self.frame_contenaire_analyse.pack(pady=(20,0), padx=(10,10))
         
@@ -83,7 +82,7 @@ class Pannel_import(tk.Frame):
             self.contenaire_videos_to_analyse.create_window(150,25*len(self.check_buttons_to_analyse_state), window = item_label)
 
         if (parse_path_to_name(file_path) in list(self.video_analyse)) == True:
-            messagebox.showinfo(title="Alerte", message="Vidéo déjà chargée")
+            messagebox.showinfo(title="Alert", message="Video already imported")
 
     
     def get_videos_analyse(self):

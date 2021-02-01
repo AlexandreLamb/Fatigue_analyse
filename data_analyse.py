@@ -49,6 +49,7 @@ class AnalyseData():
             else: 
                 y_frequency_list.append(0)
         self.df_measure["yawning_frequency"] = pd.DataFrame(y_frequency_list)
+        return self.df_measure["yawning_frequency"]
     
     #function that computes the number of blinks
     def blinking_frequency(self, threshold):
@@ -68,7 +69,7 @@ class AnalyseData():
             b_frequency_list.append(len(peaks[0]))
             #print(b_frequency_list)
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
-        #print(self.df_measure["blinking_frequency"])
+        return self.df_measure["blinking_frequency"]
 
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
@@ -76,6 +77,7 @@ class AnalyseData():
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
         self.df_measure["ear_std"] = self.df_measure["ear"].std()
         self.measures_computes.append({"measure" : "ear" , "axis_x" : "frame"})
+        return self.measures_computes
 
     def measure_perclos(self, threshold, percentage):
         #first, we get the distances for each eye and do the mean of it 
@@ -105,15 +107,19 @@ class AnalyseData():
             #if the values doesn't go below one of the "bornes" the timestamp equals 0 to simplify the perclos calculus
             if(math.isnan(t1)): 
                 t1 = 0
+                perclos = (t3 - t2)/(t4 - t1)
             if(math.isnan(t2)): 
                 t2 = 0
+                perclos = (t3 - t2)/(t4 - t1)
             if(math.isnan(t3)): 
                 t3 = 0
+                perclos = (t3 - t2)/(t4 - t1)
             if(math.isnan(t4)): 
                 t4 = 0
-            perclos = (t3 - t2)/(t4 - t1)
+                perclos = 0
             perclos_list.append(perclos)
         self.df_measure["perclos_measure"] = pd.DataFrame(perclos_list)
+        return self.df_measure["perclos_measure"]
             
     def measure_microsleep(self, microsleep):
         frames_per_second = (int(self.df_measure["frame"].max()))/60
@@ -134,11 +140,13 @@ class AnalyseData():
         self.df_measure["eyebrow_nose_l"] = (self.measure_euclid_dist(20,32))
         self.df_measure["eyebrow_nose_r"] = (self.measure_euclid_dist(25,36))
         self.df_measure["eyebrow_nose"]   = (self.df_measure["eyebrow_nose_r"] + self.df_measure["eyebrow_nose_r"])/ 2
+        return self.df_measure["eyebrow_nose"]
 
     def nose_wrinkles(self):
         self.df_measure["eyebrow_eye_l"] = (self.measure_euclid_dist(22,40))
         self.df_measure["eyebrow_eye_r"] = (self.measure_euclid_dist(23,43))
         self.df_measure["eyebrow_eye"]   = (self.df_measure["eyebrow_eye_l"] + self.df_measure["eyebrow_eye_r"])/ 2
+        return self.df_measure["eyebrow_eye"] 
 
     def eyes_angle(self):
 
@@ -299,26 +307,17 @@ class AnalyseData():
             l_angle2_list.append(l_angle2)
         self.df_measure["left_angle2"] = l_angle2_list 
             
-        #mean for the angle 2
-        # angle2_list = [r_angle2_list, l_angle2_list]
-        # list2 =  [sum(x) for x in zip(*angle2_list)]
-        # angle2 = [x / 2 for x in list2]
-        
-        #mean for the angle 1
-        # angle1_list = [r_angle1_list, l_angle1_list]
-        # list1 =  [sum(x) for x in zip(*angle1_list)]
-        # angle1 = [x / 2 for x in list1]
-        
-        # self.df_measure["angle1"] = angle1  #isn't suppose to increase
-        # self.df_measure["angle2"] = angle2  #is suppose to increase
+        return self.df_measure["left_angle1"], self.df_measure["left_angle2"], self.df_measure["right_angle1"], self.df_measure["right_angle2"]
 
     def jaw_dropping(self):
         self.df_measure["jaw_dropping"] = self.measure_euclid_dist(52,9)
+        return self.df_measure["jaw_dropping"]
         
     def measure_eye_area(self):
         self.df_measure["eye_area_l"] = (self.measure_euclid_dist(37, 40) / 2) * ((self.measure_euclid_dist(38, 42) + self.measure_euclid_dist(39,41)) /2) * np.pi
         self.df_measure["eye_area_r"] = (self.measure_euclid_dist(43, 46) / 2) * ((self.measure_euclid_dist(44, 48) + self.measure_euclid_dist(45,47)) /2) * np.pi
         self.df_measure["eye_area"] = (self.df_measure["eye_area_l"] + self.df_measure["eye_area_r"])/2
+        return self.df_measure["eye_area"]
 
     def measure_mean_eye_area(self, threshold, percent = False):
         self.measure_eye_area()
@@ -331,6 +330,7 @@ class AnalyseData():
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame_std"] = self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"].std()
         self.measures_computes.append({"measure" : "eye_area_mean_over_"+str(threshold)+"_frame" , "axis_x" : "eye_area_theshold"})
+        return self.measures_computes
 
     def measure_mean_eye_area_curve(self, threshold, percent = False):
         self.measure_eye_area()
@@ -405,6 +405,7 @@ class AnalyseData():
     
     def compute_std(self, measure_name):
         self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
+        return self.df_measure[measure_name+"_std"]
 
       
 # ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H63_hog.csv")
