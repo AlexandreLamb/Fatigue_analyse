@@ -4,8 +4,10 @@ import tkinter as tk
 from tkinter import filedialog
 import tkinter.ttk as ttk
 import tkinter.filedialog 
-from pannel import Pannel
+
 from pannel_measure import MeasurePannel
+from pannel_import import Pannel_import
+from pannel_results import Pannel_results
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -15,8 +17,9 @@ from video_transforme import VideoToLandmarks
 class MainWindows(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        self.pannel = Pannel(parent)
+        self.pannel = Pannel_import(parent)
         self.pannel.bind("<<TRANSFORM>>", lambda e: self.analyse_video(self.pannel))
+        self.pannel = Pannel_results(parent)
         self.video_reader = None
         
         self.measure_pannel = MeasurePannel(parent)
