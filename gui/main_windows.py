@@ -19,15 +19,18 @@ class MainWindows(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.pannel_import = Pannel_import(parent)
         self.pannel_import.bind("<<TRANSFORM>>", lambda e: self.analyse_video(self.pannel_import))
+        self.pannel_measure = MeasurePannel(parent)
+        self.pannel_measure.bind("<<MEASURE>>", lambda e: self.plot_graphs(self.pannel_measure))
         self.pannel_result = Pannel_results(parent)
-        
-        self.measure_pannel = MeasurePannel(parent)
         
     def analyse_video(self, pannel):
         video_to_analyse = [val.get("file_path") for index, val in enumerate(pannel.check_buttons_to_analyse_state) if val.get("state").get()]
         for video in video_to_analyse:
             videoLandmarks = VideoToLandmarks(video)
             videoLandmarks.load_and_transform()
+    
+    def plot_graphs(self, pannel):
+        self.pannel_result.plot_graphs_analyse()
     
 
 root = tk.Tk()

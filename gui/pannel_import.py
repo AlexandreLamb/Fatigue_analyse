@@ -62,7 +62,9 @@ class Pannel_import(tk.Frame):
         self.contenaire_videos_analyse.config(yscrollcommand=self.scrollbar_analyse.set, xscrollcommand=self.scrollbar_analyse2.set)
         self.contenaire_videos_analyse.pack(side=LEFT,expand=True,fill=BOTH)
         
-
+        self.measure_button = tk.Button(self, text="Add Measure", bd=5, height=2, width=18, command= lambda: self.event_generate("<<TRANSFORM>>"))
+        self.measure_button.pack(side="bottom")
+        
         self.check_buttons_to_analyse_state =  [] 
         self.check_buttons_analyse_state =  []   
         self.path_select="" 

@@ -74,7 +74,7 @@ class Pannel_results(tk.Frame):
                 a.writerow(measures)
                 np.savetxt("foo.csv", measures, delimiter=",")
       
-    def plot_graphs_analyse(self, csv_path):
+    def plot_graphs_analyse(self, csv_path, measure):
 
         data_analyse = AnalyseData(csv_path)
 
