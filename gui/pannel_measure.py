@@ -15,7 +15,7 @@ from utils import parse_path_to_name
 import random
 class MeasurePannel(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent, width=300, height=700, bg='gray80')
+        tk.Frame.__init__(self, parent, width=400, height=700, bg='gray80')
         tk.Frame.pack(self, side="right")
         tk.Frame.pack_propagate(self,0)
         
@@ -26,11 +26,17 @@ class MeasurePannel(tk.Frame):
         self.validate_button = tk.Button(self, text="Meeasure", bd=5, height=2, width=18, command= lambda: self.plot_info())
         self.validate_button.pack(side=tk.BOTTOM)
         self.check_buttons_measure_state = []
-        self.add_measure("test")
-        self.add_measure("test")
-        self.add_measure("test","tets_1","test_2")
-        self.add_measure("test","tets_1")
+        self.add_measure("yawning_frequency")
+        self.add_measure("blinking_frequency", "threshold (sec)")
+        self.add_measure("ear")
+        self.add_measure("perclos_measure","threshold (sec)", "percentage")
+        self.add_measure("microsleep_measure","threshold (sec)")
+        self.add_measure("eyebrow_nose")
+        self.add_measure("eyebrow_eye", "threshold (sec)")
+        self.add_measure("eye_area")
+        self.add_measure("eye_area_mean_over_","threshold (sec)")
         
+
     """
     def add_measure(self, measure_name):
         item_frame = tk.Frame(self, width=300, height=50, bg="yellow")
@@ -46,7 +52,7 @@ class MeasurePannel(tk.Frame):
     
     def add_measure(self, measure_name, input_name_1 = None, input_name_2 = None):
         
-        item_frame = tk.Frame(self, width=300, height=50, bg="yellow")
+        item_frame = tk.Frame(self, width=350, height=50, bg="yellow")
         item_title = tk.StringVar()
         item_title.set(measure_name)
         state = tk.IntVar()
@@ -69,8 +75,10 @@ class MeasurePannel(tk.Frame):
             ent_2 = tk.Entry(item_frame, width = 5)    
             ent_2.insert(0, "0")
             self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state, "input_1": input_name_1, "input_2" : input_name_2, "ent_1" :ent_1, "ent_2":ent_2})
-
-        item_label.pack(side="top")
+        if(input_name_1 == None):
+            item_label.pack(side="top", pady=(12,0))
+        else:
+            item_label.pack(side="top")
         if(input_name_1 != None):
             label_input_1.pack(side="left", padx=(20,0))
             ent_1.pack(side="left", padx=(20,0))
