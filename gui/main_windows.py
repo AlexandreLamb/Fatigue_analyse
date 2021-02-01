@@ -17,10 +17,9 @@ from video_transforme import VideoToLandmarks
 class MainWindows(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        self.pannel = Pannel_import(parent)
-        self.pannel.bind("<<TRANSFORM>>", lambda e: self.analyse_video(self.pannel))
-        self.pannel = Pannel_results(parent)
-        self.video_reader = None
+        self.pannel_import = Pannel_import(parent)
+        self.pannel_import.bind("<<TRANSFORM>>", lambda e: self.analyse_video(self.pannel_import))
+        self.pannel_result = Pannel_results(parent)
         
         self.measure_pannel = MeasurePannel(parent)
         

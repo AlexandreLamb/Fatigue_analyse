@@ -348,7 +348,7 @@ class AnalyseData():
         discontinuities_frame  = self.find_discontinuities()
         #c est ca qui merde
         video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"])
-                
+        print(video_fps)
         if axis_x == "frame" :
             for index in discontinuities_frame:
                 plt.plot(self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0], self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure])

@@ -26,7 +26,7 @@ class Pannel_results(tk.Frame):
     def __init__(self, parent):
         #fenêtre qui va afficher les graphiques 
         tk.Frame.__init__(self, parent, width=700, height=700, highlightbackground="black", highlightthickness=2)
-        tk.Frame.pack(self, side="left")
+        tk.Frame.pack(self, side = "left", padx=(50,0))
         tk.Frame.pack_propagate(self,0)
 
         #frame for title 
@@ -52,7 +52,7 @@ class Pannel_results(tk.Frame):
         self.canvas_graphs.config(yscrollcommand=self.graphs_scrollbar.set)
         self.canvas_graphs.pack()
 
-        self.plot_graphs_analyse("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H63_hog.csv")
+        #sself.plot_graphs_analyse("data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H63_hog.csv")
     
     def save_plot(self, fig):
         image = fig
