@@ -1,0 +1,7 @@
+une calsse graph qui prend u parametre un obj mesure (de la gui mesure ave tout les parametre en gros quelle param appeler)
+la classe graph qui s'intancie ave un obj mesure
+class graph ajoute frame
+instancie tout et ajoute l'objet plt
+une fois instacié elle lance les calculs de analyse data
+progress bar (1/2 min)
+affichage  graph

@@ -64,11 +64,10 @@ class DataFormator:
                     count_divide_dict.update({frame : count_divide_dict.get(frame)+1})
         self.df_merge = self.df_merge.sort_index()
         for frame, divider in count_divide_dict.items():
-            print("frame : ", frame)
-            print("divider : ", divider)
             self.df_merge.loc[frame] = self.df_merge.loc[frame].divide(divider)
-        self.df_merge.to_csv("data/data_out/df_merge_pvt.csv")
+        date_id = datetime.now().strftime("%H_%M_%d_%m_%Y")
+        csv_path = "data/data_out/df_merge_"+date_id+".csv"
+        self.df_merge.to_csv(csv_path)
+        return csv_path
     
-df = DataFormator()
-csv_array = ["data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H63_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H64_hog.csv", "data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H66_hog.csv"]
-df.merge_csv(csv_array)
+## TODO:  add video anme and stuff in csv video infos
