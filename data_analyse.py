@@ -343,7 +343,7 @@ class AnalyseData():
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
 
     def plot_measure(self, measure, title, axis_x = "frame"):
-        fig = Figure(figsize=(6,5))
+        fig = Figure(figsize=(5,4))
         plt = fig.add_subplot(111)
         discontinuities_frame  = self.find_discontinuities()
         #c est ca qui merde
@@ -403,21 +403,22 @@ class AnalyseData():
             axes[axe_number].set(xlabel=measure.get("axis_x"), ylabel=measure.get("measure"))
         plt.show()
     
-    def compute_std(self, measure_name):
+    def compute_std(self, measure_name, file_path):
         self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
         return self.df_measure[measure_name+"_std"]
     
-    def measure_csv(self, measure, axis_x = "frame"):
-        discontinuities_frame = self.find_discontinuities() 
-        video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]) 
-        if axis_x == "frame" : 
-            for index in discontinuities_frame:
-                self.df_measure["axis_x"] = self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0] 
-                self.df_measure["axis_y"] = self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure] 
+    def save_csv(self, measure, file_path, axis_x = "frame"):
+        df_to_save = pd.DataFrame()
+        video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"])
+        if axis_x == "frame" :
+                df_to_save["seconds"] = self.df_measure[axis_x]/video_fps[0]
+                df_to_save["measure"] = self.df_measure[measure]
         else :
-            self.df_measure["axis_x"] = self.df_measure[measure]
-            self.df_measure["axis_y"] = self.df_measure[axis_x]
-        return self.df_measure 
+            df_to_save[axis_x] = self.df_measure[axis_x]
+            df_to_save[measure] = self.df_measure[measure]
+        print(df_to_save)
+        df_to_save.to_csv(file_path)
+            
              
 
       

@@ -51,7 +51,7 @@ class MainWindows(tk.Frame):
         if(self.pannel_result == None):
             self.pannel_result = Pannel_results(parent)
         self.pannel_result.plot_graphs_analyse(self.path_video_analyse, pannel.check_buttons_measure_state)
-    
+
 
 root = tk.Tk()
 window = MainWindows(root).pack(side="top", fill="both", expand=True)
