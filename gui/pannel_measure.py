@@ -23,7 +23,6 @@ class MeasurePannel(tk.Frame):
         self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=4, width=50)
         self.pannel_label.pack(side="top", pady=(10,0), padx=(10,10))
        
-        
         self.contenaire_measure = tk.Canvas(self, width=400, height=400,scrollregion=(0,0,0,300))
         self.scrollbar_measure = tk.Scrollbar(self.contenaire_measure, orient=tk.VERTICAL)
         self.scrollbar_measure.pack(side=tk.RIGHT, fill= Y)
@@ -35,8 +34,6 @@ class MeasurePannel(tk.Frame):
         self.validate_button.pack(side=tk.BOTTOM)
         self.check_buttons_measure_state = []
        
-
-        
         self.add_measure("yawning_frequency", "threshold (sec)")
         self.add_measure("blinking_frequency", "threshold (sec)")
         self.add_measure("ear")
