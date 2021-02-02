@@ -17,14 +17,26 @@ class MeasurePannel(tk.Frame):
         tk.Frame.__init__(self, parent, width=400, height=700, bg='gray80')
         tk.Frame.pack(self, side="right")
         tk.Frame.pack_propagate(self,0)
-        
+         
         self.pannel_title = tk.StringVar()
         self.pannel_title.set("Measure on \n"+video_name)
         self.pannel_label = tk.Label(self, textvariable=self.pannel_title, bd=5, height=4, width=50)
         self.pannel_label.pack(side="top", pady=(10,0), padx=(10,10))
-        self.validate_button = tk.Button(self, text="Compute", bd=5, height=2, width=18, command = lambda: self.event_generate("<<COMPUTE>>"))
+       
+        
+        self.contenaire_measure = tk.Canvas(self, width=400, height=400,scrollregion=(0,0,0,300))
+        self.scrollbar_measure = tk.Scrollbar(self.contenaire_measure, orient=tk.VERTICAL)
+        self.scrollbar_measure.pack(side=tk.RIGHT, fill= Y)
+        self.contenaire_measure.pack()
+        self.contenaire_measure.config(yscrollcommand=self.scrollbar_measure.set)
+        self.scrollbar_measure.config(command=self.contenaire_measure.yview)
+        
+        self.validate_button = tk.Button( self.contenaire_measure, text="Compute", bd=5, height=2, width=18, command = lambda: self.event_generate("<<COMPUTE>>"))
         self.validate_button.pack(side=tk.BOTTOM)
         self.check_buttons_measure_state = []
+       
+
+        
         self.add_measure("yawning_frequency", "threshold (sec)")
         self.add_measure("blinking_frequency", "threshold (sec)")
         self.add_measure("ear")
@@ -36,23 +48,11 @@ class MeasurePannel(tk.Frame):
         self.add_measure("eye_area_mean_over_","threshold (sec)")
         self.add_measure("eye_angle")
 
-    """
-    def add_measure(self, measure_name):
-        item_frame = tk.Frame(self, width=300, height=50, bg="yellow")
-        item_text = tk.StringVar()
-        item_text.set(measure_name)
-        state = tk.IntVar()
-        item_label = tk.Checkbutton(item_frame, variable= state, textvariable=item_text)
-        item_label.pack(pady=(12,0))
-        item_frame.pack(pady=(10,0))
-        item_frame.pack_propagate(0)
-        self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state})
-"""
     def update_title(self, video_name):
          self.pannel_title.set("Measure on \n"+video_name)
     def add_measure(self, measure_name, input_name_1 = None, input_name_2 = None):
         
-        item_frame = tk.Frame(self, width=350, height=50, bg="yellow")
+        item_frame = tk.Frame(self.contenaire_measure, width=350, height=50, bg="yellow")
         item_title = tk.StringVar()
         item_title.set(measure_name)
         state = tk.IntVar()

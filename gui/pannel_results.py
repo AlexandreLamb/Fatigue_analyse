@@ -122,7 +122,7 @@ class Pannel_results(tk.Frame):
             canvas = FigureCanvasTkAgg(nose_wrinkles_graph, master=frame1)
             canvas.get_tk_widget().pack(pady=(5,0))
             canvas.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame1)
+            self.canvas_graphs.create_window(350, len(graph_list)*500 + 300, window=frame1)
 
             b1 = Button(frame1, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(nose_wrinkles_graph))
             b1.pack(side=tk.LEFT, padx=(200,0))

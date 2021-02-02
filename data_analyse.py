@@ -146,7 +146,7 @@ class AnalyseData():
         self.df_measure["eyebrow_eye_l"] = (self.measure_euclid_dist(22,40))
         self.df_measure["eyebrow_eye_r"] = (self.measure_euclid_dist(23,43))
         self.df_measure["eyebrow_eye"]   = (self.df_measure["eyebrow_eye_l"] + self.df_measure["eyebrow_eye_r"])/ 2
-        return self.df_measure["eyebrow_eye"] 
+        return self.df_measure
 
     def eyes_angle(self):
 
@@ -343,7 +343,7 @@ class AnalyseData():
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
 
     def plot_measure(self, measure, title, axis_x = "frame"):
-        fig = Figure(figsize=(5,4))
+        fig = Figure(figsize=(6,5))
         plt = fig.add_subplot(111)
         discontinuities_frame  = self.find_discontinuities()
         #c est ca qui merde
@@ -406,6 +406,19 @@ class AnalyseData():
     def compute_std(self, measure_name):
         self.df_measure[measure_name+"_std"] = self.df_measure[measure_name].std()
         return self.df_measure[measure_name+"_std"]
+    
+    def measure_csv(self, measure, axis_x = "frame"):
+        discontinuities_frame = self.find_discontinuities() 
+        video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == self.video_name]["fps"]) 
+        if axis_x == "frame" : 
+            for index in discontinuities_frame:
+                self.df_measure["axis_x"] = self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][axis_x]/video_fps[0] 
+                self.df_measure["axis_y"] = self.df_measure[self.df_measure[axis_x].between(index[0],index[1])][measure] 
+        else :
+            self.df_measure["axis_x"] = self.df_measure[measure]
+            self.df_measure["axis_y"] = self.df_measure[axis_x]
+        return self.df_measure 
+             
 
       
 # ad = AnalyseData("data/data_out/DESFAM_Semaine-2-Vendredi_PVT_H63_hog.csv")
