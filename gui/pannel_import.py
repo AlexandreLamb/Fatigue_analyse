@@ -24,7 +24,7 @@ class Pannel_import(tk.Frame):
         self.frame_contenaire_to_analyse = tk.Frame(self, width=300, height=200)
         self.frame_contenaire_to_analyse.pack(pady=(10,0), padx=(10,10))
         
-        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, bg='gray94', scrollregion=(0,0,500,500))
+        self.contenaire_videos_to_analyse = tk.Canvas(self.frame_contenaire_to_analyse, width=300, height=200, scrollregion=(0,0,500,500))
         
         self.scrollbar_to_analyse = tk.Scrollbar(self.frame_contenaire_to_analyse, orient=tk.VERTICAL)
         self.scrollbar_to_analyse.pack(side=tk.RIGHT, fill= Y)
@@ -47,7 +47,7 @@ class Pannel_import(tk.Frame):
         self.frame_contenaire_analyse.pack(pady=(20,0), padx=(10,10))
         
         #videos déja présentes
-        self.contenaire_videos_analyse = tk.Canvas(self.frame_contenaire_analyse, width=300, height=200, bg='gray94',scrollregion=(0,0,500,500))
+        self.contenaire_videos_analyse = tk.Canvas(self.frame_contenaire_analyse, width=300, height=200,scrollregion=(0,0,500,500))
         
         self.scrollbar_analyse = tk.Scrollbar(self.frame_contenaire_analyse, orient=tk.VERTICAL)
         self.scrollbar_analyse.pack(side=tk.RIGHT, fill= Y)
