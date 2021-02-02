@@ -51,7 +51,7 @@ class Pannel_results(tk.Frame):
         
         self.canvas_graphs.config(yscrollcommand=self.graphs_scrollbar.set)
         self.canvas_graphs.pack()
-
+        self.graph_list = []
         #sself.plot_graphs_analyse("data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H63_hog.csv")
     
     def save_plot(self, fig):
@@ -88,7 +88,6 @@ class Pannel_results(tk.Frame):
         measure_eye_angle           = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "eye_angle")]
         measure_eyebrow_nose        = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "eyebrow_nose")]
 
-        graph_list = []
         #######################################################
         if(len(measure_eyebrow_eye) == 1):
             frame1 = tk.Frame(self.frame_graphs, width=700, height=700)
@@ -99,14 +98,14 @@ class Pannel_results(tk.Frame):
             canvas = FigureCanvasTkAgg(nose_wrinkles_graph, master=frame1)
             canvas.get_tk_widget().pack(pady=(5,0))
             canvas.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 300, window=frame1)
-
+            item_id= self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 300, window=frame1)
+            print(item_id)
             b1 = Button(frame1, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(nose_wrinkles_graph))
             b1.pack(side=tk.LEFT, padx=(200,0))
 
             z1 = Button(frame1, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "eyebrow_eye"))
             z1.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
         ######################################################
         if(len(measure_jaw_dropping) == 1):
             frame2 = tk.Frame(self.frame_graphs, width=700, height=700)
@@ -117,14 +116,14 @@ class Pannel_results(tk.Frame):
             canvas2 = FigureCanvasTkAgg(jaw_dropping_graph, master=frame2)
             canvas2.get_tk_widget().pack(pady=(5,0))
             canvas2.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame2)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame2)
 
             b2 = Button(frame2, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(jaw_dropping_graph))
             b2.pack(side=tk.LEFT, padx=(200,0))
 
             z2 = Button(frame2, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "jaw_dropping"))
             z2.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ###################################################
         if(len(measure_eyebrow_nose) == 1):
@@ -137,14 +136,14 @@ class Pannel_results(tk.Frame):
             canvas3 = FigureCanvasTkAgg(eyebrow_nose_graph, master=frame3)
             canvas3.get_tk_widget().pack(pady=(5,0))
             canvas3.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame3)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame3)
 
             b3 = Button(frame3, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(eyebrow_nose_graph))
             b3.pack(side=tk.LEFT, padx=(200,0))
 
             z3 = Button(frame3, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse,"eyebrow_nose" ))
             z3.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
         ##########################################################
         if(len(measure_yawning_frequency) == 1):
     
@@ -159,14 +158,14 @@ class Pannel_results(tk.Frame):
             canvas4 = FigureCanvasTkAgg(yawning_frequency_graph, master=frame4)
             canvas4.get_tk_widget().pack(pady=(5,0))
             canvas4.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame4)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame4)
 
             b4 = Button(frame4, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(yawning_frequency_graph))
             b4.pack(side=tk.LEFT, padx=(200,0))
 
             z4 = Button(frame4, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse,"yawning_frequency","Time (in mins)"))
             z4.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ################################################
         if(len(measure_ear) == 1):
@@ -179,14 +178,14 @@ class Pannel_results(tk.Frame):
             canvas5 = FigureCanvasTkAgg(ear_graph, master=frame5)
             canvas5.get_tk_widget().pack(pady=(5,0))
             canvas5.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame5)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame5)
 
             b5 = Button(frame5, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(ear_graph))
             b5.pack(side=tk.LEFT, padx=(200,0))
 
             z5 = Button(frame5, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "ear"))
             z5.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ############################################################
         if(len(measure_eye_area_mean_over) == 1):
@@ -200,14 +199,14 @@ class Pannel_results(tk.Frame):
             canvas6 = FigureCanvasTkAgg(ear_mean_graph, master=frame6)
             canvas6.get_tk_widget().pack(pady=(5,0))
             canvas6.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame6)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame6)
 
             b6 = Button(frame6, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(ear_mean_graph))
             b6.pack(side=tk.LEFT, padx=(200,0))
 
-            z6 = Button(frame6, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "eye_area_mean_over_"+treshold+"_frame","eye_area_theshold"))
+            z6 = Button(frame6, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "eye_area_mean_over_"+str(treshold)+"_frame","eye_area_theshold"))
             z6.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ##############################################################
         if(len(measure_blinking_frequency) == 1):
@@ -221,14 +220,14 @@ class Pannel_results(tk.Frame):
             canvas7 = FigureCanvasTkAgg(blinking_graph, master=frame7)
             canvas7.get_tk_widget().pack(pady=(5,0))
             canvas7.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame7)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame7)
 
             b7 = Button(frame7, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(blinking_graph))
             b7.pack(side=tk.LEFT, padx=(200,0))
 
             z7 = Button(frame7, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "blinking_frequency", "Time (in mins)"))
             z7.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ################################################################
         if(len(measure_perclos) == 1):  
@@ -243,12 +242,12 @@ class Pannel_results(tk.Frame):
             canvas8 = FigureCanvasTkAgg(perclos_graph, master=frame8)
             canvas8.get_tk_widget().pack(pady=(5,0))
             canvas8.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame8)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame8)
 
             b8 = Button(frame8, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(perclos_graph))
             b8.pack(side=tk.LEFT, padx=(200,0))
 
-            z8 = Button(frame8, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "perclos_measure", "Time (in mins)")
+            z8 = Button(frame8, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "perclos_measure", "Time (in mins)"))
             z8.pack(side=tk.LEFT,padx=(5,0))
             graph_list.append(1)
 
@@ -263,11 +262,11 @@ class Pannel_results(tk.Frame):
             canvas9 = FigureCanvasTkAgg(left_eye_graph, master=frame9)
             canvas9.get_tk_widget().pack(pady=(5,0))
             canvas9.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame9)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame9)
 
             b9 = Button(frame9, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(left_eye_graph))
             b9.pack(side=tk.LEFT, padx=(200,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
 
             frame10 = tk.Frame(self.frame_graphs, width=700, height=700)
@@ -277,16 +276,20 @@ class Pannel_results(tk.Frame):
             canvas10 = FigureCanvasTkAgg(right_eye_graph, master=frame10)
             canvas10.get_tk_widget().pack(pady=(5,0))
             canvas10.draw()
-            self.canvas_graphs.create_window(350, len(graph_list)*500 + 200, window=frame10)
+            self.canvas_graphs.create_window(350, len(self.graph_list)*500 + 200, window=frame10)
 
             b10 = Button(frame10, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(right_eye_graph))
             b10.pack(side=tk.LEFT, padx=(200,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
     
     def clean_graph_frame(self):
         print("clean")
-        #self.canvas_graphs.destroy()
-
+        print(self.graph_list)
+        print(self.canvas_graphs.winfo_children())
+        for graph in self.graph_list:
+            self.canvas_graphs.delete(str(graph))
+        print(self.canvas_graphs.winfo_children())
+        self.graph_list = []
 
 
         
