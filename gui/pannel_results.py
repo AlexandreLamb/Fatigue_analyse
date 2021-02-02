@@ -52,7 +52,7 @@ class Pannel_results(tk.Frame):
         self.canvas_graphs.config(yscrollcommand=self.graphs_scrollbar.set)
         self.canvas_graphs.pack()
         self.graph_list = []
-        #sself.plot_graphs_analyse("data/data_out/DESFAM_Semaine 2-Vendredi_PVT_H63_hog.csv")
+
     
     def save_plot(self, fig):
         image = fig
