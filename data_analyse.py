@@ -343,7 +343,7 @@ class AnalyseData():
         self.df_measure["eye_area_mean_over_"+str(threshold)+"_frame"] = pd.DataFrame(eye_area_mean)
 
     def plot_measure(self, measure, title, axis_x = "frame"):
-        fig = Figure(figsize=(6,5))
+        fig = Figure(figsize=(5,4))
         plt = fig.add_subplot(111)
         discontinuities_frame  = self.find_discontinuities()
         #c est ca qui merde
