@@ -249,7 +249,7 @@ class Pannel_results(tk.Frame):
 
             z8 = Button(frame8, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "perclos_measure", "Time (in mins)"))
             z8.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ###################################################################
         if(len(measure_eye_angle) == 1):   
@@ -266,8 +266,11 @@ class Pannel_results(tk.Frame):
 
             b9 = Button(frame9, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(left_eye_graph))
             b9.pack(side=tk.LEFT, padx=(200,0))
-            self.graph_list.append(1)
 
+            z9 = Button(frame9, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, ["left_angle1", "left_angle2"]))
+            z9.pack(side=tk.LEFT,padx=(5,0))
+            
+            self.graph_list.append(1)
 
             frame10 = tk.Frame(self.frame_graphs, width=700, height=700)
             frame10.pack()
@@ -280,6 +283,9 @@ class Pannel_results(tk.Frame):
 
             b10 = Button(frame10, text="Save plot", bg="gray70", fg = 'black', command = lambda : self.save_plot(right_eye_graph))
             b10.pack(side=tk.LEFT, padx=(200,0))
+
+            z10 = Button(frame10, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, ["right_angle1", "right_angle2"]))
+            z10.pack(side=tk.LEFT,padx=(5,0))
             self.graph_list.append(1)
     
     def clean_graph_frame(self):
