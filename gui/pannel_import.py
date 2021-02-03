@@ -100,11 +100,11 @@ class Pannel_import(tk.Frame):
             self.contenaire_videos_analyse.create_window(150,25*len(self.check_buttons_analyse_state), window = item_label)
         
     def upadte_video_analyse(self):
-        data_path = "/home/simeon/Documents/ING5/PFE/Fatigue_analyse/data/data_in/videos/"
+        data_path = "data/data_out/"
         video_analyse_update = pd.read_csv("data/data_out/videos_infos.csv")["video_name"]
 
         for video_name in video_analyse_update:
-            if (video_name in self.video_analyse) == False:
+            if (video_name in list(self.video_analyse)) == False:
                 state = tk.IntVar()
                 self.check_buttons_analyse_state.append({"file_path" : data_path + video_name, "state" : state})     
             
