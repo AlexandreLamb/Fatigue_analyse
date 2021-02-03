@@ -73,18 +73,18 @@ class Pannel_import(tk.Frame):
     def add_item(self):
         state = tk.IntVar()
         file_path = tk.filedialog.askopenfilename(title="Choose the file to open", filetypes=[("Only video", "*.mp4 *.avi *.mov")])
-        
-        if (parse_path_to_name(file_path) in list(self.video_analyse)) == False:
-            self.check_buttons_to_analyse_state.append({"file_path" : file_path, "state" : state})     
-        
-            item_text = tk.StringVar()
-            item_text.set(parse_path_to_name(file_path))
-            item_label = tk.Checkbutton(self.contenaire_videos_to_analyse, variable= state, textvariable=item_text)
-        
-            self.contenaire_videos_to_analyse.create_window(150,25*len(self.check_buttons_to_analyse_state), window = item_label)
+        if (type(file_path) == type(str())) and (file_path != ""):
+            if (parse_path_to_name(file_path) in list(self.video_analyse)) == False:
+                self.check_buttons_to_analyse_state.append({"file_path" : file_path, "state" : state})     
+            
+                item_text = tk.StringVar()
+                item_text.set(parse_path_to_name(file_path))
+                item_label = tk.Checkbutton(self.contenaire_videos_to_analyse, variable= state, textvariable=item_text)
+            
+                self.contenaire_videos_to_analyse.create_window(150,25*len(self.check_buttons_to_analyse_state), window = item_label)
 
-        if (parse_path_to_name(file_path) in list(self.video_analyse)) == True:
-            messagebox.showinfo(title="Alert", message="Video already imported")
+            if (parse_path_to_name(file_path) in list(self.video_analyse)) == True:
+                messagebox.showinfo(title="Alert", message="Video already imported")
 
     
     def get_videos_analyse(self):

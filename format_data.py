@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from utils import paths_to_df
-
+from utils import paths_to_df, parse_path_to_name
+from datetime import datetime
 class DataFormator:   
     def __init__(self):
         self.df_csv_files = {}
@@ -68,6 +68,15 @@ class DataFormator:
         date_id = datetime.now().strftime("%H_%M_%d_%m_%Y")
         csv_path = "data/data_out/df_merge_"+date_id+".csv"
         self.df_merge.to_csv(csv_path)
-        return csv_path
+        df_videos_infos = pd.read_csv("data/data_out/videos_infos.csv")
+        print(list(df_videos_infos[df_videos_infos["video_name"]==parse_path_to_name(csv_array_path[0])]["fps"])[0])
+        df_videos_merge_infos = pd.DataFrame(columns = ["video_name","fps"])
+        df_videos_merge_infos = df_videos_merge_infos.append({
+                                                                'video_name' : "df_merge_"+date_id,
+                                                                'fps' :list(df_videos_infos[df_videos_infos["video_name"]==parse_path_to_name(csv_array_path[0])]["fps"])[0],
+                                                                    },
+                                                                    ignore_index=True)
+        df_videos_merge_infos.to_csv("data/data_out/videos_infos.csv", mode="a", header=False)
+        return csv_path.split(".")[0]
     
 ## TODO:  add video anme and stuff in csv video infos

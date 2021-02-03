@@ -37,7 +37,8 @@ class MainWindows(tk.Frame):
         if(len(video_paths) >=2):
             data_format = DataFormator()
             messagebox.showinfo(title="Alert", message="Fusion of all video, this can take time")
-            self.path_video_analyse = data_format.merge_csv(video_paths)
+            print([path + ".csv" for path in video_paths])
+            self.path_video_analyse = data_format.merge_csv([path + ".csv" for path in video_paths])
         else : 
             self.path_video_analyse = video_paths[0]
             
