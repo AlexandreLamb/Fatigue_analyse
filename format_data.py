@@ -69,7 +69,6 @@ class DataFormator:
         csv_path = "data/data_out/df_merge_"+date_id+".csv"
         self.df_merge.to_csv(csv_path)
         df_videos_infos = pd.read_csv("data/data_out/videos_infos.csv")
-        print(list(df_videos_infos[df_videos_infos["video_name"]==parse_path_to_name(csv_array_path[0])]["fps"])[0])
         df_videos_merge_infos = pd.DataFrame(columns = ["video_name","fps"])
         df_videos_merge_infos = df_videos_merge_infos.append({
                                                                 'video_name' : "df_merge_"+date_id,

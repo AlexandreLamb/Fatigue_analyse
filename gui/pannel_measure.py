@@ -27,20 +27,11 @@ class MeasurePannel(tk.Frame):
         self.frame_measures = tk.Frame(self, width=450, height=600)
         self.frame_measures.pack()
          
-        self.contenaire_measure = tk.Canvas(self.frame_measures, width=450, height=510,scrollregion=(0,0,0,800))
+        self.contenaire_measure = tk.Canvas(self.frame_measures, width=450, height=510)
         
-        self.scrollbar_measure = tk.Scrollbar(self.frame_measures, orient=tk.VERTICAL)
-        self.scrollbar_measure.pack(side=tk.RIGHT, fill= Y)
-        self.scrollbar_measure.config(command=self.contenaire_measure.yview)
-        
-        # self.scrollbar_measure2 = tk.Scrollbar(self.contenaire_measure, orient=tk.HORIZONTAL)
-        # self.scrollbar_measure2.pack(side=tk.BOTTOM, fill= X)
-        # self.contenaire_measure.pack()
     
-        self.contenaire_measure.config(yscrollcommand=self.scrollbar_measure.set)
         self.contenaire_measure.pack()
         
-        #self.scrollbar_measure2.config(command=self.contenaire_measure.xview)
 
         self.frame_button = tk.Frame(self, width=450, height=200)
         self.frame_button.pack(pady=(10,0))
@@ -52,15 +43,14 @@ class MeasurePannel(tk.Frame):
         self.validate_button.pack()
         self.check_buttons_measure_state = []
 
-        self.add_measure("yawning_frequency", "\ threshold (sec)")
-        self.add_measure("blinking_frequency", "\ threshold (sec)")
+        self.add_measure("yawning_frequency", "threshold (sec)")
+        self.add_measure("blinking_frequency", "threshold (sec)")
         self.add_measure("ear")
-        self.add_measure("perclos_measure","\ threshold (sec)", "\ percentage")
-        self.add_measure("microsleep_measure","\ threshold (sec)")
+        self.add_measure("microsleep_measure","threshold (sec)")
         self.add_measure("eyebrow_nose")
+        self.add_measure("perclos_measure","threshold (sec)", "percentage")
         self.add_measure("eyebrow_eye")
-        self.add_measure("eye_area")
-        self.add_measure("eye_area_mean_over","\ threshold (sec)")
+        self.add_measure("eye_area_mean_over","threshold (sec)")
         self.add_measure("eye_angle")
 
 
@@ -88,7 +78,7 @@ class MeasurePannel(tk.Frame):
             self.check_buttons_measure_state.append({"measure" : measure_name, "state" : state, "input_1": input_name_1,  "ent_1" :ent_1})
         
         elif((input_name_1 != None) and (input_name_2 != None)):
-            print("test")
+            item_frame.config(width=350, height=100)
             item_input = tk.StringVar()
             item_input.set(input_name_1 + " : ")
             label_input_1 = tk.Label(item_frame, textvariable=item_input)
@@ -110,13 +100,13 @@ class MeasurePannel(tk.Frame):
             item_label.pack(side="left", pady=(0,0))
             
         if((input_name_1 != None) and (input_name_2 == None)):
-            label_input_1.pack(side="left", pady=(2,0), padx=(0,0))
-            ent_1.pack(side="left", pady=(5,0), padx=(0,0))
+            label_input_1.pack()
+            ent_1.pack()
         if((input_name_1 != None) and (input_name_2 != None)):
-            label_input_1.pack(side="left", pady=(2,0), padx=(0,0))
-            ent_1.pack(side="left", pady=(5,0), padx=(0,0))
-            label_input_2.pack(side="left", pady=(2,0), padx=(0,0))
-            ent_2.pack(side="left", pady=(5,0), padx=(0,0))
+            label_input_1.pack(padx=(35,0))
+            ent_1.pack(padx=(45,0))
+            label_input_2.pack(padx=(35,0))
+            ent_2.pack(padx=(45,0))
         
         item_frame.pack(pady=(5,0))
         item_frame.pack_propagate(0)

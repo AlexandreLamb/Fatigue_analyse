@@ -59,4 +59,6 @@ class MainWindows(tk.Frame):
 root = tk.Tk()
 window = MainWindows(root).pack(side="top", fill="both", expand=True)
 root.geometry("1500x900")
+
+root.title("Tiredeness analysis")
 root.mainloop()

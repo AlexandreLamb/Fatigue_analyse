@@ -25,7 +25,7 @@ import csv
 class Pannel_results(tk.Frame):
     def __init__(self, parent):
         #fenêtre qui va afficher les graphiques 
-        tk.Frame.__init__(self, parent, width=700, height=700, highlightbackground="black", highlightthickness=2)
+        tk.Frame.__init__(self, parent, width=1000, height=700, highlightbackground="black", highlightthickness=2)
         tk.Frame.pack(self, side = "left", padx=(50,0))
         tk.Frame.pack_propagate(self,0)
 
@@ -39,10 +39,10 @@ class Pannel_results(tk.Frame):
         self.pannel_label.pack(side="top", pady=(5,0))
         
         #frame for graphs
-        self.frame_graphs = tk.Frame(self, width=700, height=690)
+        self.frame_graphs = tk.Frame(self, width=1000, height=690)
         self.frame_graphs.pack(pady=(10,0))
 
-        self.canvas_graphs = tk.Canvas(self.frame_graphs, width=700, height=600, scrollregion=(0, 0, 0, 7000))
+        self.canvas_graphs = tk.Canvas(self.frame_graphs, width=1000, height=600, scrollregion=(0, 0, 0, 7000))
 
         #scrollbar 
         self.graphs_scrollbar = tk.Scrollbar(self.frame_graphs, orient=tk.VERTICAL)
@@ -75,14 +75,15 @@ class Pannel_results(tk.Frame):
       
     def plot_graphs_analyse(self, csv_path, measures_state):
         self.clean_graph_frame()
-        
+        df_videos_infos = pd.read_csv("data/data_out/videos_infos.csv")
+        fps = list(df_videos_infos[df_videos_infos["video_name"]==parse_path_to_name(csv_path)]["fps"])[0]
         data_analyse = AnalyseData(csv_path+".csv")
 
         measure_eyebrow_eye         = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "eyebrow_eye")]
         measure_jaw_dropping        = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "jaw_dropping")]
         measure_yawning_frequency   = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "yawning_frequency")]
         measure_ear                 = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "ear")]
-        measure_eye_area_mean_over  = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "eye_area_mean_over_")]
+        measure_eye_area_mean_over  = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "eye_area_mean_over")]
         measure_blinking_frequency  = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "blinking_frequency")]
         measure_perclos             = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "perclos_measure")]
         measure_eye_angle           = [val for index, val in enumerate(measures_state) if (val.get("state").get()) and (val.get("measure") == "eye_angle")]
@@ -90,7 +91,7 @@ class Pannel_results(tk.Frame):
 
         #######################################################
         if(len(measure_eyebrow_eye) == 1):
-            frame1 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame1 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame1.pack()
 
             data_analyse.nose_wrinkles()
@@ -108,7 +109,7 @@ class Pannel_results(tk.Frame):
             self.graph_list.append(1)
         ######################################################
         if(len(measure_jaw_dropping) == 1):
-            frame2 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame2 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame2.pack()
             
             data_analyse.jaw_dropping()
@@ -128,7 +129,7 @@ class Pannel_results(tk.Frame):
         ###################################################
         if(len(measure_eyebrow_nose) == 1):
     
-            frame3 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame3 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame3.pack()
 
             data_analyse.measure_eyebrow_nose()
@@ -147,14 +148,13 @@ class Pannel_results(tk.Frame):
         ##########################################################
         if(len(measure_yawning_frequency) == 1):
     
-            frame4 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame4 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame4.pack()
-            treshold = int(measure_yawning_frequency[0].get("ent_1").get())
-            print(type(treshold))
+            treshold = int(int(measure_yawning_frequency[0].get("ent_1").get())*fps)
             ## TODO: add conversion frame sec
             
             data_analyse.measure_yawning_frequency(treshold)
-            yawning_frequency_graph = data_analyse.plot_measure("yawning_frequency", "Yawning frequency (over "+str(treshold)+")", axis_x = "Time (in mins)")
+            yawning_frequency_graph = data_analyse.plot_measure("yawning_frequency", "Yawning frequency (over "+measure_yawning_frequency[0].get("ent_1").get()+")", axis_x = "Time (in mins)")
             canvas4 = FigureCanvasTkAgg(yawning_frequency_graph, master=frame4)
             canvas4.get_tk_widget().pack(pady=(5,0))
             canvas4.draw()
@@ -170,7 +170,7 @@ class Pannel_results(tk.Frame):
         ################################################
         if(len(measure_ear) == 1):
     
-            frame5 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame5 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame5.pack()
 
             data_analyse.measure_ear()
@@ -189,13 +189,13 @@ class Pannel_results(tk.Frame):
 
         ############################################################
         if(len(measure_eye_area_mean_over) == 1):
-            frame6 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame6 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame6.pack()
             
-            treshold = int(measure_eye_area_mean_over[0].get("ent_1").get())
+            treshold = int(int(measure_eye_area_mean_over[0].get("ent_1").get())*fps)
             data_analyse.measure_mean_eye_area(treshold)
 
-            ear_mean_graph = data_analyse.plot_measure("eye_area_mean_over_"+treshold+"_frame", "Eye aspect ratio mean" ,"eye_area_theshold")
+            ear_mean_graph = data_analyse.plot_measure("eye_area_mean_over_"+str(treshold)+"_frame", "Eye area mean" ,"eye_area_theshold")
             canvas6 = FigureCanvasTkAgg(ear_mean_graph, master=frame6)
             canvas6.get_tk_widget().pack(pady=(5,0))
             canvas6.draw()
@@ -210,13 +210,13 @@ class Pannel_results(tk.Frame):
 
         ##############################################################
         if(len(measure_blinking_frequency) == 1):
-            frame7 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame7 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame7.pack()
             
-            treshold = int(measure_blinking_frequency[0].get("ent_1").get())
+            treshold = int(int(measure_blinking_frequency[0].get("ent_1").get())*fps)
             data_analyse.blinking_frequency(treshold)
             
-            blinking_graph = data_analyse.plot_measure("blinking_frequency", "Blinking frequency per "+str(treshold), axis_x = "Time (in mins)")
+            blinking_graph = data_analyse.plot_measure("blinking_frequency", "Blinking frequency per "+measure_blinking_frequency[0].get("ent_1").get() + " s", axis_x = "Time (in mins)")
             canvas7 = FigureCanvasTkAgg(blinking_graph, master=frame7)
             canvas7.get_tk_widget().pack(pady=(5,0))
             canvas7.draw()
@@ -231,10 +231,10 @@ class Pannel_results(tk.Frame):
 
         ################################################################
         if(len(measure_perclos) == 1):  
-            frame8 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame8 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame8.pack()
             
-            treshold = int(measure_perclos[0].get("ent_1").get())
+            treshold = int(int(measure_perclos[0].get("ent_1").get())*fps)
             percentage = int(measure_perclos[0].get("ent_2").get())
             data_analyse.measure_perclos(treshold, percentage)
             perclos_measures = data_analyse.measure_perclos(treshold, percentage)
@@ -249,11 +249,11 @@ class Pannel_results(tk.Frame):
 
             z8 = Button(frame8, text="Save csv", bg="gray70", fg = 'black', command = lambda : self.save_csv(data_analyse, "perclos_measure", "Time (in mins)"))
             z8.pack(side=tk.LEFT,padx=(5,0))
-            graph_list.append(1)
+            self.graph_list.append(1)
 
         ###################################################################
         if(len(measure_eye_angle) == 1):   
-            frame9 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame9 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame9.pack()
 
             data_analyse.eyes_angle()
@@ -269,7 +269,7 @@ class Pannel_results(tk.Frame):
             self.graph_list.append(1)
 
 
-            frame10 = tk.Frame(self.frame_graphs, width=700, height=700)
+            frame10 = tk.Frame(self.frame_graphs, width=900, height=700)
             frame10.pack()
 
             right_eye_graph = data_analyse.plot_measure(["right_angle1","right_angle2"], "Angles measures for the right eye")
@@ -286,7 +286,7 @@ class Pannel_results(tk.Frame):
         print("clean")
         self.canvas_graphs.destroy()
         self.graphs_scrollbar.destroy()
-        self.canvas_graphs = tk.Canvas(self.frame_graphs, width=700, height=600, scrollregion=(0, 0, 0, 7000))
+        self.canvas_graphs = tk.Canvas(self.frame_graphs, width=1000, height=600, scrollregion=(0, 0, 0, 7000))
         self.graphs_scrollbar = tk.Scrollbar(self.frame_graphs, orient=tk.VERTICAL)
         self.graphs_scrollbar.pack(side=tk.RIGHT, fill=Y)
         self.graphs_scrollbar.config(command=self.canvas_graphs.yview)
