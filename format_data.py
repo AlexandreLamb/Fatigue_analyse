@@ -107,7 +107,7 @@ class DataFormator:
                     for measure_name in list(df_measure):
                         measure = df_measure[df_measure["frame"].between(index, index+window-1)][measure_name]
                         if len(measure)==window:
-                            df_temporal.loc[index,measure_name+"_"+windows]=list(measure)
+                            df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
                             label = 0 if df_measure[df_measure["frame"].between(index, index+window-1)]["Target"].sum() == 0 else 1
                             df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
         return df_temporal, df_label
@@ -117,8 +117,8 @@ class DataFormator:
         col = []
         for measure_name in measure_name_array:
             if measure_name != 'frame' or measure_name != 'Target':
-                for windows in windows_array:
-                    col.append(measure_name+"_"+str(windows))
+                for window in windows_array:
+                    col.append(measure_name+"_"+str(window))
         df_temporal  = pd.DataFrame(columns=col, dtype='object')
         df_label = pd.DataFrame(columns=windows_array)
         return df_temporal, df_label  
