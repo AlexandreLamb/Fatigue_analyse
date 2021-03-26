@@ -10,7 +10,7 @@ class DataFormator:
         self.df_formatted = None
         self.df_merge = None
         self.face_recognitions_type = ["cnn", "hog"]
-        self.data_folder = "data/data_out/"
+        self.data_folder = "data/stage_data_out/"
         #self.video_info_path("data/stage_data_out/videos_infos.csv")
         
     def load_csv_by_face_recognitions(self, video_name):
@@ -97,6 +97,31 @@ class DataFormator:
             df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min,"Target"] = 1
             
         return df_label
+    
+    @staticmethod
+    def make_df_temporal_label(windows_array, df_measure):
+        df_temporal, df_label = DataFormator.create_df_temporal_label(list(df_measure), windows_array)
+        for window in windows_array:
+            for index in df_measure["frame"]:
+                if index + window < df_measure["frame"].max():
+                    for measure_name in list(df_measure):
+                        measure = df_measure[df_measure["frame"].between(index, index+window-1)][measure_name]
+                        if len(measure)==window:
+                            df_temporal.loc[index,measure_name+"_"+windows]=list(measure)
+                            label = 0 if df_measure[df_measure["frame"].between(index, index+window-1)]["Target"].sum() == 0 else 1
+                            df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
+        return df_temporal, df_label
+        
+    @staticmethod
+    def create_df_temporal_label(measure_name_array, windows_array):
+        col = []
+        for measure_name in measure_name_array:
+            if measure_name != 'frame' or measure_name != 'Target':
+                for windows in windows_array:
+                    col.append(measure_name+"_"+str(windows))
+        df_temporal  = pd.DataFrame(columns=col, dtype='object')
+        df_label = pd.DataFrame(columns=windows_array)
+        return df_temporal, df_label  
 
 
 ## TODO:  add video anme and stuff in csv video infos
