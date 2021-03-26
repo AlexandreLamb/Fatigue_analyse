@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from utils import paths_to_df, parse_path_to_name
 from datetime import datetime
+import os
 class DataFormator:   
     VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
 
@@ -100,30 +101,62 @@ class DataFormator:
     
     @staticmethod
     def make_df_temporal_label(windows_array, df_measure):
+        measures_list = list(df_measure)
+        measures_list.remove("Target")
+        measures_list.remove("frame")        
         df_temporal, df_label = DataFormator.create_df_temporal_label(list(df_measure), windows_array)
         for window in windows_array:
             for index in df_measure["frame"]:
                 if index + window < df_measure["frame"].max():
-                    for measure_name in list(df_measure):
+                    for measure_name in measures_list:
+                        print("frame : " + str(index))
+                        print("measure : " + str(measure_name))
+                        print("window : "  + str(window))
                         measure = df_measure[df_measure["frame"].between(index, index+window-1)][measure_name]
                         if len(measure)==window:
-                            df_temporal.loc[index,measure_name+"_"+windows]=list(measure)
+                            df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
                             label = 0 if df_measure[df_measure["frame"].between(index, index+window-1)]["Target"].sum() == 0 else 1
                             df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
+                        os.system('clear')
         return df_temporal, df_label
         
     @staticmethod
     def create_df_temporal_label(measure_name_array, windows_array):
         col = []
         for measure_name in measure_name_array:
-            if measure_name != 'frame' or measure_name != 'Target':
-                for windows in windows_array:
-                    col.append(measure_name+"_"+str(windows))
+            for windows in windows_array:
+                col.append(measure_name+"_"+str(windows))
         df_temporal  = pd.DataFrame(columns=col, dtype='object')
         df_label = pd.DataFrame(columns=windows_array)
         return df_temporal, df_label  
+    
+    @staticmethod
+    def make_df_feature(df_temporal, df_label, windows_array):
+        df_tab=[]
+        measures_list = list(df_temporal)
+        measures_list.remove("Unnamed: 0")
+        for window in windows_array:
+            measures_list.remove("frame_"+str(window))
+            measures_list.remove("Target_"+str(window))
+        for measure in measures_list:
+            df_features = pd.DataFrame(df_temporal[df_temporal[measure].notna()][measure])
+            df_features = df_features.set_index(np.arange(len(df_features)))
+            df_target = pd.DataFrame(df_label[df_label[measure.split("_")[-1]].notna()][measure.split("_")[-1]]).rename(columns = {measure.split("_")[-1] : "target"})
+            df_target = df_target.set_index(np.arange(len(df_target)))
+            df_tab.append(df_features.join(df_target))
+        return df_tab
+
+    @staticmethod
+    def save_df(df, video_name):
+        dataset_path = "data/stage_data_out/dataset"
+        if os.path.exists(os.path.join(dataset_path,video_name)) == False:
+            os.mkdir(os.path.join(dataset_path,video_name))
+        df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+df.columns[0]+".csv"))
+
 
 
 ## TODO:  add video anme and stuff in csv video infos
 
 ## TODO: make mother class for herite some commun variable (csv_infos ect...)
+
+## TODO: fiw 'Unnamed: 0' columns  (coreseponding to frame) in df_temporal
