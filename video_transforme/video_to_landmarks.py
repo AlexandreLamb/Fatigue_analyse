@@ -107,7 +107,7 @@ class VideoToLandmarks:
                         self.df_landmarks.loc[count] = marks
                     else:
                         logging.info("No face detect on image "+str(count))
-                    self.progression_of_place_landmarks(count, video_name)
+                    #self.progression_of_place_landmarks(count, video_name)
                     count += 1
             self.df_landmarks.to_csv(csv_path_name,header=True,mode="w") 
             
