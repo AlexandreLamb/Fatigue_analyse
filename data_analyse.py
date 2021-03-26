@@ -75,7 +75,7 @@ class AnalyseData():
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
         self.df_measure["ear"]   = (self.df_measure["ear_r"] +self.df_measure["ear_l"])/2
-        self.df_measure["ear_std"] = self.df_measure["ear"].std()
+        #self.df_measure["ear_std"] = self.df_measure["ear"].std()
         self.measures_computes.append({"measure" : "ear" , "axis_x" : "frame"})
         return self.measures_computes
 
