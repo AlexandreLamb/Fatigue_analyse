@@ -83,6 +83,7 @@ class DataFormator:
         return csv_path.split(".")[0]
     @staticmethod
     def make_label_df(num_min, video_name, df_measure= pd.DataFrame(), path = None):
+        print(video_name)
         df_video_infos = pd.read_csv(DataFormator.VIDEOS_INFOS_PATH)
         fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
         num_sec = num_min*60
@@ -96,7 +97,7 @@ class DataFormator:
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
 
             df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min,"Target"] = 1
-            
+        df_label = df_label.set_index("frame")
         return df_label
     
     @staticmethod
@@ -104,8 +105,9 @@ class DataFormator:
         measures_list = list(df_measure)
         measures_list.remove("Target")
         measures_list.remove("frame")        
-        df_temporal, df_label = DataFormator.create_df_temporal_label(list(df_measure), windows_array)
+        df_temporal, df_label = DataFormator.create_df_temporal_label(list(measures_list), windows_array)
         for window in windows_array:
+            print(df_measure["frame"].max())
             for index in df_measure["frame"]:
                 if index + window < df_measure["frame"].max():
                     for measure_name in measures_list:
@@ -134,15 +136,19 @@ class DataFormator:
     def make_df_feature(df_temporal, df_label, windows_array):
         df_tab=[]
         measures_list = list(df_temporal)
-        measures_list.remove("Unnamed: 0")
+        print(measures_list)
+        """
         for window in windows_array:
             measures_list.remove("frame_"+str(window))
             measures_list.remove("Target_"+str(window))
+        """
+        print(df_label)
         for measure in measures_list:
             df_features = pd.DataFrame(df_temporal[df_temporal[measure].notna()][measure])
             df_features = df_features.set_index(np.arange(len(df_features)))
-            df_target = pd.DataFrame(df_label[df_label[measure.split("_")[-1]].notna()][measure.split("_")[-1]]).rename(columns = {measure.split("_")[-1] : "target"})
+            df_target = pd.DataFrame(df_label[df_label[int(measure.split("_")[-1])].notna()][int(measure.split("_")[-1])]).rename(columns = {int(measure.split("_")[-1]) : "target"})
             df_target = df_target.set_index(np.arange(len(df_target)))
+            print(df_features.join(df_target))
             df_tab.append(df_features.join(df_target))
         return df_tab
 
@@ -151,7 +157,7 @@ class DataFormator:
         dataset_path = "data/stage_data_out/dataset"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
-        df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+df.columns[0]+".csv"))
+        df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
 
 
 
