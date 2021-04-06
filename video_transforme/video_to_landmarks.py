@@ -9,7 +9,7 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from logger import logging
-from video_transforme.face_recognitions import FaceRecognitionHOG
+from video_transforme.face_recognitions import FaceRecognitionHOG, FaceRecognitionMtcnn
 from utils import make_landmarks_header, parse_path_to_name
 
 SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
@@ -142,3 +142,16 @@ class VideoToLandmarks:
         self.load_data_video()
         self.transoform_videos_to_landmarks("hog", False)
 
+    def load_and_transform_mtcnn(self):
+        cap = cv2.VideoCapture(self.path)
+        success, img = cap.read()     
+         
+        mtcnn = FaceRecognitionMtcnn()
+        count = 0
+        while success:  
+            mtcnn.place_landmarks(img, count)
+            success, img = cap.read()
+            count = count + 1
+
+vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H64.mp4")
+vl.load_and_transform_mtcnn()
