@@ -10,4 +10,5 @@ loggin.log
 fatigue_analysis.code-workspace
 log/
 data/shape_predictor
+tensorboard/
 .vscode/

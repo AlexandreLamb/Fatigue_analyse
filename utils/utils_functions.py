@@ -18,3 +18,9 @@ def paths_to_df(csv_array):
         df_array.append(pd.read_csv(path).rename(columns={"Unnamed: 0" : "frame"}))
     return df_array
 
+def generate_columns_name(windows):
+    columns_name = []
+    for i in range(1,windows+1):
+        columns_name.append("t_"+str(i))
+    return columns_name
+

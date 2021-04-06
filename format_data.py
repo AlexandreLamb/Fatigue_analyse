@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
-from utils import paths_to_df, parse_path_to_name
+from utils import paths_to_df, parse_path_to_name, generate_columns_name
 from datetime import datetime
 import os
+import json
+
 class DataFormator:   
     VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
 
@@ -159,8 +161,25 @@ class DataFormator:
             os.mkdir(os.path.join(dataset_path,video_name))
         df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
 
-
-
+    
+    
+    @staticmethod
+    def merge_dataset(dataset_array):
+        df_merge = pd.DataFrame()
+        for df in dataset_array:
+            df_merge = df_merge.append(df)
+        return df_merge
+    
+    @staticmethod
+    def convert_df_temporal_array_into_df(dataset_to_convert):
+        df = pd.DataFrame(columns = generate_columns_name(10))
+        for i, row in dataset_to_convert.iterrows():
+            array = json.loads(row["ear_10"])
+            df.loc[i] = array
+        df["target"] = dataset_to_convert["target"]
+        return df
+    
+        
 ## TODO:  add video anme and stuff in csv video infos
 
 ## TODO: make mother class for herite some commun variable (csv_infos ect...)
