@@ -23,6 +23,7 @@ class VideoToLandmarks:
         self.videos = []
         self.face_recognitions = {
                                     "hog" : FaceRecognitionHOG(),
+                                    "mtcnn" : FaceRecognitionMtcnn()
                                    # "cnn" : FaceRecognitionCNN()
         }
 
@@ -129,6 +130,7 @@ class VideoToLandmarks:
                         marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
                         if len(marks) > 0:         
                             self.df_landmarks.loc[count] = marks
+                            self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
                         else:
                             logging.info("No face detect on image "+str(count))
                         self.progression_of_place_landmarks(count, video_name, sec*video_fps)
@@ -137,10 +139,14 @@ class VideoToLandmarks:
                     success = False
                 count += 1
 
-            self.df_landmarks.to_csv(csv_path_name,header=True,mode="w") 
-    def load_and_transform(self):
+             
+    def load_and_transform(self, detector):
         self.load_data_video()
-        self.transoform_videos_to_landmarks("hog", False)
+        self.transoform_videos_to_landmarks(detector, False)
+        
+    def load_and_transform_with_sec(self, detector):
+        self.load_data_video()
+        self.transoform_videos_with_sec_to_landmarks(detector, False, 5*60)
 
     def load_and_transform_mtcnn(self):
         cap = cv2.VideoCapture(self.path)
@@ -149,9 +155,14 @@ class VideoToLandmarks:
         mtcnn = FaceRecognitionMtcnn()
         count = 0
         while success:  
-            mtcnn.place_landmarks(img, count)
+            marks = mtcnn.place_landmarks(img, count)
+            marks_pair = list(zip(marks[::2],marks[1::2]))
+            np.savetxt("data/stage_data_out/marks_pair",marks_pair)
+            for mark in marks_pair:
+                cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
+            cv2.imwrite("data/stage_data_out/landmarks_pics_mtcnn/image_"+str(count)+".jpg", img)
+
             success, img = cap.read()
             count = count + 1
 
-vl = VideoToLandmarks("data/data_in/videos/DESFAM_Semaine 2-Vendredi_PVT_H64.mp4")
-vl.load_and_transform_mtcnn()
+
