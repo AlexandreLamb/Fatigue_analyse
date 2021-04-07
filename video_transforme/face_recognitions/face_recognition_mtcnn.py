@@ -25,7 +25,7 @@ class FaceRecognitionMtcnn:
             marks = face_utils.shape_to_np(marks)
         elif len(face_informations) > 1:
             logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
-        
+            logging.info(face_informations)
         else :
             logging.info("No face on img number " +str(count) + " try with HOG classifier")
             hog_recogniton = FaceRecognitionHOG()
