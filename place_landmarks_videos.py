@@ -14,4 +14,4 @@ args=parser.parse_args()
 print(type(args.path))
 vl = VideoToLandmarks(args.path)
 
-vl.load_and_transform_with_sec(args.detector)
+vl.load_and_transform_with_sec(args.detector, args.sec)
