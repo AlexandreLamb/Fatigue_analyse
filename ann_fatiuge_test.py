@@ -165,7 +165,6 @@ all_features = tf.keras.layers.concatenate(encoded_features)
 
 logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+"/"
 
-
 # ### Define model parameter
 
 # In[20]:
@@ -174,7 +173,7 @@ logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%
 HP_NUM_UNITS_1 = hp.HParam('num_units_1', hp.Discrete([32,64,128,256,512]))
 HP_NUM_UNITS_2 = hp.HParam('num_units_2', hp.Discrete([32,64,128,256,512]))
 HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
-HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam','momentum','adadelta','sgd']))
+HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam','adadelta','sgd']))
 HP_ACTIVATION = hp.HParam('activation', hp.Discrete(['relu','elu']))
 HP_ACTIVATION_OUTPUT = hp.HParam('activation_output', hp.Discrete(['sigmoid']))
 
@@ -292,14 +291,3 @@ for num_units_1 in HP_NUM_UNITS_1.domain.values:
 
 
 # In[ ]:
-
-
-get_ipython().run_line_magic('load_ext', 'tensorboard')
-get_ipython().run_line_magic('tensorboard', "--logdir 'logs/fit'")
-
-
-# In[24]:
-
-
-get_ipython().system('jupyter nbconvert --to script ann_fatiuge_test.ipynb')
-
