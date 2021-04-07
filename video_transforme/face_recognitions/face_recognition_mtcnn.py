@@ -5,7 +5,7 @@ import pandas as pd
 from imutils import face_utils
 from logger import logging
 from . import FaceRecognitionHOG
-
+import numpy as np
 
 SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
 

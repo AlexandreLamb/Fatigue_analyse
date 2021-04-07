@@ -16,7 +16,7 @@ SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat
 
 class VideoToLandmarks:
     def __init__(self, path):
-        self.df_landmarks = pd.DataFrame(columns = make_landmarks_header())
+        self.df_landmarks = pd.DataFrame(columns = make_landmarks_header(),index=["frame"])
         self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps","frame_count"])
         self.path = path
         self.video_infos_path = "data/stage_data_out/videos_infos.csv"
@@ -130,7 +130,8 @@ class VideoToLandmarks:
             success, image = video.get("video").read()
             count = 0
             if os.path.isfile(csv_path_name) : 
-                self.df_landmarks = pd.read_csv(csv_path_name)
+                print(csv_path_name)
+                self.df_landmarks = pd.read_csv(csv_path_name, index_col="frame")
             while success:
                 if count in range(0,int(sec*video_fps)+1) or count in range(frame_count-int(sec*video_fps), frame_count+1) :
                     success, img = video.get("video").read()
@@ -148,6 +149,9 @@ class VideoToLandmarks:
                 if count == frame_count:
                     success = False
                 count += 1
+                if count == int(sec*video_fps) : 
+                    count = frame_count-int(sec*video_fps)
+               
 
              
     def load_and_transform(self, detector):

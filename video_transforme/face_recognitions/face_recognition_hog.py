@@ -3,6 +3,7 @@ import cv2
 from logger import logging
 from imutils import face_utils
 import imutils
+import numpy as np
 
 SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"
 
