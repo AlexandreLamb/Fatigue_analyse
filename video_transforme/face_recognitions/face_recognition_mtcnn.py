@@ -3,7 +3,8 @@ import cv2
 import dlib
 import pandas as pd
 from imutils import face_utils
-from face_recognitions import FaceRecognitionHOG
+from logger import logging
+from . import FaceRecognitionHOG
 
 
 SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat"

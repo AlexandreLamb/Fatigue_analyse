@@ -82,16 +82,23 @@ class VideoToLandmarks:
             cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
         cv2.imwrite("data/stage_data_out/landmarks_pics/"++"_image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
 
-    def progression_of_place_landmarks(self, count, video_name, frame_total= -1):
-        if frame_total == -1:
+    def progression_of_place_landmarks(self, count, video_name, frame_total_1= -1, frame_total_2 = None):
+        if frame_total_1 == -1:
             frame_count = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"]
             os.system("clear")
             print(str(count)+ " on " + str(frame_count[0]) + " frame analyse")
         else : 
-            frame_count = int(frame_total)
+            frame_count_1 = int(frame_total_1)
+            if frame_total_2 == None:
+                frame_count_2 = -1
+            else : 
+                frame_count_2 = int(frame_total_2)             
             os.system("clear")
-            print(str(count)+ " on " + str(frame_count) + " frame analyse")
-            
+            if count <= frame_count_1 : 
+                print(str(count)+ " on " + str(frame_count_1) + " frame analyse")
+            if count >= frame_count_1 and frame_count_2 != -1 :
+                print(str(count)+ " on " + str(frame_count_2) + " frame analyse")
+
     def transoform_videos_to_landmarks(self, face_recognition_type):
         for video in self.videos:
             video_name = video.get("video_name")
@@ -135,10 +142,9 @@ class VideoToLandmarks:
                                 self.df_landmarks.to_csv(csv_path_name,header=True,mode="w")
                             else:
                                 logging.info("No face detect on image "+str(count))
-                            self.progression_of_place_landmarks(count, video_name, sec*video_fps)
                     else : 
                         logging.info("There is already landmarks place on image "+str(count))
-                print(count)
+                self.progression_of_place_landmarks(count, video_name, sec*video_fps, frame_count)
                 if count == frame_count:
                     success = False
                 count += 1
@@ -146,11 +152,11 @@ class VideoToLandmarks:
              
     def load_and_transform(self, detector):
         self.load_data_video()
-        self.transoform_videos_to_landmarks(detector, False)
+        self.transoform_videos_to_landmarks(detector)
         
-    def load_and_transform_with_sec(self, detector):
+    def load_and_transform_with_sec(self, detector, minutes):
         self.load_data_video()
-        self.transoform_videos_with_sec_to_landmarks(detector, False, 5*60)
+        self.transoform_videos_with_sec_to_landmarks(detector, minutes*60)
 
     def load_and_transform_mtcnn(self):
         cap = cv2.VideoCapture(self.path)
