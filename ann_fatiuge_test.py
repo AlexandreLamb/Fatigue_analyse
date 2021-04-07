@@ -289,5 +289,3 @@ for num_units_1 in HP_NUM_UNITS_1.domain.values:
               run(logdir + run_name, hparams)
               session_num += 1          
 
-
-# In[ ]:
