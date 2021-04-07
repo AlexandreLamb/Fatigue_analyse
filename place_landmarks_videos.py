@@ -6,6 +6,8 @@ parser=argparse.ArgumentParser()
 
 parser.add_argument('--path', help='path to the video folder')
 parser.add_argument('--detector', help='name of detector : [mtcnn, hog]')
+parser.add_argument('--sec', help='number of sec at begin and end to place landmarks')
+
 
 args=parser.parse_args()
 
