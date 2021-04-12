@@ -10,7 +10,12 @@ loggin.log
 fatigue_analysis.code-workspace
 log/
 data/shape_predictor
+<<<<<<< HEAD
 .vscode/
 tensorboard/
 .vscode/
 dlib_trainer/
+=======
+tensorboard/
+.vscode/
+>>>>>>> 6154e99359ab1b3d846bec9dbad64960a81f0d60
