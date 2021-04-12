@@ -24,8 +24,14 @@ class FaceRecognitionMtcnn:
             marks = self.predictor(img_gray, rectangle_box)
             marks = face_utils.shape_to_np(marks)
         elif len(face_informations) > 1:
-            logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
+            logging.info("Detect more than 1 face on img number " +str(count) + " get face with higher confidence")
             logging.info(face_informations)
+            conf_max  = max([obj.get("confidence") for obj in face_informations])
+            index_conf_max = [index for index , obj in enumerate(face_informations) if obj.get("confidence") == conf_max]
+            box = face_informations[index_conf_max[0]].get("box")
+            rectangle_box = dlib.rectangle(box[0]+box[2], box[1], box[0], box[1]+box[3])
+            marks = self.predictor(img_gray, rectangle_box)
+            marks = face_utils.shape_to_np(marks)
         else :
             logging.info("No face on img number " +str(count) + " try with HOG classifier")
             hog_recogniton = FaceRecognitionHOG()
