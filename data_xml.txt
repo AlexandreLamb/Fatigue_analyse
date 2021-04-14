@@ -1,0 +1,1 @@
+py script/improve_dataset.py --path_csv data/stage_data_out/DESFAM_Semaine-2-Vendredi_PVT_H64_hog.csv --path_video data/data_in/videos/DESFAM_Semaine-2-Vendredi_PVT_H64.mp4 --path_xml dlib_trainer/dataset/labels_ibug_300W.xml
