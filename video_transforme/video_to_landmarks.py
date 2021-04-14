@@ -129,7 +129,10 @@ class VideoToLandmarks:
             csv_path_name = "data/stage_data_out/"+video_name+"_"+str(face_recognition_type)+".csv"
             success, image = video.get("video").read()
             count = 0
+            self.df_landmarks = pd.DataFrame(columns = make_landmarks_header()).rename(index={0 : "frame"})
             if os.path.isfile(csv_path_name) : 
+                logging.info(os.path.isfile(csv_path_name)) 
+                logging.info(csv_path_name) 
                 self.df_landmarks = pd.read_csv(csv_path_name, index_col="frame")
                 count = len(self.df_landmarks)
             while success:
