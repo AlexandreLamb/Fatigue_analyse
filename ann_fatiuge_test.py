@@ -14,8 +14,6 @@ from tensorflow import feature_column
 from tensorflow.keras import layers
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorboard.plugins.hparams import api as hp
-import matplotlib.pyplot as plt
-import sklearn.metrics
 import datetime
 
 
@@ -177,10 +175,10 @@ logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%
 
 HP_NUM_UNITS_1 = hp.HParam('num_units_1', hp.Discrete([32]))
 HP_NUM_UNITS_2 = hp.HParam('num_units_2', hp.Discrete([512]))
-HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.5,0.5))
+HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.5, 0.5))
 HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
 HP_ACTIVATION = hp.HParam('activation', hp.Discrete(['relu']))
-HP_ACTIVATION_OUTPUT = hp.HParam('activation_output', hp.Discrete(['sigmoid']))
+HP_ACTIVATION_OUTPUT = hp.HParam('activation_output', hp.Discrete(['softmax']))
 
 
 METRIC_BINARY_ACCURACY = "binary_accuracy"
@@ -232,12 +230,12 @@ def modeling(hparams):
 # In[25]:
 
 
-def train_test_model(hparams):
+def train_test_model(hparams, session_num):
     model = modeling(hparams)
     model.summary()
     model.compile(
         optimizer = hparams[HP_OPTIMIZER],
-        loss = tf.keras.losses.BinaryCrossentropy(),
+        loss = tf.keras.losses.MeanSquareError(),
         metrics = ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     )
     model.fit(
@@ -252,7 +250,7 @@ def train_test_model(hparams):
             tf.keras.callbacks.EarlyStopping(monitor='val_binary_accuracy', patience=10),
         ]
     ) 
-    model.save("tensorboard/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model")
+    model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
     _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
     return binary_accuracy, binary_crossentropy, mean_squared_error
 
@@ -262,10 +260,10 @@ def train_test_model(hparams):
 # In[18]:
 
 
-def run(run_dir, hparams):
+def run(run_dir, hparams, session_num):
     with tf.summary.create_file_writer(run_dir).as_default():
         hp.hparams(hparams)  # record the values used in this trial
-        binary_accuracy, binary_crossentropy, mean_squared_error = train_test_model(hparams)
+        binary_accuracy, binary_crossentropy, mean_squared_error = train_test_model(hparams, session_num)
         tf.summary.scalar(METRIC_BINARY_ACCURACY, binary_accuracy, step=1)
         tf.summary.scalar(METRIC_BINARY_CROSSENTROPY, binary_crossentropy, step=1)
         tf.summary.scalar(METRIC_MSE, mean_squared_error, step=1)
@@ -295,7 +293,7 @@ for num_units_1 in HP_NUM_UNITS_1.domain.values:
               run_name = "run-%d" % session_num
               print('--- Starting trial: %s' % run_name)
               print({h.name: hparams[h] for h in hparams})
-              run(logdir + run_name, hparams)
+              run(logdir + run_name, hparams, session_num)
               session_num += 1          
 
 
