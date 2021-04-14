@@ -12,3 +12,4 @@ log/
 data/shape_predictor
 tensorboard/
 .vscode/
+dlib_trainer/
