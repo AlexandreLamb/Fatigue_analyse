@@ -178,7 +178,7 @@ HP_NUM_UNITS_2 = hp.HParam('num_units_2', hp.Discrete([512]))
 HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.5, 0.5))
 HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
 HP_ACTIVATION = hp.HParam('activation', hp.Discrete(['relu']))
-HP_ACTIVATION_OUTPUT = hp.HParam('activation_output', hp.Discrete(['softmax']))
+HP_ACTIVATION_OUTPUT = hp.HParam('activation_output', hp.Discrete(['sigmoid']))
 
 
 METRIC_BINARY_ACCURACY = "binary_accuracy"
@@ -235,7 +235,7 @@ def train_test_model(hparams, session_num):
     model.summary()
     model.compile(
         optimizer = hparams[HP_OPTIMIZER],
-        loss = tf.keras.losses.MeanSquareError(),
+        loss = tf.keras.losses.MeanSquaredError(),
         metrics = ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     )
     model.fit(
@@ -247,7 +247,7 @@ def train_test_model(hparams, session_num):
         callbacks=[ 
             tf.keras.callbacks.TensorBoard(log_dir = logdir),  # log metrics
             hp.KerasCallback(logdir, hparams),  # log hparams
-            tf.keras.callbacks.EarlyStopping(monitor='val_binary_accuracy', patience=10),
+            tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error', patience=10),
         ]
     ) 
     model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
