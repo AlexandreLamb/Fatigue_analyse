@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from utils import paths_to_df, parse_path_to_name, generate_columns_name
 from datetime import datetime
 import os
@@ -185,3 +188,9 @@ class DataFormator:
 ## TODO: make mother class for herite some commun variable (csv_infos ect...)
 
 ## TODO: fiw 'Unnamed: 0' columns  (coreseponding to frame) in df_temporal
+
+df = pd.read_csv("data/stage_data_out/dataset/DESFAM_Semaine 2-Vendredi_PVT_H64/ear_10.csv")
+
+df_temp, df_label = DataFormator.make_df_temporal_label([10],df)
+
+print(df_temp)
