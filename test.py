@@ -17,12 +17,13 @@ csv_array_path = [folder_path + "/" +name for name in csv_array_name]
 df_ear_all = pd.DataFrame()
 
 for index, csv_landmarks_path in enumerate(csv_array_path) :
-    video_name = csv_array_name[index]
+    video_name = csv_array_name[index].split("_mtcnn.")[0]
 
     analyse_data = AnalyseData(csv_landmarks_path)
     #TODO: make a function who take a json file of meaurec
     analyse_data.measure_ear()
     print(analyse_data.df_measure)
+    print(csv_landmarks_path)
     df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, df_measure= analyse_data.df_measure)
     print(df_ear)
     df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, df_measure= analyse_data.df_measure)

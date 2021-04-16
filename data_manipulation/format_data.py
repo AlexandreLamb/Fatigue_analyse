@@ -108,21 +108,21 @@ class DataFormator:
     @staticmethod
     def make_df_temporal_label(windows_array, df_measure):
         measures_list = list(df_measure)
+        print(measures_list)
         measures_list.remove("Target")
-        measures_list.remove("frame")        
         df_temporal, df_label = DataFormator.create_df_temporal_label(list(measures_list), windows_array)
         for window in windows_array:
-            print(df_measure["frame"].max())
-            for index in df_measure["frame"]:
-                if index + window < df_measure["frame"].max():
+            print(df_measure.index.max())
+            for index in df_measure.index:
+                if index + window < df_measure.index.max():
                     for measure_name in measures_list:
                         print("frame : " + str(index))
                         print("measure : " + str(measure_name))
                         print("window : "  + str(window))
-                        measure = df_measure[df_measure["frame"].between(index, index+window-1)][measure_name]
+                        measure = df_measure.loc[index : index+window-1][measure_name]
                         if len(measure)==window:
                             df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
-                            label = 0 if df_measure[df_measure["frame"].between(index, index+window-1)]["Target"].sum() == 0 else 1
+                            label = 0 if df_measure.loc[index : index+window-1]["Target"].sum() == 0 else 1
                             df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
                         os.system('clear')
         return df_temporal, df_label
