@@ -22,13 +22,11 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     analyse_data = AnalyseData(csv_landmarks_path)
     #TODO: make a function who take a json file of meaurec
     analyse_data.measure_ear()
-    print(analyse_data.df_measure)
     print(csv_landmarks_path)
-    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, df_measure= analyse_data.df_measure)
+    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures = ["frame","ear"], df_measure= analyse_data.df_measure)
     print(df_ear)
-    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, df_measure= analyse_data.df_measure)
     df_temporal, df_label = DataFormator.make_df_temporal_label([10] , df_ear)
+    df_tab = make_df_feature(df_temporal, df_label, [10])
+    df_merge = DataFormator.merge_dataset(df_tab)
     #df_ear_all = df_ear_all.append(df_ear)
-    #DataFormator.save_df(df_ear, video_name)
-
-DataFormator.save_df(df_ear_all,'Merge_Dataset')
+    DataFormator.save_df(df_merge, video_name)

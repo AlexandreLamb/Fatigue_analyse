@@ -87,8 +87,8 @@ class DataFormator:
         df_videos_merge_infos.to_csv("data/data_out/videos_infos.csv", mode="a", header=False)
         return csv_path.split(".")[0]
     @staticmethod
-    def make_label_df(num_min, video_name, df_measure= pd.DataFrame(), path = None):
-        print(video_name)
+    def make_label_df(num_min, video_name, measures, df_measure= pd.DataFrame(), path = None):
+        
         df_video_infos = pd.read_csv(DataFormator.VIDEOS_INFOS_PATH)
         fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
         num_sec = num_min*60
@@ -96,7 +96,7 @@ class DataFormator:
         if path != None:
             df = pd.read_csv(path)
         if not df_measure.empty:
-            df = df_measure
+            df = df_measure[measures]
             df_label = df.append( pd.DataFrame(columns=['Target']))
 
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
@@ -118,12 +118,14 @@ class DataFormator:
                     for measure_name in measures_list:
                         print("frame : " + str(index))
                         print("measure : " + str(measure_name))
-                        print("window : "  + str(window))
-                        measure = df_measure.loc[index : index+window-1][measure_name]
-                        if len(measure)==window:
-                            df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
-                            label = 0 if df_measure.loc[index : index+window-1]["Target"].sum() == 0 else 1
-                            df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
+                        print("window size: "  + str(window))
+                        if index+window-1 in df_measure.index :
+                            print("windows frames : " + str(list(df_measure.loc[index : index+window-1].index)))
+                            measure = df_measure.loc[index : index+window-1][measure_name]
+                            if len(measure)==window:
+                                df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
+                                label = 0 if df_measure.loc[index : index+window-1]["Target"].sum() == 0 else 1
+                                df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
                         os.system('clear')
         return df_temporal, df_label
         
@@ -159,7 +161,7 @@ class DataFormator:
 
     @staticmethod
     def save_df(df, video_name):
-        dataset_path = "data/stage_data_out/dataset"
+        dataset_path = "data/stage_data_out_all_landamrks/measure_dataset"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
         df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))

@@ -17,13 +17,13 @@ args=parser.parse_args()
 
 csv_array_name  = os.listdir(args.path)
 
-csv_array_path = [args.path + name for name in csv_array_name]
+csv_array_path = [args.path + "/" +  name for name in csv_array_name]
 
 df_ear_all = pd.DataFrame()
 
 for index, csv_landmarks_path in enumerate(csv_array_path) :
-    video_name = csv_array_name[index]
-
+    video_name = csv_array_name[index].split("_"+args.path.split("/")[-1]+".")[0]
+    
     analyse_data = AnalyseData(csv_landmarks_path)
     #TODO: make a function who take a json file of meaurec
     analyse_data.measure_ear()
