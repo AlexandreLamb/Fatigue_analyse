@@ -9,7 +9,7 @@ import os
 import json
 
 class DataFormator:   
-    VIDEOS_INFOS_PATH = "data/stage_data_out_all_landamrks/videos_infos.csv"
+    VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
 
     def __init__(self):
         self.df_csv_files = {}

@@ -8,7 +8,7 @@ from operator import itemgetter
 from utils import parse_path_to_name
 from matplotlib.figure import Figure
 
-VIDEOS_INFOS_PATH = "data/stage_data_out_all_landamrks/videos_infos.csv"
+VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
 
 class AnalyseData():
     def __init__(self, csv_path):
