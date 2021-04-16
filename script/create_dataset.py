@@ -9,11 +9,11 @@ parser=argparse.ArgumentParser()
 
 
 parser.add_argument('--path', help='path to the landamrks folder')
-parser.add_argument('--json_measure', help='path to measure json file')
+#parser.add_argument('--json_measure', help='path to measure json file')
 
 args=parser.parse_args()
 
-json_measure = json.load(args.json_measure)
+#json_measure = json.load(args.json_measure)
 
 csv_array_name  = os.listdir(args.path)
 
