@@ -70,7 +70,7 @@ class AnalyseData():
             #print(b_frequency_list)
         self.df_measure["blinking_frequency"] = pd.DataFrame(b_frequency_list)
         return self.df_measure["blinking_frequency"]
-
+    #TODO: Measure OK
     def measure_ear(self): # calculate
         self.df_measure["ear_l"] = (self.measure_euclid_dist(38,42) + self.measure_euclid_dist(39,41)) / (2*self.measure_euclid_dist(37,40))
         self.df_measure["ear_r"] = (self.measure_euclid_dist(44,48) + self.measure_euclid_dist(45,47)) / (2*self.measure_euclid_dist(43,46))
