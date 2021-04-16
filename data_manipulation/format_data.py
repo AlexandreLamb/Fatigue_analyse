@@ -108,6 +108,7 @@ class DataFormator:
     @staticmethod
     def make_df_temporal_label(windows_array, df_measure):
         measures_list = list(df_measure)
+        df_measure.sort_index(inplace=True)
         print(measures_list)
         measures_list.remove("Target")
         df_temporal, df_label = DataFormator.create_df_temporal_label(list(measures_list), windows_array)
