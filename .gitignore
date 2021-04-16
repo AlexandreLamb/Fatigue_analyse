@@ -1,6 +1,7 @@
 data/data_in/
 data/data_out/landmarks_pics
 data/stage_data_out
+data/
 data/data_out
 code_test/
 test_space.py
