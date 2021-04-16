@@ -23,9 +23,9 @@ df_ear_all = pd.DataFrame()
 
 for index, video_path in enumerate(csv_array_path) :
     video_name = csv_array_name[index]
-    
+
     analyse_data = AnalyseData(video_path)
-    #TODO: make a function who take a json file of meaure
+    #TODO: make a function who take a json file of meaurec
     analyse_data.measure_ear()
 
     df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, df_measure= analyse_data.df_measure)
