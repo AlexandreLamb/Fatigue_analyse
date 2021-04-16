@@ -4,6 +4,7 @@ from data_manipulation import AnalyseData
 from data_manipulation import DataFormator
 import json
 import os
+import pandas as pd
 
 parser=argparse.ArgumentParser()
 
