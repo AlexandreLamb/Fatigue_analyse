@@ -161,11 +161,11 @@ class DataFormator:
         return df_tab
 
     @staticmethod
-    def save_df(df, video_name):
+    def save_df(df, video_name, windows):
         dataset_path = "data/stage_data_out/measure_dataset"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
-        df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
+        df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"))
 
     
     
