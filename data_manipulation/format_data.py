@@ -9,7 +9,7 @@ import os
 import json
 
 class DataFormator:   
-    VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
+    VIDEOS_INFOS_PATH = "data/stage_data_out_all_landamrks/videos_infos.csv"
 
     def __init__(self):
         self.df_csv_files = {}
@@ -189,8 +189,3 @@ class DataFormator:
 
 ## TODO: fiw 'Unnamed: 0' columns  (coreseponding to frame) in df_temporal
 
-df = pd.read_csv("data/stage_data_out/dataset/DESFAM_Semaine 2-Vendredi_PVT_H64/ear_10.csv")
-
-df_temp, df_label = DataFormator.make_df_temporal_label([10],df)
-
-print(df_temp)
