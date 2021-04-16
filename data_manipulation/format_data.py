@@ -162,7 +162,7 @@ class DataFormator:
 
     @staticmethod
     def save_df(df, video_name):
-        dataset_path = "data/stage_data_out_all_landamrks/measure_dataset"
+        dataset_path = "data/stage_data_out/measure_dataset"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
         df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
