@@ -1,0 +1,15 @@
+{
+    "hp.Discrete" : {
+        "num_units_1" : [32,64],
+        "num_units_2" : [512],
+        "num_units_3" : [512],
+        "optimizer" : ["adam"],
+        "activation" : ["relu"],
+        "activation_output" : ["sigmoid"]
+    },
+    "hp.RealInterval" : {
+        "dropout" : [0.1,0.5]
+    },
+    "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
+    "num_of_target" : 1
+}

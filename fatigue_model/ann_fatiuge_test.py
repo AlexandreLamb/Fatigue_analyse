@@ -290,6 +290,7 @@ for num_units_1 in HP_NUM_UNITS_1.domain.values:
                 HP_ACTIVATION: activation,
                 HP_ACTIVATION_OUTPUT: activation_output
               }
+              print(hparams)
               run_name = "run-%d" % session_num
               print('--- Starting trial: %s' % run_name)
               print({h.name: hparams[h] for h in hparams})
