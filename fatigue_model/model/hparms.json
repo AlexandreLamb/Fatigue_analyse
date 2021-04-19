@@ -8,7 +8,8 @@
         "activation_output" : ["sigmoid"]
     },
     "hp.RealInterval" : {
-        "dropout" : [0.1,0.5]
+        "dropout_1" : [0.1,0.5],
+        "dropout_2" : [0.1,0.5]
     },
     "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     "num_of_target" : 1

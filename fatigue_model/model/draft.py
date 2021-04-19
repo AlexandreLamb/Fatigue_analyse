@@ -31,32 +31,24 @@ import itertools
 import numpy as np
 
 def tune_model(hparams_arr):
-    len_of_loops = len(hparams_arr.get("hp.Discrete")) + len(hparams_arr.get("hp.RealInterval"))
+    name_hparams = [hparam.name for hparam in hparams_arr.get("hp.Discrete")]  + [hparam.name for hparam in hparams_arr.get("hp.RealInterval")]
+    
+    hparam_combination = []
+    hparams = []
     discrete_value = [val.domain.values for val in hparams_arr.get("hp.Discrete")]
+    real_inteval =  [[float(val) for val in np.arange(hparam_interval.domain.min_value, hparam_interval.domain.max_value+0.1,0.1)] for hparam_interval in hparams_arr.get("hp.RealInterval")]
     
-    real_inteval =  [[val for val in (hparam_interval.domain.min_value, hparam_interval.domain.max_value)] for hparam_interval in hparams_arr.get("hp.RealInterval")]
+    [hparam_combination.append(discrete) for discrete in discrete_value]
+    [hparam_combination.append(interval) for interval in real_inteval]
     
-    
-    print(real_inteval)
-    print(list(itertools.product(*discrete_value)))
-    
-    """
-    for num_units_1 in HP_NUM_UNITS_1.domain.values:
-            for num_units_2 in HP_NUM_UNITS_2.domain.values:
-                for dropout_rate in (HP_DROPOUT.domain.min_value, HP_DROPOUT.domain.max_value):
-                    for optimizer in HP_OPTIMIZER.domain.values:
-                        for activation in HP_ACTIVATION.domain.values:
-                            for activation_output in HP_ACTIVATION_OUTPUT.domain.values:
-                                hparams = {
-                                    HP_NUM_UNITS_1: num_units_1,
-                                    HP_NUM_UNITS_2: num_units_2,
-                                    HP_DROPOUT : dropout_rate,
-                                    HP_OPTIMIZER: optimizer,
-                                    HP_ACTIVATION: activation,
-                                    HP_ACTIVATION_OUTPUT: activation_output
-                                }
-                                print(hparams)
-    """
+    for combination in list(itertools.product(*hparam_combination)):
+        combination = list(combination)
+        for index, name in enumerate(name_hparams):
+            combination[index] = { name : combination[index]}
+        hparams.append(combination)
+        
+    for hparam in hparams:
+       print(hparam)
         
 path = "fatigue_model/model/hparms.json"
 
