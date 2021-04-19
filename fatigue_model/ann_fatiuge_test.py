@@ -173,7 +173,7 @@ logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%
 # In[14]:
 
 
-HP_NUM_UNITS_1 = hp.HParam('num_units_1', hp.Discrete([32]))
+HP_NUM_UNITS_1 = hp.HParam('num_units_1', hp.Discrete([32,64]))
 HP_NUM_UNITS_2 = hp.HParam('num_units_2', hp.Discrete([512]))
 HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.5, 0.5))
 HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
@@ -275,7 +275,8 @@ def run(run_dir, hparams, session_num):
 
 
 session_num = 0
- 
+import time
+
 for num_units_1 in HP_NUM_UNITS_1.domain.values:
   for num_units_2 in HP_NUM_UNITS_2.domain.values:
       for dropout_rate in (HP_DROPOUT.domain.min_value, HP_DROPOUT.domain.max_value):
@@ -294,6 +295,8 @@ for num_units_1 in HP_NUM_UNITS_1.domain.values:
               run_name = "run-%d" % session_num
               print('--- Starting trial: %s' % run_name)
               print({h.name: hparams[h] for h in hparams})
+              print({type(h) for h in hparams})
+              time.sleep(60)
               run(logdir + run_name, hparams, session_num)
               session_num += 1          
 
