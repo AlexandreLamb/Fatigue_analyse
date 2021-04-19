@@ -43,12 +43,11 @@ def tune_model(hparams_arr):
     
     for combination in list(itertools.product(*hparam_combination)):
         combination = list(combination)
+        hparam_obj = {}
         for index, name in enumerate(name_hparams):
-            combination[index] = { name : combination[index]}
-        hparams.append(combination)
-        
-    for hparam in hparams:
-       print(hparam)
+            hparam_obj.update({ name : combination[index]})
+        hparams.append(hparam_obj)
+ 
         
 path = "fatigue_model/model/hparms.json"
 

@@ -1,17 +1,19 @@
 
 
 
-class Model():
+class ModelTunning():
     def __init__(self):      
         self.metrics= []
         self.epochs
         self.save_model_on_training
         self.number_of_target
-        self.models = []
+        self.model = None
         self.inputs_features = 
     
-
-
+    def initialize_model(self, model_name):
+        if model_name == "Dense" :
+            self.model = DenseAnn()
+        
     def train_test_model(self, session_num):
         model = modeling(self.hparams)
         model.summary()
