@@ -5,20 +5,7 @@ class DenseANn():
         self.hparams = hparams
         self.inputs_features = inputs_features
     
-        self.HP_NUM_UNITS_1 = hp.HParam('num_units_1', hp.Discrete([32]))
-        self.HP_NUM_UNITS_2 = hp.HParam('num_units_2', hp.Discrete([512]))
-        self.HP_NUM_UNITS_3 = hp.HParam('num_units_3', hp.Discrete([512]))
-        self.HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.5, 0.5))
-        self.HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
-        self.HP_ACTIVATION = hp.HParam('activation', hp.Discrete(['relu']))
-        self.HP_ACTIVATION_OUTPUT = hp.HParam('activation_output', hp.Discrete(['sigmoid']))
-
-        self.METRIC_BINARY_ACCURACY = "binary_accuracy"
-        self.METRIC_BINARY_CROSSENTROPY = "binary_crossentropy"
-        self.METRIC_MSE = "mean_squared_error"
-
-        self.NUMBER_OF_TARGET = 1
-        self.METRICS = ["binary_accuracy","binary_crossentropy","mean_squared_error"]
+        
 
     def get_model(self):
         x = tf.keras.layers.BatchNormalization()(self.inputs_features)
