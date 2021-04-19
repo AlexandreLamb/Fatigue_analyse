@@ -52,10 +52,14 @@ class Hparams():
                 hparam_obj.update({ hparam : combination[index]})
             self.hparams_combined.append(hparam_obj)
     
-    def print_hp(self):
-        for hparam in self.hparams_combined:
-            print(hparam)
+    def tune_model(self):
+        for hparams in self.hparams_combined:    
+            print(hparams)
+            print({h.name: hparams[h] for h in hparams})
+            time.sleep(10) 
         
-
 hp = Hparams("fatigue_model/model/hparms.json")
-hp.print_hp()
+#hp.tune_model()
+
+hpmetrics = hp.hpmetrics.get("metrics")
+(hpmetrics[0])
