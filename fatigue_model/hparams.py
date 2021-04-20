@@ -59,10 +59,3 @@ class Hparams():
             print({h.name: hparams[h] for h in hparams})
             time.sleep(10) 
         
-hp = Hparams("fatigue_model/model/hparms.json")
-#hp.tune_model()
-
-hpmetrics = hp.hpmetrics.get("metrics")
-number_of_tar = hp.hpmetrics.get("num_of_target")
-
-print(number_of_tar)

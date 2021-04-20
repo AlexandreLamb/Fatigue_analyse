@@ -1,68 +1,88 @@
 import pandas as pd
 import numpy as np
 
-class WindowGenerator():
-    def __init__(self, input_width, label_width, shift, df, label_columns=None):
-        # Store the raw data.
-        self.df = df
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-        # Work out the label column indices.
-        self.label_columns = label_columns
-        if label_columns is not None:
-            self.label_columns_indices = {name: i for i, name in enumerate(label_columns)}
-        self.column_indices = {name: i for i, name in enumerate(df.columns)}
-
-        # Work out the window parameters.
-        self.input_width = input_width
-        self.label_width = label_width
-        self.shift = shift
-
-        self.total_window_size = input_width + shift
-
-        self.input_slice = slice(0, input_width)
-        self.input_indices = np.arange(self.total_window_size)[self.input_slice]
-
-        self.label_start = self.total_window_size - self.label_width
-        self.labels_slice = slice(self.label_start, None)
-        self.label_indices = np.arange(self.total_window_size)[self.labels_slice]
-
-    def __repr__(self):
-        return '\n'.join([
-            f'Total window size: {self.total_window_size}',
-            f'Input indices: {self.input_indices}',
-            f'Label indices: {self.label_indices}',
-            f'Label column name(s): {self.label_columns}'])
-    
-    def split_window(self, features):
-        inputs = features[:, self.input_slice, :]
-        labels = features[:, self.labels_slice, :]
-        if self.label_columns is not None:
-            labels = tf.stack([labels[:, :, self.column_indices[name]] for name in self.label_columns], axis=-1)
-        # Slicing doesn't preserve static shape information, so set the shapes
-        # manually. This way the `tf.data.Datasets` are easier to inspect.
-        inputs.set_shape([None, self.input_width, None])
-        labels.set_shape([None, self.label_width, None])
-
-        return inputs, labels
-"""
-df = pd.read_csv("data/stage_data_out/dataset/DESFAM_Semaine 2-Vendredi_PVT_H64/ear_10.csv", index_col="frame")
-w1 = WindowGenerator(30,1,1, df, ["Target"])
-print(w1)
-"""
-
-
+from fatigue_model.data_processing import DataPreprocessing
 import tensorflow as tf
 import numpy as np
+from sklearn.metrics import confusion_matrix
+
+def compile_and_fit(model, preprocessing, patience=2):
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience, mode='min')
+    model.compile(loss=tf.losses.MeanSquaredError(), optimizer=tf.optimizers.Adam(), metrics=[tf.metrics.MeanAbsoluteError(), tf.metrics.BinaryAccuracy()])
+    history = model.fit(preprocessing.train, epochs=20, validation_data=preprocessing.val, callbacks=[early_stopping])
+    return history
+
+
 df = pd.read_csv("data/stage_data_out/dataset/DESFAM_Semaine 2-Vendredi_PVT_H64/ear_10.csv", index_col=0)
 
+dp = DataPreprocessing(1,"data/stage_data_out/dataset/DESFAM_Semaine 2-Vendredi_PVT_H64/ear_10.csv", True)
+for feature_batch, label_batch in dp.dataset.take(1):
+    print('A batch of features:', feature_batch.numpy())
+    print('A batch of targets:', label_batch.numpy() )
 
-time_serie = np.fromstring(df["ear_10"][0], dtype=float)
-time_label = np.ones(len(time_serie))
-print(len(time_serie))
+dense = tf.keras.Sequential([
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(units=512, activation='relu'),
+    tf.keras.layers.Dropout(0.4),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(units=256, activation='relu'),
+    tf.keras.layers.Dropout(0.4),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(units=256, activation='relu'),
+    tf.keras.layers.Dropout(0.4),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dense(units=1, activation="sigmoid")
+])
 
-dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_serie, time_label, sequence_length = len(time_serie))
+history = compile_and_fit(dense, dp)
+dense.save("fatigue_model/model_1")
+val_performance ={}
+performance = {}
+val_performance['Dense'] = dense.evaluate(dp.val)
+performance['Dense'] = dense.evaluate(dp.test, verbose=0)
+
+print(val_performance)
+print(performance)
+
+y_true = np.concatenate([y for x, y in dp.dataset], axis=0)
+
+predictions = dense.predict(dp.dataset)
+print(predictions)
+y_pred = []
+for pred in predictions:
+    if pred >=0.5:
+        y_pred.append(1)
+    else: y_pred.append(0)
+
+conf_mat = confusion_matrix(y_true, y_pred)
+print(conf_mat)
+
+
+"""
+def parse_time_series(columns):
+    array_serie=[]
+    for serie in list(columns):
+        parse_serie = serie.replace("[","").replace("]","").split(",")
+        parse_serie = [ float(element_floated) for element_floated in parse_serie ]
+        array_serie.append(parse_serie)
+    return array_serie
+
+
+
+time_series = parse_time_series(df["ear_10"])
+
+time_label = [np.ones(1)*label for label in list(df["target"])]
+
+print(len(time_series))
+
+dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=3)
 
 for feature_batch, label_batch in dataset.take(1):
     print('A batch of features:', feature_batch.numpy())
     print('A batch of targets:', label_batch.numpy() )
 
+"""
