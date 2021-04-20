@@ -142,13 +142,14 @@ def make_numerical_feature_col(numerical_column, normalize = False):
 
 # In[11]:
 
-
+import time 
 all_inputs = []
 encoded_features = []
 numerical_features = ["ear","ear_l","ear_r"]
 all_inputs, encoded_features = make_numerical_feature_col(numerical_features, normalize = True)
-
-
+print(all_inputs)
+print(encoded_features)
+time.sleep(60)
 # In[12]:
 
 
