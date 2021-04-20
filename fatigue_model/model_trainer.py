@@ -7,10 +7,12 @@ class ModelTunning():
         self.save_model_on_training = True
         self.model_generator = None
         
-        self.inputs_features = DataPreprocessing.get_features()
-        self.val = DataPreprocessing.get_val()
-        self.training = DataPreprocessing.get_training()
-        self.test = DataPreprocessing.get_test()
+        self.preprocessing = DataPreprocessing(batch_size, path_to_dataset)
+        self.all_features = DataPreprocessing.all_features
+        self.all_inputs = DataPreprocessing.all_inputs
+        self.val = DataPreprocessing.val
+        self.training = DataPreprocessing.training
+        self.test = DataPreprocessing.test
         
         self.hptuner = Hparams("fatigue_model/model/hparms.json")
         self.hparams_combined = hptuner.hparams_combined
@@ -32,7 +34,7 @@ class ModelTunning():
             )
      
     def train_test_model(self, hparams, session_num):
-        model = self.model.getModel(self.inputs_features, self.hparams, self.number_of_target)
+        model = self.model.getModel(self.all_features, self.hparams, self.number_of_target)
         model.summary()
         model.compile(
             optimizer = [hparam for hparam in hparams if  hparam.name == "optimizer"],
