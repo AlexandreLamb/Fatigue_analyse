@@ -1,30 +1,35 @@
 
-
+import tensorflow as tf 
+import pandas as pd 
+from tensorflow import feature_column
+from tensorflow.keras import layers
+from tensorflow.keras.layers.experimental import preprocessing
 
 class DataPreprocessing()
-    def __init__(self, batch_size):
+    def __init__(self, batch_size, path_to_dataset):
         self.all_inputs = []
         self.encoded_features = []
         self.batch_size = batch_size
         self.all_features = []
+        self.path_to_dataset = path_to_dataset
+        self.dataset = None
+        self.numerical_column = None
+        self.initialize()
+    
+    def make_numerical_feature_col(self, normalize = False):    
+        def get_normalization_layer(name, dataset):
+            # Create a Normalization layer for our feature.
+            normalizer = preprocessing.Normalization()
+            # Prepare a Dataset that only yields our feature.
+            feature_ds = dataset.map(lambda x, y: x[name])
+            # Learn the statistics of the data.
+            normalizer.adapt(feature_ds)
+            return normalizer
         
-        
-        
-
-    def get_normalization_layer(self, name, dataset):
-        # Create a Normalization layer for our feature.
-        normalizer = preprocessing.Normalization()
-        # Prepare a Dataset that only yields our feature.
-        feature_ds = dataset.map(lambda x, y: x[name])
-        # Learn the statistics of the data.
-        normalizer.adapt(feature_ds)
-    return normalizer
-
-    def make_numerical_feature_col(self, numerical_column, normalize = False):    
         for column_name in numerical_column:
             numeric_col = tf.keras.Input(shape=(1,), name=column_name)
             if normalize : 
-                normalization_layer = self.get_normalization_layer(column_name, self.train)
+                normalization_layer = get_normalization_layer(column_name, self.train)
                 encoded_numeric_col = normalization_layer(numeric_col) 
             else : 
                 encoded_numeric_col = feature_column.numeric_column(column_name)
@@ -63,9 +68,13 @@ class DataPreprocessing()
 
         test = test.batch(self.batch_size)
         
-        def load_dataset(self):
-                        
-            df = pd.read_csv("data/stage_data_out/dataset/Merge_Dataset/Merge_Dataset.csv", index_col=0)
+        def load_dataset(self):                  
+            df = pd.read_csv(self.path_to_dataset, index_col=0)
             target = df.pop('Target')
-            dataset = tf.data.Dataset.from_tensor_slices((dict(df), target.values))
+            self.numerical_column = list(df.columns)
+            self.dataset = tf.data.Dataset.from_tensor_slices((dict(df), target.values))
 
+        def initialize(self):
+            self.load_dataset()
+            self.make_train_val_test_dataset()
+            self.make_numerical_feature_col()
