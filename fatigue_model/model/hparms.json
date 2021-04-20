@@ -9,7 +9,8 @@
     },
     "hp.RealInterval" : {
         "dropout_1" : [0.1,0.5],
-        "dropout_2" : [0.1,0.5]
+        "dropout_2" : [0.1,0.5],
+        "dropout_3" : [0.1, 0.5]
     },
     "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     "num_of_target" : 1

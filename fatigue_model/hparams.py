@@ -62,4 +62,6 @@ hp = Hparams("fatigue_model/model/hparms.json")
 #hp.tune_model()
 
 hpmetrics = hp.hpmetrics.get("metrics")
-(hpmetrics[0])
+number_of_tar = hp.hpmetrics.get("num_of_target")
+
+print(number_of_tar)

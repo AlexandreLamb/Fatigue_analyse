@@ -5,7 +5,7 @@ class ModelTunning():
     def __init__(self, json_path):      
         self.metrics= []
         self.save_model_on_training = True
-        self.model = None
+        self.model_generator = None
         
         self.inputs_features = DataPreprocessing.get_features()
         self.val = DataPreprocessing.get_val()
@@ -16,12 +16,13 @@ class ModelTunning():
         self.hparams_combined = hptuner.hparams_combined
         self.hparams_discrete = hptuner.hparams.get("hp.Discrete")
         self.hpmetrics = hptuner.hpmetrics.get("metrics")
+        self.number_of_target = hptuner.hpmetrics.get("num_of_target")
         
         self.logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+"/"
 
     def initialize_model(self, model_name):
         if model_name == "Dense" :
-            self.model = DenseAnn().get_model()
+            self.model_generator = DenseAnn()
             
     def creat_file_logger(self):
             
@@ -32,7 +33,7 @@ class ModelTunning():
     )
      
     def train_test_model(self, hparams, session_num):
-        model = modeling(self.hparams)
+        model = self.model.getModel(self.inputs_features, self.hparams, self.number_of_target)
         model.summary()
         model.compile(
             optimizer = [hparam for hparam in hparams if  hparam.name == "optimizer"],

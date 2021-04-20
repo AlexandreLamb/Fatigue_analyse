@@ -296,6 +296,8 @@ for num_units_1 in HP_NUM_UNITS_1.domain.values:
               print('--- Starting trial: %s' % run_name)
               print({h.name: hparams[h] for h in hparams})
               print({type(h) for h in hparams})
+              print(hparams[HP_NUM_UNITS_1])
+              print(type(hparams[HP_NUM_UNITS_1]))
               time.sleep(60)
               run(logdir + run_name, hparams, session_num)
               session_num += 1          
