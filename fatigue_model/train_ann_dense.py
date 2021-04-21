@@ -9,10 +9,10 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorboard.plugins.hparams import api as hp
 import matplotlib.pyplot as plt
-import sklearn.metrics
+from sklearn.metrics import confusion_matrix
 import datetime
 
-df = pd.read_csv("data/stage_data_out/dataset/Merge_Dataset/Merge_Dataset.csv", index_col=0)
+df = pd.read_csv("data/stage_data_out/dataset_ear/dataset_ear/dataset_ear_1.csv", index_col=0)
 print(df.dtypes)
 print(df.describe())
 print(df.head(5))
@@ -48,7 +48,7 @@ print("Train dataset size:", train_size)
 print("Val dataset size:", val_size)
 print("Test dataset size:", test_size)    
 
-BATCH_SIZE = 32
+BATCH_SIZE = 256
 
 train = train.shuffle(buffer_size = train_size)
 train = train.batch(BATCH_SIZE)
@@ -88,7 +88,7 @@ def make_numerical_feature_col(numerical_column, normalize = False):
 
 all_inputs = []
 encoded_features = []
-numerical_features = ["ear","ear_l","ear_r"]
+numerical_features = ["ear","eyebrow_nose","eyebrow_eye", "jaw_dropping", "eye_area"]
 all_inputs, encoded_features = make_numerical_feature_col(numerical_features, normalize = True)
 
 all_features = []
@@ -104,8 +104,13 @@ x = tf.keras.layers.BatchNormalization()(x)
 x = tf.keras.layers.Dense(512,activation="relu")(x)
 x = tf.keras.layers.Dropout(0.4)(x)
 x = tf.keras.layers.BatchNormalization()(x)
+x = tf.keras.layers.Dense(512,activation="relu")(x)
+x = tf.keras.layers.Dropout(0.4)(x)
+x = tf.keras.layers.BatchNormalization()(x)
 
 output = tf.keras.layers.Dense(1, activation="sigmoid")(x)
+
+
 model = tf.keras.Model(all_inputs,output)
 
 model.compile(optimizer='adam',
@@ -119,8 +124,11 @@ model.fit(
         shuffle=True,
         verbose =1,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='min')]) 
-model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
-binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
-print("binary_accuracy on test : " + binary_accuracy )
-print("binary_crossentropy on test : " + binary_crossentropy )
-print("mean_squared_error on test : " + mean_squared_error )
+model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_ann_dense")
+_ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
+
+print("binary_accuracy on test : " + str(binary_accuracy) )
+print("binary_crossentropy on test : " + str(binary_crossentropy) )
+print("mean_squared_error on test : " + str(mean_squared_error) )
+
+print(test)

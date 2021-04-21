@@ -97,6 +97,7 @@ class DataFormator:
             df = pd.read_csv(path)
         if not df_measure.empty:
             df = df_measure[measures]
+            print(df)
             df_label = df.append( pd.DataFrame(columns=['Target']))
 
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
@@ -162,7 +163,7 @@ class DataFormator:
 
     @staticmethod
     def save_df(df, video_name, windows):
-        dataset_path = "data/stage_data_out/measure_dataset"
+        dataset_path = "data/stage_data_out/dataset_ear"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
         df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"))
