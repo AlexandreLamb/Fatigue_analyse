@@ -1,20 +1,23 @@
+import os
+import sys
 import datetime
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from model import DenseAnn
+from data_processing import DataPreprocessing
 
 class ModelTunning():
-    def __init__(self, json_path):      
-        self.metrics= []
+    def __init__(self, json_path, path_to_dataset):      
         self.save_model_on_training = True
         self.model_generator = None
         
-        self.preprocessing = DataPreprocessing(batch_size, path_to_dataset)
+        self.preprocessing = DataPreprocessing(path_to_dataset)
         self.all_features = DataPreprocessing.all_features
         self.all_inputs = DataPreprocessing.all_inputs
         self.val = DataPreprocessing.val
         self.training = DataPreprocessing.training
         self.test = DataPreprocessing.test
         
-        self.hptuner = Hparams("fatigue_model/model/hparms.json")
+        self.hptuner = Hparams(json_path)
         self.hparams_combined = hptuner.hparams_combined
         self.hparams_discrete = hptuner.hparams.get("hp.Discrete")
         self.hpmetrics = hptuner.hpmetrics.get("metrics")
@@ -76,5 +79,9 @@ class ModelTunning():
             run(self.logdir + run_name, hparams, session_num)
             session_num += 1          
                     
-        
-                    
+json_path = "fatigue_model/model/hparms.json"
+dataset_path = "data/stage_data_out_all_landamrks/dataset/dataset_ear/dataset_ear_1.csv"
+mt = ModelTunning(json_path, dataset_path)
+
+
+## TODO : make global variable across module for path

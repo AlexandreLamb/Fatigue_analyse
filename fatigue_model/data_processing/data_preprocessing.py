@@ -7,7 +7,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers.experimental import preprocessing
 
 class DataPreprocessing():
-    def __init__(self, batch_size, path_to_dataset, isTimeSeries):
+    def __init__(self, path_to_dataset, batch_size=32, isTimeSeries=False):
         self.path_to_dataset = path_to_dataset
         self.dataset = None
         self.train = None
@@ -33,7 +33,7 @@ class DataPreprocessing():
             normalizer.adapt(feature_ds)
             return normalizer
         
-        for column_name in numerical_column:
+        for column_name in self.numerical_column:
             numeric_col = tf.keras.Input(shape=(1,), name=column_name)
             if normalize : 
                 normalization_layer = get_normalization_layer(column_name, self.train)
