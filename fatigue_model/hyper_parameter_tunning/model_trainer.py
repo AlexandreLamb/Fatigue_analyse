@@ -24,9 +24,9 @@ class ModelTunning():
         self.hparams_combined = self.hptuner.hparams_combined
         self.hparams_discrete = self.hptuner.hparams.get("hp.Discrete")
         self.hparams_real_inerval = self.hptuner.hparams.get("hp.RealInterval")
-        self.hpmetrics = self.hptuner.hpmetrics.get("metrics")
-        self.number_of_target = self.hptuner.hpmetrics.get("num_of_target")
-        self.epochs = self.hptuner.hpmetrics.get("epochs")
+        self.hpmetrics = self.hptuner.hpmetrics
+        self.number_of_target = self.hptuner.other_params.get("num_of_target")
+        self.epochs = self.hptuner.other_params.get("epochs")
         self.logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+"/"
 
     def initialize_model(self, model_name):
@@ -37,17 +37,17 @@ class ModelTunning():
         with tf.summary.create_file_writer(self.logdir).as_default():
             hp.hparams_config(
                 hparams=self.hparams_discrete + self.hparams_real_inerval,
-                metrics=self.hpmetrics,
+                metrics=list(self.hpmetrics.values()),
             )
      
     def train_test_model(self, hparams, session_num):
         model = self.model_generator.get_model(self.all_features, self.all_inputs, hparams, self.number_of_target)
         model.summary()
-        print(self.hpmetrics[0])
+        print(self.hpmetrics)
         model.compile(
             optimizer = hparams["optimizer"],
             loss = tf.keras.losses.MeanSquaredError(),
-            metrics = self.hpmetrics,
+            metrics = list(self.hpmetrics),
         )
         model.fit(
             self.train, 
