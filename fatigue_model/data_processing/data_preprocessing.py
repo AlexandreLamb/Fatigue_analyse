@@ -42,7 +42,7 @@ class DataPreprocessing():
                 encoded_numeric_col = feature_column.numeric_column(column_name)
             self.all_inputs.append(numeric_col)
             self.encoded_features.append(encoded_numeric_col)
-            self.all_features = tf.keras.layers.concatenate(self.encoded_features)
+        self.all_features = tf.keras.layers.concatenate(self.encoded_features)
     
     def make_train_val_test_dataset(self):     
         dataset_size = self.dataset.reduce(0, lambda x, _: x + 1).numpy()
@@ -92,7 +92,7 @@ class DataPreprocessing():
         self.load_dataset()
         self.make_train_val_test_dataset()
         if self.isTimeSeries == False :
-            self.make_numerical_feature_col()
+            self.make_numerical_feature_col(normalize=True)
             
                 
     def parse_time_series(self, columns):

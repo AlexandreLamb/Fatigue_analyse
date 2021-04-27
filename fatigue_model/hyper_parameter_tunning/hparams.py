@@ -11,7 +11,8 @@ class Hparams():
                     "hp.RealInterval" : [] ,
                 }
         self.hpmetrics = {   "metrics" : [] ,
-                    "num_of_target" : None
+                    "num_of_target" : None, 
+                    "epochs" : None
                 }
         self.hparams_combined = []
         self.json_to_hparams()
@@ -33,8 +34,8 @@ class Hparams():
         for metrics in self.json_data.get("metrics"):
             self.hpmetrics.get("metrics").append(hp.Metric(metrics, display_name = metrics))
         
-        self.hpmetrics.update({"num_of_target" : self.json_data.get("num_of_target")}) 
-    
+        self.hpmetrics.update({"num_of_target" : self.json_data.get("num_of_target")})
+        self.hpmetrics.update({"epochs" : self.json_data.get("epochs")})
         
     def create_hparam_combination(self):
         name_hparams = [hparam.name for hparam in self.hparams.get("hp.Discrete")]  + [hparam.name for hparam in self.hparams.get("hp.RealInterval")]

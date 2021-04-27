@@ -4,6 +4,9 @@ import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from model import DenseAnn
 from data_processing import DataPreprocessing
+from hparams import Hparams
+import tensorflow as tf
+from tensorboard.plugins.hparams import api as hp
 
 class ModelTunning():
     def __init__(self, json_path, path_to_dataset):      
@@ -11,18 +14,19 @@ class ModelTunning():
         self.model_generator = None
         
         self.preprocessing = DataPreprocessing(path_to_dataset)
-        self.all_features = DataPreprocessing.all_features
-        self.all_inputs = DataPreprocessing.all_inputs
-        self.val = DataPreprocessing.val
-        self.training = DataPreprocessing.training
-        self.test = DataPreprocessing.test
+        self.all_features = self.preprocessing.all_features
+        self.all_inputs = self.preprocessing.all_inputs
+        self.val = self.preprocessing.val
+        self.train = self.preprocessing.train
+        self.test = self.preprocessing.test
         
         self.hptuner = Hparams(json_path)
-        self.hparams_combined = hptuner.hparams_combined
-        self.hparams_discrete = hptuner.hparams.get("hp.Discrete")
-        self.hpmetrics = hptuner.hpmetrics.get("metrics")
-        self.number_of_target = hptuner.hpmetrics.get("num_of_target")
-        
+        self.hparams_combined = self.hptuner.hparams_combined
+        self.hparams_discrete = self.hptuner.hparams.get("hp.Discrete")
+        self.hparams_real_inerval = self.hptuner.hparams.get("hp.RealInterval")
+        self.hpmetrics = self.hptuner.hpmetrics.get("metrics")
+        self.number_of_target = self.hptuner.hpmetrics.get("num_of_target")
+        self.epochs = self.hptuner.hpmetrics.get("epochs")
         self.logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+"/"
 
     def initialize_model(self, model_name):
@@ -32,15 +36,16 @@ class ModelTunning():
     def create_file_logger(self):           
         with tf.summary.create_file_writer(self.logdir).as_default():
             hp.hparams_config(
-                hparams=self.hparams,
+                hparams=self.hparams_discrete + self.hparams_real_inerval,
                 metrics=self.hpmetrics,
             )
      
     def train_test_model(self, hparams, session_num):
-        model = self.model.getModel(self.all_features, self.hparams, self.number_of_target)
+        model = self.model_generator.get_model(self.all_features, self.all_inputs, hparams, self.number_of_target)
         model.summary()
+        print(self.hpmetrics[0])
         model.compile(
-            optimizer = [hparam for hparam in hparams if  hparam.name == "optimizer"],
+            optimizer = hparams["optimizer"],
             loss = tf.keras.losses.MeanSquaredError(),
             metrics = self.hpmetrics,
         )
@@ -52,7 +57,7 @@ class ModelTunning():
             verbose =1,
             callbacks=[ 
                 tf.keras.callbacks.TensorBoard(log_dir = self.logdir),  # log metrics
-                hp.KerasCallback(self.logdir, self.hparams),  # log self.hparams
+                hp.KerasCallback(self.logdir, hparams),  # log self.hparams
                 tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error', patience=10),
             ]
         )
@@ -64,7 +69,7 @@ class ModelTunning():
     def run(self, run_dir, hparams, session_num):
         with tf.summary.create_file_writer(run_dir).as_default():
             hp.hparams(hparams)  # record the values used in this trial
-            binary_accuracy, binary_crossentropy, mean_squared_error = train_test_model(hparams, session_num)
+            binary_accuracy, binary_crossentropy, mean_squared_error = self.train_test_model(hparams, session_num)
             tf.summary.scalar("METRIC_BINARY_ACCURACY", binary_accuracy, step=1)
             tf.summary.scalar("METRIC_BINARY_CROSSENTROPY", binary_crossentropy, step=1)
             tf.summary.scalar("METRIC_MSE", mean_squared_error, step=1)
@@ -76,12 +81,12 @@ class ModelTunning():
             run_name = "run-%d" % session_num
             print('--- Starting trial: %s' % run_name)
             print({h.name: hparams[h] for h in hparams})
-            run(self.logdir + run_name, hparams, session_num)
+            self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
             session_num += 1          
                     
 json_path = "fatigue_model/model/hparms.json"
-dataset_path = "data/stage_data_out_all_landamrks/dataset/dataset_ear/dataset_ear_1.csv"
+dataset_path = "data/stage_data_out/dataset_ear/dataset_ear/dataset_ear_1.csv"
 mt = ModelTunning(json_path, dataset_path)
-
-
+mt.initialize_model("Dense")
+mt.tune_model()
 ## TODO : make global variable across module for path
