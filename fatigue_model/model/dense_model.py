@@ -4,7 +4,6 @@ from tensorboard.plugins.hparams import api as hp
 class DenseAnn():
     @staticmethod
     def get_model(inputs_features, all_inputs, hparams ,number_of_target):
-        print(hparams)
         x = tf.keras.layers.BatchNormalization()(inputs_features)
         x = tf.keras.layers.Dense(hparams["num_units_1"],activation=hparams["activation"])(x)
         x = tf.keras.layers.Dropout(hparams["dropout_1"])(x)

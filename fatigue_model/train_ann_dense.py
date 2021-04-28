@@ -71,8 +71,10 @@ def make_numerical_feature_col(numerical_column, normalize = False):
         normalizer = preprocessing.Normalization()
         # Prepare a Dataset that only yields our feature.
         feature_ds = dataset.map(lambda x, y: x[name])
+        print(feature_ds)
         # Learn the statistics of the data.
         normalizer.adapt(feature_ds)
+        print(feature_ds)
         return normalizer
     
     for column_name in numerical_column:

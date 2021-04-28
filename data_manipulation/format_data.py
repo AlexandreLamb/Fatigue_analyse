@@ -152,6 +152,7 @@ class DataFormator:
             measures_list.remove("Target_"+str(window))
         """
         print(df_label)
+        print(measures_list)
         for measure in measures_list:
             df_features = pd.DataFrame(df_temporal[df_temporal[measure].notna()][measure])
             df_features = df_features.set_index(np.arange(len(df_features)))

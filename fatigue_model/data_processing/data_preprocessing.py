@@ -67,22 +67,24 @@ class DataPreprocessing():
         print("Val dataset size:", val_size)
         print("Test dataset size:", test_size)
 
+        if self.isTimeSeries == False:
+            self.train = self.train.batch(self.batch_size)
+            self.val = self.val.batch(self.batch_size)
+            self.test = self.test.batch(self.batch_size)
+
         self.train = self.train.shuffle(buffer_size = train_size)
-        self.train = self.train.batch(self.batch_size)
-
         self.val = self.val.shuffle(buffer_size = val_size)
-        self.val = self.val.batch(self.batch_size)
 
-        self.test = self.test.batch(self.batch_size)
+
         
     def load_dataset(self):                  
         df = pd.read_csv(self.path_to_dataset, index_col=0)
-        if self.isTimeSeries : 
+        if self.isTimeSeries :          
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
-            time_series = self.parse_time_series(df["ear_10"])
+            time_series = self.parse_time_series(df["ear_90"])
+            time_series = self.noramlize_time_series(time_series)
             self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
-
         else :
             target = df.pop('Target')
             self.numerical_column = list(df.columns)
@@ -94,7 +96,13 @@ class DataPreprocessing():
         if self.isTimeSeries == False :
             self.make_numerical_feature_col(normalize=True)
             
-                
+    def noramlize_time_series(self, time_series): 
+        df_to_normalize = pd.DataFrame(time_series)
+        mean = df_to_normalize.mean(axis = 1)
+        std = df_to_normalize.std(axis = 1)
+        df_to_normalize = df_to_normalize.sub(mean, axis = 0) 
+        df_to_normalize = df_to_normalize.div(std, axis = 0)
+        return list(df_to_normalize.values)
     def parse_time_series(self, columns):
         array_serie=[]
         for serie in list(columns):
@@ -102,3 +110,4 @@ class DataPreprocessing():
             parse_serie = [ float(element_floated) for element_floated in parse_serie ]
             array_serie.append(parse_serie)
         return array_serie
+
