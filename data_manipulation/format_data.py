@@ -173,7 +173,7 @@ class DataFormator:
     
     @staticmethod
     def concat_dataset(dataset_array):
-        [df.pop("target") for index, df in enumarate(dataset_array) if index !=len(dataset_array-1)]
+        [df.pop("target") for index, df in enumerate(dataset_array) if index !=len(dataset_array-1)]
         df_concat = pd.concat(dataset_array,axis = 1)
         return df_concat
     
