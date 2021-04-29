@@ -24,27 +24,9 @@ train = dp.train
 test = dp.test 
 val = dp.val
 
-"""model = tf.keras.Sequential([
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(32,activation="relu"),
-    tf.keras.layers.Dropout(0.4),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(512,activation="relu"),
-    tf.keras.layers.Dropout(0.4),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(512,activation="relu"),
-    tf.keras.layers.Dropout(0.4),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(512,activation="relu"),
-    tf.keras.layers.Dropout(0.4),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(1, activation="sigmoid")
-])"""
 model = tf.keras.models.Sequential([
-    # Shape [batch, time, features] => [batch, time, lstm_units]
     tf.keras.layers.LSTM(32, return_sequences=True),
-    # Shape => [batch, time, features]
-    tf.keras.layers.Dense(units=1)
+    tf.keras.layers.Dense(units=1, activation=)
 ])
 
 
@@ -60,7 +42,7 @@ model.fit(
         verbose =1,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='min')]) 
 
-model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_ann_dense")
+model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_lstm")
 _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
 
 print("binary_accuracy on test : " + str(binary_accuracy) )

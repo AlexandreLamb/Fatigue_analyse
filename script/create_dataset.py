@@ -39,8 +39,8 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     df_tab = DataFormator.make_df_feature(df_temporal, df_label, windows_size)
     print(df_temporal)
     print(df_label)
-    df_merge = DataFormator.merge_dataset(df_tab)
+    df_merge = DataFormator.concat_dataset(df_tab)
     #df_ear_all = df_ear_all.append(df_ear)
     for df_to_save in df_tab:
         DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0])
-    #DataFormator.save_df(df_merge, video_name, windows_size)
+    DataFormator.save_df(df_merge, video_name, windows_size)

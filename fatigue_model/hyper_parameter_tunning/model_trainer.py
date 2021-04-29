@@ -2,7 +2,7 @@ import os
 import sys
 import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from model import DenseAnn
+from model_trainning import DenseAnn, LSTMAnn
 from data_processing import DataPreprocessing
 from hparams import Hparams
 import tensorflow as tf
@@ -32,6 +32,8 @@ class ModelTunning():
     def initialize_model(self, model_name):
         if model_name == "Dense" :
             self.model_generator = DenseAnn()
+        elif model_name == "LSTM" :
+            self.model_generator = LSTMAnn()
             
     def create_file_logger(self):           
         with tf.summary.create_file_writer(self.logdir).as_default():
@@ -84,9 +86,9 @@ class ModelTunning():
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
             session_num += 1          
                     
-json_path = "fatigue_model/model/hparms.json"
+json_path = "fatigue_model/model_trainning/hparms_lstm.json"
 dataset_path = "data/stage_data_out/dataset_ear/dataset_ear/dataset_ear_1.csv"
-mt = ModelTunning(json_path, dataset_path)
-mt.initialize_model("Dense")
+mt = ModelTunning(json_path, dataset_path, isTimeSeries = True)
+mt.initialize_model("LSTM")
 mt.tune_model()
 ## TODO : make global variable across module for path

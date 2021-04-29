@@ -172,11 +172,10 @@ class DataFormator:
     
     
     @staticmethod
-    def merge_dataset(dataset_array):
-        df_merge = pd.DataFrame()
-        for df in dataset_array:
-            df_merge = df_merge.append(df)
-        return df_merge
+    def concat_dataset(dataset_array):
+        [df.pop("target") for index, df in enumarate(dataset_array) if index !=len(dataset_array-1)]
+        df_concat = pd.concat(dataset_array,axis = 1)
+        return df_concat
     
     @staticmethod
     def convert_df_temporal_array_into_df(dataset_to_convert):
