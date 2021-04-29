@@ -62,7 +62,7 @@ class ModelTunning():
             ]
         )
         if self.save_model_on_training : 
-            model.save("tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
+            model.save("fatigue_model/model_save/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
         _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
         return binary_accuracy, binary_crossentropy, mean_squared_error
 

@@ -103,6 +103,7 @@ class DataPreprocessing():
         df_to_normalize = df_to_normalize.sub(mean, axis = 0) 
         df_to_normalize = df_to_normalize.div(std, axis = 0)
         return list(df_to_normalize.values)
+    
     def parse_time_series(self, columns):
         array_serie=[]
         for serie in list(columns):
