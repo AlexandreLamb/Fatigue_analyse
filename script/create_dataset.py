@@ -43,4 +43,4 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     #df_ear_all = df_ear_all.append(df_ear)
     for df_to_save in df_tab:
         DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0])
-    DataFormator.save_df(df_merge, video_name, windows_size)
+    DataFormator.save_df(df_merge, video_name)

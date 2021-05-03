@@ -82,9 +82,10 @@ class DataPreprocessing():
         if self.isTimeSeries :          
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
-            time_series = self.parse_time_series(df["ear_90"])
-            time_series = self.noramlize_time_series(time_series)
+            time_series = self.parse_time_series(df)
+            #time_series = self.noramlize_time_series(time_series)
             self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
+
         else :
             target = df.pop('Target')
             self.numerical_column = list(df.columns)
@@ -104,11 +105,27 @@ class DataPreprocessing():
         df_to_normalize = df_to_normalize.div(std, axis = 0)
         return list(df_to_normalize.values)
     
-    def parse_time_series(self, columns):
+    def parse_time_serie(self, columns):
         array_serie=[]
         for serie in list(columns):
             parse_serie = serie.replace("[","").replace("]","").split(",")
             parse_serie = [ float(element_floated) for element_floated in parse_serie ]
             array_serie.append(parse_serie)
         return array_serie
+    
+    def parse_time_series(self, df):
+        array_series = []
+        array_measure = []
+        list_measures = [measure for measure in list(df) if measure != "target"]
+        for series in df[list_measures].values:
+            parse_series = [serie.replace("[","").replace("]","").split(",") for serie in series]
+            for float_serie in parse_series:
+                array_series.append([ float(element_floated) for element_floated in float_serie ])
+            array_measure.append(array_series)
+            array_series = []
+        return array_measure
 
+dp = DataPreprocessing("data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv",batch_size=1 ,isTimeSeries = True)
+for feature_batch, label_batch in dp.train.take(1):
+    print('A batch of features:', feature_batch)
+    print('A batch of targets:', label_batch)

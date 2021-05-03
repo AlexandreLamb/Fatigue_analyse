@@ -163,17 +163,20 @@ class DataFormator:
         return df_tab
 
     @staticmethod
-    def save_df(df, video_name, windows):
+    def save_df(df, video_name, windows=""):
         dataset_path = "data/stage_data_out/dataset_ear"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
-        df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"))
+        if windows == "":
+            df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
+        else : 
+            df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"))
 
     
     
     @staticmethod
     def concat_dataset(dataset_array):
-        [df.pop("target") for index, df in enumerate(dataset_array) if index !=len(dataset_array-1)]
+        [df.pop("target") for index, df in enumerate(dataset_array) if index !=len(dataset_array)-1]
         df_concat = pd.concat(dataset_array,axis = 1)
         return df_concat
     
