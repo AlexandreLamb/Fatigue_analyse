@@ -15,25 +15,28 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
 
-dp = DataPreprocessing(path_to_dataset = "/home/simeon/Desktop/Fatigue_analyse/data/stage_data_out/measure_dataset/DESFAM_Semaine 2-Vendredi_Go-NoGo_H63/DESFAM_Semaine 2-Vendredi_Go-NoGo_H63_90.csv",batch_size= 1, isTimeSeries = True) 
+dp = DataPreprocessing(path_to_dataset = "data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI_ear_30.csv",batch_size= 5, isTimeSeries = True) 
 for feature_batch, label_batch in dp.train.take(1):
-    print('A batch of features:', feature_batch.shape)
-    print('A batch of targets:', label_batch.shape)
+    print('A shape of features:', tf.rank(feature_batch))
+    print('A shape of targets:', tf.rank(label_batch.shape))
+    print('A shape of features:', feature_batch.shape)
+    print('A shape of targets:', label_batch.shape)
+    print('A batch of features:', feature_batch.numpy())
+    print('A batch of targets:', label_batch.numpy())
 
 train = dp.train
 test = dp.test 
 val = dp.val
 
 model = tf.keras.models.Sequential([
-    tf.keras.layers.LSTM(32, return_sequences=True),
-    tf.keras.layers.Dense(units=1, activation=)
+    tf.keras.layers.LSTM(32 , return_sequences=True),
+    tf.keras.layers.Dense(units=1)
 ])
 
 
 model.compile(optimizer='adam',
               loss=tf.keras.losses.MeanSquaredError(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
-
 model.fit(
         train, 
         validation_data= val,

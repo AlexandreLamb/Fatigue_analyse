@@ -26,14 +26,15 @@ class Hparams():
     
     def json_to_hparams(self):
         
-        for hparam, value in self.json_data.get("hp.Discrete").items():
-            self.hparams.get("hp.Discrete").append(hp.HParam(hparam, hp.Discrete(value)))
-            
-        for hparam, value in self.json_data.get("hp.RealInterval").items():
-            self.hparams.get("hp.RealInterval").append(hp.HParam(hparam, hp.RealInterval(value[0],value[1])))
-        
-        for metrics in self.json_data.get("metrics"):
-            self.hpmetrics.update({ metrics : hp.Metric(metrics, display_name = metrics) }) 
+        if self.json_data.get("hp.Discrete") != None:
+            for hparam, value in self.json_data.get("hp.Discrete").items():
+                self.hparams.get("hp.Discrete").append(hp.HParam(hparam, hp.Discrete(value)))
+        if self.json_data.get("hp.RealInterval") != None:
+            for hparam, value in self.json_data.get("hp.RealInterval").items():
+                self.hparams.get("hp.RealInterval").append(hp.HParam(hparam, hp.RealInterval(value[0],value[1])))
+        if self.json_data.get("metrics") != None:
+            for metrics in self.json_data.get("metrics"):
+                self.hpmetrics.update({ metrics : hp.Metric(metrics, display_name = metrics) }) 
         self.other_params.update({"num_of_target" : self.json_data.get("num_of_target")})
         self.other_params.update({"epochs" : self.json_data.get("epochs")})
         

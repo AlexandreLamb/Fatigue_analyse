@@ -9,11 +9,11 @@ import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
 
 class ModelTunning():
-    def __init__(self, json_path, path_to_dataset):      
+    def __init__(self, json_path, path_to_dataset, isTimeSeries):      
         self.save_model_on_training = True
         self.model_generator = None
         
-        self.preprocessing = DataPreprocessing(path_to_dataset)
+        self.preprocessing = DataPreprocessing(path_to_dataset, isTimeSeries = isTimeSeries)
         self.all_features = self.preprocessing.all_features
         self.all_inputs = self.preprocessing.all_inputs
         self.val = self.preprocessing.val
@@ -44,7 +44,6 @@ class ModelTunning():
      
     def train_test_model(self, hparams, session_num):
         model = self.model_generator.get_model(self.all_features, self.all_inputs, hparams, self.number_of_target)
-        model.summary()
         print(self.hpmetrics)
         model.compile(
             optimizer = hparams["optimizer"],
@@ -63,9 +62,10 @@ class ModelTunning():
                 tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error', patience=10),
             ]
         )
+        model.summary()
         if self.save_model_on_training : 
             model.save("fatigue_model/model_save/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
-        _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
+        _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(self.test)
         return binary_accuracy, binary_crossentropy, mean_squared_error
 
     def run(self, run_dir, hparams, session_num):
@@ -87,7 +87,7 @@ class ModelTunning():
             session_num += 1          
                     
 json_path = "fatigue_model/model_trainning/hparms_lstm.json"
-dataset_path = "data/stage_data_out/dataset_ear/dataset_ear/dataset_ear_1.csv"
+dataset_path = "data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv"
 mt = ModelTunning(json_path, dataset_path, isTimeSeries = True)
 mt.initialize_model("LSTM")
 mt.tune_model()

@@ -14,3 +14,4 @@ data/shape_predictor
 tensorboard/
 .vscode/
 dlib_trainer/dataset
+fatigue_model/model_save/

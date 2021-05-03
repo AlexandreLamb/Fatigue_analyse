@@ -3,7 +3,7 @@
         "num_units_1" : [32,64,128,256,512],
         "num_units_2" : [32,64,128,256,512],
         "num_units_3" : [32,64,128,256,512],
-        "number_of_lstm_layer" : [3],
+        "number_of_lstm_layer" : [1,2,3],
         "optimizer" : ["adam"],
         "activation" : ["relu"],
         "activation_output" : ["sigmoid"]

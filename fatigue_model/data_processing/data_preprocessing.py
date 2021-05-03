@@ -82,10 +82,12 @@ class DataPreprocessing():
         if self.isTimeSeries :          
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
-            time_series = self.parse_time_series(df)
-            #time_series = self.noramlize_time_series(time_series)
-            self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
-
+            time_series = np.array(self.parse_time_series(df), dtype=np.float32)
+            time_series = np.squeeze(time_series)
+            #self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
+            self.dataset = tf.data.Dataset.from_tensor_slices((time_series, time_label)).batch(self.batch_size)
+            #self.dataset = self.dataset.map(lambda features, label: (tf.squeeze(features), label))
+           
         else :
             target = df.pop('Target')
             self.numerical_column = list(df.columns)
@@ -125,7 +127,9 @@ class DataPreprocessing():
             array_series = []
         return array_measure
 
-dp = DataPreprocessing("data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv",batch_size=1 ,isTimeSeries = True)
+"""
+dp = DataPreprocessing("data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv",batch_size=12 ,isTimeSeries = True)
 for feature_batch, label_batch in dp.train.take(1):
     print('A batch of features:', feature_batch)
     print('A batch of targets:', label_batch)
+"""

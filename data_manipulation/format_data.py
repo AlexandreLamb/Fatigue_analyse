@@ -98,7 +98,8 @@ class DataFormator:
         if not df_measure.empty:
             df = df_measure[measures]
             print(df)
-            df_label = df.append( pd.DataFrame(columns=['Target']))
+            df = (df-df.min())/(df.max()-df.min())
+            df = df.append( pd.DataFrame(columns=['Target']))
 
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
 
@@ -188,6 +189,7 @@ class DataFormator:
             df.loc[i] = array
         df["target"] = dataset_to_convert["target"]
         return df
+    
     
         
 ## TODO:  add video anme and stuff in csv video infos

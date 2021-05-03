@@ -5,6 +5,7 @@ from data_manipulation import DataFormator
 import json
 import os
 import pandas as pd
+import time
 
 parser=argparse.ArgumentParser()
 
@@ -34,11 +35,8 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     analyse_data.measure_ear()
     analyse_data.measure_eyebrow_nose()
     df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures = ["frame","ear","eyebrow_nose"], df_measure= analyse_data.df_measure)
-    print(df_ear)
     df_temporal, df_label = DataFormator.make_df_temporal_label(windows_size , df_ear)
     df_tab = DataFormator.make_df_feature(df_temporal, df_label, windows_size)
-    print(df_temporal)
-    print(df_label)
     df_merge = DataFormator.concat_dataset(df_tab)
     #df_ear_all = df_ear_all.append(df_ear)
     for df_to_save in df_tab:
