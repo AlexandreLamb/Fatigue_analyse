@@ -98,13 +98,14 @@ class DataFormator:
         if not df_measure.empty:
             df = df_measure[measures]
             print(df)
-            df = (df-df.min())/(df.max()-df.min())
-            df = df.append( pd.DataFrame(columns=['Target']))
+            df_label = df.append( pd.DataFrame(columns=['Target']))
 
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
 
             df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min,"Target"] = 1
         df_label = df_label.set_index("frame")
+        columns_measures = [col for col in df_label.columns if col !=  "Target"]
+        df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
         return df_label
     
     @staticmethod
