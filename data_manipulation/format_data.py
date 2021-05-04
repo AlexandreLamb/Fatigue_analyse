@@ -166,7 +166,7 @@ class DataFormator:
 
     @staticmethod
     def save_df(df, video_name, windows=""):
-        dataset_path = "data/stage_data_out/dataset_ear"
+        dataset_path = "data/stage_data_out/dataset/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
         if windows == "":
@@ -191,7 +191,15 @@ class DataFormator:
         df["target"] = dataset_to_convert["target"]
         return df
     
-    
+    @staticmethod
+    def create_dataset_from_measure_folder(path_to_measure_folder):
+        dir_measures = os.listdir(path_to_measure_folder)
+        path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
+        df_measures = pd.DataFrame()
+        for path in path_csv_arr:
+            df_measures = df_measures.append(pd.read_csv(path, index_col=0), ignore_index=True)
+        df_measures.to_csv("data/stage_data_out/dataset/Merge_Dataset/dataset_merge.csv")
+        
         
 ## TODO:  add video anme and stuff in csv video infos
 

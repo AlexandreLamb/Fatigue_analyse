@@ -35,7 +35,7 @@ class ModelTunning():
         elif model_name == "LSTM" :
             self.model_generator = LSTMAnn()
             
-    def create_file_logger(self):           
+    def create_file_logger(self):   
         with tf.summary.create_file_writer(self.logdir).as_default():
             hp.hparams_config(
                 hparams=self.hparams_discrete + self.hparams_real_inerval,
@@ -44,7 +44,7 @@ class ModelTunning():
      
     def train_test_model(self, hparams, session_num):
         model = self.model_generator.get_model(self.all_features, self.all_inputs, hparams, self.number_of_target)
-        print(self.hpmetrics)
+        print(list(self.hpmetrics))
         model.compile(
             optimizer = hparams["optimizer"],
             loss = tf.keras.losses.MeanSquaredError(),
@@ -72,9 +72,9 @@ class ModelTunning():
         with tf.summary.create_file_writer(run_dir).as_default():
             hp.hparams(hparams)  # record the values used in this trial
             binary_accuracy, binary_crossentropy, mean_squared_error = self.train_test_model(hparams, session_num)
-            tf.summary.scalar("METRIC_BINARY_ACCURACY", binary_accuracy, step=1)
-            tf.summary.scalar("METRIC_BINARY_CROSSENTROPY", binary_crossentropy, step=1)
-            tf.summary.scalar("METRIC_MSE", mean_squared_error, step=1)
+            tf.summary.scalar("binary_accuracy", binary_accuracy, step=1)
+            tf.summary.scalar("binary_crossentropy", binary_accuracy, step=1)
+            tf.summary.scalar("mean_squared_error", mean_squared_error, step=1)
 
     def tune_model(self):
         self.create_file_logger()
@@ -87,7 +87,7 @@ class ModelTunning():
             session_num += 1          
                     
 json_path = "fatigue_model/model_trainning/hparms_lstm.json"
-dataset_path = "data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv"
+dataset_path = "data/stage_data_out/dataset/Merge_Dataset/dataset_merge.csv"
 mt = ModelTunning(json_path, dataset_path, isTimeSeries = True)
 mt.initialize_model("LSTM")
 mt.tune_model()
