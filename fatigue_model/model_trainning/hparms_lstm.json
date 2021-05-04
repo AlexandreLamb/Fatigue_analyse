@@ -10,5 +10,5 @@
     },
     "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     "num_of_target" : 1,
-    "epochs" : 30
+    "epochs" : 40
 }
