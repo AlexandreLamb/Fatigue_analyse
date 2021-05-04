@@ -87,7 +87,7 @@ class ModelTunning():
             session_num += 1          
                     
 json_path = "fatigue_model/model_trainning/hparms_lstm.json"
-dataset_path = "data/stage_data_out/dataset/Irba_40_min/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv"
+dataset_path = "data/stage_data_out/dataset/Merge_Dataset/dataset_merge.csv"
 mt = ModelTunning(json_path, dataset_path, isTimeSeries = True)
 mt.initialize_model("LSTM")
 mt.tune_model()
