@@ -197,8 +197,8 @@ class DataFormator:
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
-            print(pd.read_csv(path, index_col=0)["target"].sum())
             df_measures = df_measures.append(pd.read_csv(path, index_col=0), ignore_index=True)
+        print(df_measures.describe())
         df_measures.to_csv("data/stage_data_out/dataset/Merge_Dataset/dataset_merge_"+str(windows)+".csv")
         
         
