@@ -34,7 +34,11 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     #TODO: make a function who take a json file of meaurec
     analyse_data.measure_ear()
     analyse_data.measure_eyebrow_nose()
-    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures = ["frame","ear","eyebrow_nose"], df_measure= analyse_data.df_measure)
+    analyse_data.nose_wrinkles()
+    analyse_data.eyes_angle()
+    analyse_data.jaw_dropping()
+    analyse_data.measure_eye_area()
+    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures = ["frame","ear","eyebrow_nose","eye_area","jaw_dropping","left_angle1","left_angle2","right_angle1","right_angle2","eyebrow_eye"], df_measure= analyse_data.df_measure)
     df_temporal, df_label = DataFormator.make_df_temporal_label(windows_size , df_ear)
     df_tab = DataFormator.make_df_feature(df_temporal, df_label, windows_size)
     df_merge = DataFormator.concat_dataset(df_tab)

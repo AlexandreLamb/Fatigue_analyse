@@ -14,8 +14,7 @@ import datetime
 import os, sys 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
-
-dp = DataPreprocessing(path_to_dataset = "data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI_ear_30.csv",batch_size= 5, isTimeSeries = True) 
+dp = DataPreprocessing(path_to_dataset = "data/stage_data_out/dataset/Merge_Dataset/dataset_merge.csv",batch_size= 5, isTimeSeries = True) 
 for feature_batch, label_batch in dp.train.take(1):
     print('A shape of features:', tf.rank(feature_batch))
     print('A shape of targets:', tf.rank(label_batch.shape))
@@ -30,17 +29,20 @@ val = dp.val
 
 model = tf.keras.models.Sequential([
     tf.keras.layers.LSTM(32 , return_sequences=True),
+
     tf.keras.layers.Dense(units=1)
 ])
 
 
 model.compile(optimizer='adam',
-              loss=tf.keras.losses.MeanSquaredError(),
+              loss=tf.
+              .losses.MeanSquaredError(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
+model.summary()
 model.fit(
         train, 
         validation_data= val,
-        epochs=30,
+        epochs=1000,
         shuffle=True,
         verbose =1,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='min')]) 
