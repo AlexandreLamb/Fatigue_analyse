@@ -67,10 +67,10 @@ class DataPreprocessing():
         print("Val dataset size:", val_size)
         print("Test dataset size:", test_size)
 
-        if self.isTimeSeries == False:
-            self.train = self.train.batch(self.batch_size)
-            self.val = self.val.batch(self.batch_size)
-            self.test = self.test.batch(self.batch_size)
+        #if self.isTimeSeries == False:
+        self.train = self.train.batch(self.batch_size)
+        self.val = self.val.batch(self.batch_size)
+        self.test = self.test.batch(self.batch_size)
 
         self.train = self.train.shuffle(buffer_size = train_size)
         self.val = self.val.shuffle(buffer_size = val_size)
@@ -85,8 +85,15 @@ class DataPreprocessing():
             time_series = np.array(self.parse_time_series(df), dtype=np.float32)
             time_series = np.squeeze(time_series)
             #self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
-            self.dataset = tf.data.Dataset.from_tensor_slices((time_series, time_label)).batch(self.batch_size)
+            self.dataset = tf.data.Dataset.from_tensor_slices((time_series, time_label))
             #self.dataset = self.dataset.map(lambda features, label: (tf.squeeze(features), label))
+            for feature_batch, label_batch in self.dataset.take(1):
+                print('A shape of features:', tf.rank(feature_batch))
+                print('A shape of targets:', tf.rank(label_batch.shape))
+                print('A shape of features:', feature_batch.shape)
+                print('A shape of targets:', label_batch.shape)
+                print('A batch of features:', feature_batch.numpy())
+                print('A batch of targets:', label_batch.numpy())
            
         else :
             target = df.pop('Target')
