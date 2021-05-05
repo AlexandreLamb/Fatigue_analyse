@@ -73,7 +73,7 @@ class ModelTunning():
             hp.hparams(hparams)  # record the values used in this trial
             binary_accuracy, binary_crossentropy, mean_squared_error = self.train_test_model(hparams, session_num)
             tf.summary.scalar("binary_accuracy", binary_accuracy, step=1)
-            tf.summary.scalar("binary_crossentropy", binary_accuracy, step=1)
+            tf.summary.scalar("binary_crossentropy", binary_crossentropy, step=1)
             tf.summary.scalar("mean_squared_error", mean_squared_error, step=1)
 
     def tune_model(self):
@@ -86,9 +86,9 @@ class ModelTunning():
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
             session_num += 1          
                     
-json_path = "fatigue_model/model_trainning/hparms_lstm.json"
+json_path = "fatigue_model/model_trainning/hparms_dense.json"
 dataset_path = "data/stage_data_out/dataset/Merge_Dataset/dataset_merge.csv"
 mt = ModelTunning(json_path, dataset_path, isTimeSeries = True)
-mt.initialize_model("LSTM")
+mt.initialize_model("Dense")
 mt.tune_model()
 ## TODO : make global variable across module for path
