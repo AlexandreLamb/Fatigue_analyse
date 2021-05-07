@@ -26,7 +26,8 @@ print(csv_array_name)
 csv_array_path = [args.path + "/" +  name for name in csv_array_name]
 
 df_ear_all = pd.DataFrame()
-
+measure_full = ["frame","ear","eyebrow_nose","eye_area","jaw_dropping","eyebrow_eye"]
+measure_short = ["frame", "ear","eye_area"]
 for index, csv_landmarks_path in enumerate(csv_array_path) :
     video_name = csv_array_name[index].split("_mtcnn.")[0]
 
@@ -37,7 +38,7 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     analyse_data.nose_wrinkles()
     analyse_data.jaw_dropping()
     analyse_data.measure_eye_area()
-    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures = ["frame","ear","eyebrow_nose","eye_area","jaw_dropping","eyebrow_eye"], df_measure= analyse_data.df_measure)
+    df_ear = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures =measure_short , df_measure= analyse_data.df_measure)
     df_temporal, df_label = DataFormator.make_df_temporal_label(windows_size , df_ear)
     df_tab = DataFormator.make_df_feature(df_temporal, df_label, windows_size)
     df_merge = DataFormator.concat_dataset(df_tab)
@@ -46,4 +47,3 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
         DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0])
     DataFormator.save_df(df_merge, video_name)
 DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset/Irba_40_min", windows_size)
-    
