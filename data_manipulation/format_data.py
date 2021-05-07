@@ -106,6 +106,13 @@ class DataFormator:
         df_label = df_label.set_index("frame")
         columns_measures = [col for col in df_label.columns if col !=  "Target"]
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
+        print(video_name)
+        print(df_label["Target"])
+        dataset_path = "data/stage_data_out/dataset_non_temporal/Irba_40_min"
+        if os.path.exists(os.path.join(dataset_path,video_name)) == False:
+            os.mkdir(os.path.join(dataset_path,video_name))
+        df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
+        
         return df_label
     
     @staticmethod
@@ -128,9 +135,9 @@ class DataFormator:
                             measure = df_measure.loc[index : index+window-1][measure_name]
                             if len(measure)==window:
                                 df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
-                                label = 0 if df_measure.loc[index : index+window-1]["Target"].sum() == 0 else 1
-                                df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
-                        #os.system('clear')
+                    label = 0 if df_measure.loc[index : index+window-1]["Target"].sum() == 0 else 1
+                    df_label = df_label.append(pd.DataFrame([label], columns=[window])) 
+                    #os.system('clear')
         return df_temporal, df_label
         
     @staticmethod
@@ -153,12 +160,11 @@ class DataFormator:
             measures_list.remove("frame_"+str(window))
             measures_list.remove("Target_"+str(window))
         """
-        #print(df_label)
-        #print(measures_list)
         for measure in measures_list:
             df_features = pd.DataFrame(df_temporal[df_temporal[measure].notna()][measure])
             df_features = df_features.set_index(np.arange(len(df_features)))
-            df_target = pd.DataFrame(df_label[df_label[int(measure.split("_")[-1])].notna()][int(measure.split("_")[-1])]).rename(columns = {int(measure.split("_")[-1]) : "target"})
+            #df_target = pd.DataFrame(df_label[df_label[int(measure.split("_")[-1])].notna()][int(measure.split("_")[-1])]).rename(columns = {int(measure.split("_")[-1]) : "target"})
+            df_target = df_label.rename(columns ={ windows_array[0] : "target" })
             df_target = df_target.set_index(np.arange(len(df_target)))
             #print(df_features.join(df_target))
             df_tab.append(df_features.join(df_target))
@@ -166,7 +172,7 @@ class DataFormator:
 
     @staticmethod
     def save_df(df, video_name, windows=""):
-        dataset_path = "data/stage_data_out/dataset/Irba_40_min"
+        dataset_path = "data/stage_data_out/dataset_temporal/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
         if windows == "":
@@ -205,7 +211,7 @@ class DataFormator:
             print(pd.read_csv(path, index_col=0)["target"].sum())
             df_measures = df_measures.append(pd.read_csv(path, index_col=0), ignore_index=True)
         print(df_measures["target"].sum())
-        df_measures.to_csv("data/stage_data_out/dataset/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv")
+        df_measures.to_csv("data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv")
         
         
 ## TODO:  add video anme and stuff in csv video infos
