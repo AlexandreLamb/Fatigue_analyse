@@ -116,7 +116,7 @@ class DataFormator:
         df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
         
         return df_label
-    
+    ##TODO : find why there is 6000 frame isntead of 3000 frame
     @staticmethod
     def make_df_temporal_label(windows_array, df_measure):
         measures_list = list(df_measure)

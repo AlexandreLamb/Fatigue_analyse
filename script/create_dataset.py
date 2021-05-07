@@ -46,4 +46,4 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     for df_to_save in df_tab:
         DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0])
     DataFormator.save_df(df_merge, video_name)
-DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset/Irba_40_min", windows_size)
+DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset_temporal/Irba_40_min", windows_size)
