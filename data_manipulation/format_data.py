@@ -94,20 +94,22 @@ class DataFormator:
         fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
         num_sec = num_min*60
         num_frame_by_num_min = int(fps*num_sec)
+        #print("num frame by min : " +str(num_frame_by_num_min))
         if path != None:
             df = pd.read_csv(path)
         if not df_measure.empty:
             df = df_measure[measures]
             df_label = df.append( pd.DataFrame(columns=['Target']))
+            print(df_label[df_label["frame"].between(0,num_frame_by_num_min*2)])
+            df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min*2,"Target"] = 0
 
-            df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
-
-            df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min,"Target"] = 1
+            df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min*2,"Target"] = 1
         df_label = df_label.set_index("frame")
         columns_measures = [col for col in df_label.columns if col !=  "Target"]
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
         print(video_name)
-        print(df_label["Target"])
+        print("ratio")
+        print(df_label["Target"].sum()/len(df_label))
         dataset_path = "data/stage_data_out/dataset_non_temporal/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
