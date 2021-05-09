@@ -5,9 +5,9 @@ import numpy as np
 from tensorflow import feature_column
 from tensorflow.keras import layers
 from tensorflow.keras.layers.experimental import preprocessing
-
+import time
 class DataPreprocessing():
-    def __init__(self, path_to_dataset, batch_size=32, isTimeSeries=False):
+    def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32):
         self.path_to_dataset = path_to_dataset
         self.dataset = None
         self.train = None
@@ -74,7 +74,14 @@ class DataPreprocessing():
 
         self.train = self.train.shuffle(buffer_size = train_size)
         self.val = self.val.shuffle(buffer_size = val_size)
-
+        
+        for feature_batch, label_batch in self.train.take(1):
+                print('A shape of features:', tf.rank(feature_batch))
+                print('A shape of targets:', tf.rank(label_batch.shape))
+                print('A shape of features:', feature_batch.shape)
+                print('A shape of targets:', label_batch.shape)
+                print('A batch of features:', feature_batch.numpy())
+                print('A batch of targets:', label_batch.numpy())
 
         
     def load_dataset(self):                  
@@ -82,18 +89,22 @@ class DataPreprocessing():
         if self.isTimeSeries :          
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
-            time_series = np.array(self.parse_time_series(df), dtype=np.float32)
-            time_series = np.squeeze(time_series)
+            #time_series = np.array(self.parse_time_series(df), dtype=np.float32)
+            #time_series = np.squeeze(time_series)
             #self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
+            time_series = self.parse_time_series(df)
+            print(len(time_series))
+            additional_features = np.arange(0, len(time_series))
+            print(len(additional_features))
+            #tf.keras.layers.concatenate([time_series, additional_features])
+            for index, serie in enumerate(time_series):
+                serie.append([index])
+            time_series = np.array(time_series, dtype=np.float32)
+            print(time_series[0])
+            
             self.dataset = tf.data.Dataset.from_tensor_slices((time_series, time_label))
             #self.dataset = self.dataset.map(lambda features, label: (tf.squeeze(features), label))
-            for feature_batch, label_batch in self.dataset.take(1):
-                print('A shape of features:', tf.rank(feature_batch))
-                print('A shape of targets:', tf.rank(label_batch.shape))
-                print('A shape of features:', feature_batch.shape)
-                print('A shape of targets:', label_batch.shape)
-                print('A batch of features:', feature_batch.numpy())
-                print('A batch of targets:', label_batch.numpy())
+            
            
         else :
             target = df.pop('Target')
