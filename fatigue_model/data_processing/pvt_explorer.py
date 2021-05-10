@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 class PvtReader():
     def __init__(self, path_to_df_pvt):
         self.df_pvt_total = pd.read_csv(path_to_df_pvt, sep=";", index_col = [0,1,2])
+        self.df_pvt_rt_total = self.df
         
         self.df_pvt_T1_dette = self.df_pvt_total.loc[(self.df_pvt_total.index.get_level_values('condition') == "dette") & (self.df_pvt_total.index.get_level_values('periode') == "T1")]
         self.df_pvt_T2_dette = self.df_pvt_total.loc[(self.df_pvt_total.index.get_level_values('condition') == "dette") & (self.df_pvt_total.index.get_level_values('periode') == "T2")]

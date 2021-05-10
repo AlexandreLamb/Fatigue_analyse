@@ -9,11 +9,11 @@ import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
 
 class ModelTunning():
-    def __init__(self, json_path, path_to_dataset, isTimeSeries):      
+    def __init__(self, json_path, path_to_dataset, isTimeSeries, batch_size =32,):      
         self.save_model_on_training = True
         self.model_generator = None
         
-        self.preprocessing = DataPreprocessing(path_to_dataset, isTimeSeries = isTimeSeries)
+        self.preprocessing = DataPreprocessing(path_to_dataset, isTimeSeries = isTimeSeries, batch_size = batch_size)
         self.all_features = self.preprocessing.all_features
         self.all_inputs = self.preprocessing.all_inputs
         self.val = self.preprocessing.val
@@ -88,7 +88,7 @@ class ModelTunning():
                     
 json_path = "fatigue_model/model_trainning/hparms_dense.json"
 dataset_path = "data/stage_data_out/dataset/Merge_Dataset/dataset_merge_30.csv"
-mt = ModelTunning(json_path, dataset_path, isTimeSeries = True)
+mt = ModelTunning(json_path, dataset_path, isTimeSeries = True, batch_size=1)
 mt.initialize_model("Dense")
-mt.tune_model()
+#mt.tune_model()
 ## TODO : make global variable across module for path
