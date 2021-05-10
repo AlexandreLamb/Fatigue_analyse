@@ -17,6 +17,7 @@ class DataFormator:
         self.df_merge = None
         self.face_recognitions_type = ["cnn", "hog"]
         self.data_folder = "data/stage_data_out/"
+
         #self.video_info_path("data/stage_data_out/videos_infos.csv")
         
     def load_csv_by_face_recognitions(self, video_name):
@@ -97,7 +98,6 @@ class DataFormator:
             df = pd.read_csv(path)
         if not df_measure.empty:
             df = df_measure[measures]
-            print(df)
             df_label = df.append( pd.DataFrame(columns=['Target']))
 
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min,"Target"] = 0
@@ -112,25 +112,25 @@ class DataFormator:
     def make_df_temporal_label(windows_array, df_measure):
         measures_list = list(df_measure)
         df_measure.sort_index(inplace=True)
-        print(measures_list)
+        #print(measures_list)
         measures_list.remove("Target")
         df_temporal, df_label = DataFormator.create_df_temporal_label(list(measures_list), windows_array)
         for window in windows_array:
-            print(df_measure.index.max())
+            #print(df_measure.index.max())
             for index in df_measure.index:
                 if index + window < df_measure.index.max():
                     for measure_name in measures_list:
-                        print("frame : " + str(index))
-                        print("measure : " + str(measure_name))
-                        print("window size: "  + str(window))
+                        #print("frame : " + str(index))
+                        #print("measure : " + str(measure_name))
+                        #print("window size: "  + str(window))
                         if index+window-1 in df_measure.index :
-                            print("windows frames : " + str(list(df_measure.loc[index : index+window-1].index)))
+                            #print("windows frames : " + str(list(df_measure.loc[index : index+window-1].index)))
                             measure = df_measure.loc[index : index+window-1][measure_name]
                             if len(measure)==window:
                                 df_temporal.loc[index,measure_name+"_"+str(window)]=list(measure)
                                 label = 0 if df_measure.loc[index : index+window-1]["Target"].sum() == 0 else 1
                                 df_label = df_label.append(pd.DataFrame([label], columns=[window]))            
-                        os.system('clear')
+                        #os.system('clear')
         return df_temporal, df_label
         
     @staticmethod
@@ -147,20 +147,20 @@ class DataFormator:
     def make_df_feature(df_temporal, df_label, windows_array):
         df_tab=[]
         measures_list = list(df_temporal)
-        print(measures_list)
+        #print(measures_list)
         """
         for window in windows_array:
             measures_list.remove("frame_"+str(window))
             measures_list.remove("Target_"+str(window))
         """
-        print(df_label)
-        print(measures_list)
+        #print(df_label)
+        #print(measures_list)
         for measure in measures_list:
             df_features = pd.DataFrame(df_temporal[df_temporal[measure].notna()][measure])
             df_features = df_features.set_index(np.arange(len(df_features)))
             df_target = pd.DataFrame(df_label[df_label[int(measure.split("_")[-1])].notna()][int(measure.split("_")[-1])]).rename(columns = {int(measure.split("_")[-1]) : "target"})
             df_target = df_target.set_index(np.arange(len(df_target)))
-            print(df_features.join(df_target))
+            #print(df_features.join(df_target))
             df_tab.append(df_features.join(df_target))
         return df_tab
 
@@ -178,8 +178,12 @@ class DataFormator:
     
     @staticmethod
     def concat_dataset(dataset_array):
-        [df.pop("target") for index, df in enumerate(dataset_array) if index !=len(dataset_array)-1]
-        df_concat = pd.concat(dataset_array,axis = 1)
+        #[df.pop("target") for index, df in enumerate(dataset_array) if index !=len(dataset_array)-1]
+        for df in dataset_array:
+            target  = df.pop("target")
+        df_concat = pd.concat(dataset_array, axis =1)
+        df_concat["target"] = target
+        print(df_concat)
         return df_concat
     
     @staticmethod
@@ -194,12 +198,14 @@ class DataFormator:
     @staticmethod
     def create_dataset_from_measure_folder(path_to_measure_folder, windows):
         dir_measures = os.listdir(path_to_measure_folder)
+        date_id = datetime.now().strftime("%H_%M_%d_%m_%Y")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
+            print(pd.read_csv(path, index_col=0)["target"].sum())
             df_measures = df_measures.append(pd.read_csv(path, index_col=0), ignore_index=True)
-        print(df_measures.describe())
-        df_measures.to_csv("data/stage_data_out/dataset/Merge_Dataset/dataset_merge_"+str(windows)+".csv")
+        print(df_measures["target"].sum())
+        df_measures.to_csv("data/stage_data_out/dataset/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv")
         
         
 ## TODO:  add video anme and stuff in csv video infos
