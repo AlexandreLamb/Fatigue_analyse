@@ -138,14 +138,11 @@ class DataPreprocessing():
         return array_measure
     
     def append_additional_features(self, time_series, features_addition):
-        embedding_layer = tf.keras.layers.Embedding(30, 30)
+        ##TODO : see how to fix input_dim of layer
+        embedding_layer = tf.keras.layers.Embedding(len(time_series[0][0]), len(time_series[0][0]))
         features_addition_embeding = embedding_layer(tf.constant(features_addition))
-        print(features_addition_embeding.numpy())
         for index, serie in enumerate(time_series):
-            print(serie) 
             serie =  np.append(serie,np.squeeze(features_addition_embeding.numpy()), axis=0)
-            print(serie)
-            time.sleep(10)
         return time_series
            
 
