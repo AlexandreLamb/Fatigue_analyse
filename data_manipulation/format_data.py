@@ -100,16 +100,16 @@ class DataFormator:
         if not df_measure.empty:
             df = df_measure[measures]
             df_label = df.append( pd.DataFrame(columns=['Target']))
-            print(df_label[df_label["frame"].between(0,num_frame_by_num_min*2)])
+            #print(df_label[df_label["frame"].between(0,num_frame_by_num_min*2)])
             df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min*2,"Target"] = 0
 
             df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min*2,"Target"] = 1
         df_label = df_label.set_index("frame")
         columns_measures = [col for col in df_label.columns if col !=  "Target"]
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
-        print(video_name)
-        print("ratio")
-        print(df_label["Target"].sum()/len(df_label))
+        #print(video_name)
+        #print("ratio")
+        #print(df_label["Target"].sum()/len(df_label))
         dataset_path = "data/stage_data_out/dataset_non_temporal/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
@@ -177,10 +177,11 @@ class DataFormator:
         dataset_path = "data/stage_data_out/dataset_temporal/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
+        print(df)
         if windows == "":
-            df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"))
+            df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"), index = False)
         else : 
-            df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"))
+            df.to_csv(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"), index = False)
 
     
     
@@ -191,7 +192,7 @@ class DataFormator:
             target  = df.pop("target")
         df_concat = pd.concat(dataset_array, axis =1)
         df_concat["target"] = target
-        print(df_concat)
+        #print(df_concat)
         return df_concat
     
     @staticmethod
@@ -210,10 +211,10 @@ class DataFormator:
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
-            print(pd.read_csv(path, index_col=0)["target"].sum())
+            #print(pd.read_csv(path, index_col=0)["target"].sum())
             df_measures = df_measures.append(pd.read_csv(path, index_col=0), ignore_index=True)
-        print(df_measures["target"].sum())
-        df_measures.to_csv("data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv")
+        #print(df_measures["target"].sum())
+        df_measures.to_csv("data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv", index=False)
         
         
 ## TODO:  add video anme and stuff in csv video infos
