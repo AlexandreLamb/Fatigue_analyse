@@ -90,9 +90,10 @@ class DataPreprocessing():
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
             time_series = np.array(self.parse_time_series(df), dtype=np.float32)
-            time_series = np.squeeze(time_series)
+            #time_series = np.squeeze(time_series)
             #self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
-        
+            self.append_additional_features(time_series,[[1],[2]])
+            
             self.dataset = tf.data.Dataset.from_tensor_slices((time_series, time_label))
             #self.dataset = self.dataset.map(lambda features, label: (tf.squeeze(features), label))
             
@@ -135,6 +136,15 @@ class DataPreprocessing():
             array_measure.append(array_series)
             array_series = []
         return array_measure
+    
+    def append_additional_features(self, time_series, features_addition):
+        ##TODO : see how to fix input_dim of layer
+        embedding_layer = tf.keras.layers.Embedding(len(time_series[0][0]), len(time_series[0][0]))
+        features_addition_embeding = embedding_layer(tf.constant(features_addition))
+        for index, serie in enumerate(time_series):
+            serie =  np.append(serie,np.squeeze(features_addition_embeding.numpy()), axis=0)
+        return time_series
+           
 
 """
 dp = DataPreprocessing("data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv",batch_size=12 ,isTimeSeries = True)
