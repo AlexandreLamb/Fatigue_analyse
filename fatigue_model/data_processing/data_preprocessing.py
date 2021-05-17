@@ -89,19 +89,10 @@ class DataPreprocessing():
         if self.isTimeSeries :          
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
-            #time_series = np.array(self.parse_time_series(df), dtype=np.float32)
-            #time_series = np.squeeze(time_series)
+            time_series = np.array(self.parse_time_series(df), dtype=np.float32)
+            time_series = np.squeeze(time_series)
             #self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
-            time_series = self.parse_time_series(df)
-            print(len(time_series))
-            additional_features = np.arange(0, len(time_series))
-            print(len(additional_features))
-            #tf.keras.layers.concatenate([time_series, additional_features])
-            for index, serie in enumerate(time_series):
-                serie.append([index])
-            time_series = np.array(time_series, dtype=np.float32)
-            print(time_series[0])
-            
+        
             self.dataset = tf.data.Dataset.from_tensor_slices((time_series, time_label))
             #self.dataset = self.dataset.map(lambda features, label: (tf.squeeze(features), label))
             
