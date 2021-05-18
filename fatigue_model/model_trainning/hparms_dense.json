@@ -1,16 +1,16 @@
 {
     "hp.Discrete" : {
-        "num_units_1" : [32,64,128],
-        "num_units_2" : [32,64,128],
-        "num_units_3" : [32,64,128],
+        "num_units_1" : [64],
+        "num_units_2" : [32],
+        "num_units_3" : [64],
         "optimizer" : ["adam"],
         "activation" : ["relu"],
-        "activation_output" : ["sigmoid"]
+        "activation_output" : ["softmax"]
     },
     "hp.RealInterval" : {
-        "dropout_1" : [0.1,0.5],
-        "dropout_2" : [0.1,0.5],
-        "dropout_3" : [0.1, 0.5]
+        "dropout_1" : [0.1,0.1],
+        "dropout_2" : [0.1,0.1],
+        "dropout_3" : [0.1, 0.1]
     },
     "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     "num_of_target" : 1,
