@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 
 
-model_path = "/home/simeon/Documents/model_1250"
+model_path = "fatigue_model/model_save/20210518-171300/model_0"
 
 model = tf.keras.models.load_model(model_path)
 preprocessing = DataPreprocessing("data/stage_data_out/dataset_temporal/Irba_40_min/DESFAM-F_H92_VENDREDI/DESFAM-F_H92_VENDREDI.csv", isTimeSeries = True, batch_size = 1, evaluate = True)

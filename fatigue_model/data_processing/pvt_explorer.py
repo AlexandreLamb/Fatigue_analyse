@@ -71,4 +71,4 @@ class PvtReader():
         
         plt.show()
 pvt = PvtReader("data/stage_data_out/sujets_data_pvt_perf.csv")
-pvt.plot_by_subject("H92", "T2", 10)
+pvt.plot_by_subject("H92", "T1", 10)

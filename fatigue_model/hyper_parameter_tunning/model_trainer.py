@@ -47,7 +47,7 @@ class ModelTunning():
         print(list(self.hpmetrics))
         model.compile(
             optimizer = hparams["optimizer"],
-            loss = tf.keras.losses.MeanSquaredError(),
+            loss = tf.keras.losses.BinaryCrossentropy(),
             metrics = list(self.hpmetrics),
         )
         model.fit(
