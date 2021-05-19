@@ -13,23 +13,24 @@ def plot_measure(path_to_df, num_sec, fps, subject):
             df_plot.loc[index, measure + "_std"] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].std()    
             
             
-        plt.subplot(2,1,1)
+        fig, axs = plt.subplots(2,1)
         
-        plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))])
-        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):])
-        plt.xlabel(str(num_sec) + " sec / point")
-        plt.ylabel(measure)
-        plt.title(measure + " by "+ str(num_sec) + " sec per point")
-        
-        plt.subplot(2,1,2)
-        
-        plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))].pct_change()*100)
-        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):].pct_change()*100)     
-        plt.xlabel(str(num_sec) + " sec / point")
-        plt.ylabel("percent of change")
-        plt.title("Rate of change of " + measure + " by "+ str(num_sec) + " sec per point")
+        axs[0].errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))])
+        axs[0].errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):])
+        axs[0].set_xlabel(str(num_sec) + " sec / point")
+        axs[0].set_ylabel(measure)
+        axs[0].set_title(measure + " by "+ str(num_sec) + " sec per point")
+    
+        axs[1].errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))].pct_change()*100)
+        axs[1].errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):].pct_change()*100)     
+        axs[1].set_xlabel(str(num_sec) + " sec / point")
+        axs[1].set_ylabel("percent of change")
+        axs[1].set_title("Rate of change of " + measure + " by "+ str(num_sec) + " sec per point")
         path_folder_to_save = "data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec)+"/measures/"
         path_img_to_save = path_folder_to_save + measure +".png"
+        #plt.table([["1","2"],["2","4"]], loc = "bottom")
+        #plt.autoscale()
+        plt.show()
         if os.path.exists(path_folder_to_save) == False:
             os.makedirs(path_folder_to_save)
         plt.savefig(path_img_to_save) 
@@ -69,6 +70,9 @@ def plot_pred(path_to_df, num_sec, fps, subject):
             os.makedirs(path_folder_to_save)
         plt.savefig(path_img_to_save)  
         plt.close()
+        
+        
+
 
 plot_measure("data/stage_data_out/dataset_non_temporal/Irba_40_min/DESFAM-F_H92_VENDREDI/DESFAM-F_H92_VENDREDI.csv", 10,10, "DESFAM-F_H92_VENDREDI")
 plot_pred("data/stage_data_out/predictions/pred.csv", 10,10, "DESFAM-F_H92_VENDREDI")    
