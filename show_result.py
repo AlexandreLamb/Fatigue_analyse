@@ -39,7 +39,7 @@ def plot_pred(path_to_df, num_sec, fps):
     df_plot = pd.DataFrame(columns=measure_list)
     for measure in measure_list :
         for index in range(0,int(len(df.index)/(num_sec*fps))) :
-            if measure == "target_pred" :
+            if measure == "target_pred_mean" or measure == "target_pred_max" :
                 df_plot.loc[index, measure] =  df.loc[index * (num_sec*fps):(index+1) * (num_sec*fps)][measure].sum()
             else :
                 df_plot.loc[index, measure] =  df.loc[index * (num_sec*fps):(index+1) * (num_sec*fps)][measure].mean()
@@ -59,8 +59,8 @@ def plot_pred(path_to_df, num_sec, fps):
         else :
             plt.title(measure + " by min with ROC (rate of change)")
         plt.show()  
-plot_measure("data/stage_data_out/dataset_non_temporal/Irba_40_min/DESFAM-F_H92_VENDREDI/DESFAM-F_H92_VENDREDI.csv", 30,10)
-#plot_pred("data/stage_data_out/predictions/pred.csv", 30,10)    
+#plot_measure("data/stage_data_out/dataset_non_temporal/Irba_40_min/DESFAM-F_H92_VENDREDI/DESFAM-F_H92_VENDREDI.csv", 30,10)
+plot_pred("data/stage_data_out/predictions/pred.csv", 30,10)    
 
 """
 afficher : mean , std, min, max, variance sur un lapse de temps donné de

@@ -14,7 +14,7 @@ import datetime
 from sklearn.model_selection import train_test_split
 from data_processing import DataPreprocessing
 import matplotlib.pyplot as plt
-
+import time
 
 
 model_path = "fatigue_model/model_save/20210518-171300/model_0"
@@ -38,32 +38,21 @@ print("mean_squared_error on test : " + str(mean_squared_error) )
 
 
 predictions = model.predict(preprocessing.dataset)
+
+measure_list = list(pd.read_csv("data/stage_data_out/dataset_temporal/Irba_40_min/DESFAM-F_H92_VENDREDI/DESFAM-F_H92_VENDREDI.csv"))
+df = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
+df.to_csv("pred.csv")
+print(df)
 y_pred_list = []
 y_pred = []
-print(np.squeeze(predictions))
-for pred in np.squeeze(predictions):
-    y_pred_list.append(pred.mean())
-"""    if pred.mean() >=0.5:
-        y_pred.append(1)
-    else: y_pred.append(0)
-y_true = target.tolist()
+for idx in df.index:
+    df.loc[idx, "pred_mean"] = df.loc[idx].mean() 
+    df.loc[idx, "pred_max"] = df.loc[idx].max() 
 
-conf_mat = confusion_matrix(y_true, y_pred)
-print(conf_mat)
-"""
-df = pd.DataFrame(y_pred_list, columns=["pred"])
 print(df)
-df.loc[lambda df: df["pred"] < 0.5,"target_pred"] = 0
-df.loc[lambda df: df["pred"] >= 0.5,"target_pred"] = 1
+df.loc[lambda df: df["pred_mean"] < 0.5,"target_pred_mean"] = 0
+df.loc[lambda df: df["pred_mean"] >= 0.5,"target_pred_mean"] = 1
+df.loc[lambda df: df["pred_max"] < 0.5,"target_pred_max"] = 0
+df.loc[lambda df: df["pred_max"] >= 0.5,"target_pred_max"] = 1
 print(df)
 df.to_csv("data/stage_data_out/predictions/pred.csv")
-df_plot = pd.DataFrame(columns=["pred"])
-
-for frame in df.index :
-    df_plot.loc[frame] =  df[df.loc[ frame * (600):  (frame+1) * (600) ]]["target_pred"].mean()
-
-df_plot["target_pred"].plot(title="target_pred" + " by min")
-plt.show()
-df.plot()
-plt.show()
-print(df)
