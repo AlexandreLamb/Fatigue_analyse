@@ -11,19 +11,24 @@ def plot_measure(path_to_df, num_sec, fps):
         for index in range(0,int(len(df.index)/(num_sec*fps))) :
             df_plot.loc[index, measure] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].mean()
             df_plot.loc[index, measure + "_std"] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].std()    
-        print(df_plot)
-        """ plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))], yerr=df_plot[measure][:int(10/(num_sec/60))].pct_change())
-        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):], yerr=df_plot[measure][-int(10/(num_sec/60)):].pct_change())"""
-        plt.subplot(2,1)
+            
+            
+        plt.subplot(2,1,1)
+        
         plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))])
         plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):])
-        plt.subplots(2,2)
-        plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))].pct_change())
-        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):].pct_change())
-       
         plt.xlabel(str(num_sec) + " sec / point")
         plt.ylabel(measure)
-        plt.title(measure + " by min with ROC (rate of change)")
+        plt.title(measure + " by "+ str(num_sec) + " sec per point")
+        
+        plt.subplot(2,1,2)
+        
+        plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))].pct_change()*100)
+        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):].pct_change()*100)     
+        plt.xlabel(str(num_sec) + " sec / point")
+        plt.ylabel("percent of change")
+        plt.title("Rate of change of " + measure + " by "+ str(num_sec) + " sec per point")
+        
         plt.show()        
 
 def plot_pred(path_to_df, num_sec, fps):
