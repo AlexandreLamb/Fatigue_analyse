@@ -7,7 +7,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers.experimental import preprocessing
 import time
 class DataPreprocessing():
-    def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32):
+    def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32, evaluate = False):
         self.path_to_dataset = path_to_dataset
         self.dataset = None
         self.train = None
@@ -21,6 +21,7 @@ class DataPreprocessing():
         
         self.batch_size = batch_size
         self.isTimeSeries = isTimeSeries
+        self.evaluate = evaluate
         self.initialize()
     
     def make_numerical_feature_col(self, normalize = False):    
@@ -85,7 +86,8 @@ class DataPreprocessing():
 
         
     def load_dataset(self):                  
-        df = pd.read_csv(self.path_to_dataset, index_col=0)
+        #df = pd.read_csv(self.path_to_dataset, index_col=0)
+        df = pd.read_csv(self.path_to_dataset)
         if self.isTimeSeries :          
             target = df.pop("target")
             time_label = [np.ones(1)*label for label in list(target)]
@@ -105,7 +107,10 @@ class DataPreprocessing():
 
     def initialize(self):
         self.load_dataset()
-        self.make_train_val_test_dataset()
+        if self.evaluate == False:
+            self.make_train_val_test_dataset()
+        else : 
+            self.dataset.batch(self.batch_size)
         if self.isTimeSeries == False :
             self.make_numerical_feature_col(normalize=True)
             
