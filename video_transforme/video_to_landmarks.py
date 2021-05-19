@@ -86,7 +86,7 @@ class VideoToLandmarks:
         if frame_total_1 == -1:
             frame_count = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"]
             os.system("clear")
-            print(str(count)+ " on " + str(frame_count[0]) + " frame analyse")
+            print(str(count)+ " on " + str(list(frame_count)[0]) + " frame analyse")
         else : 
             frame_count_1 = int(frame_total_1)
             if frame_total_2 == None:
@@ -102,21 +102,31 @@ class VideoToLandmarks:
     def transoform_videos_to_landmarks(self, face_recognition_type):
         for video in self.videos:
             video_name = video.get("video_name")
+            video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["fps"])[0]
+            frame_count = int(list(self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"])[0])
+
             logging.info("Writing video : " + str(video_name))
-            csv_path_name = "data/stage_data_out/"+video_name+"_"+str(face_recognition_type)+".csv"
+            csv_path_name = "data/stage_data_out/landmarks_csv/irba_40_min_temp/"+video_name+"_"+str(face_recognition_type)+"_all.csv"
             success, image = video.get("video").read()
             count = 0
+            self.df_landmarks = pd.DataFrame(columns = make_landmarks_header()).rename(index={0 : "frame"})
+            if os.path.isfile(csv_path_name) : 
+                logging.info(os.path.isfile(csv_path_name)) 
+                logging.info(csv_path_name) 
+                self.df_landmarks = pd.read_csv(csv_path_name, index_col="frame")
+                count = len(self.df_landmarks)
             while success:
                 success, img = video.get("video").read()
-                if success:
-                    marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
-                    if len(marks) > 0:
-                        
-                        self.df_landmarks.loc[count] = marks
-                    else:
-                        logging.info("No face detect on image "+str(count))
-                    #self.progression_of_place_landmarks(count, video_name)
-                    count += 1
+                if (self.df_landmarks.index == count).any() == False :
+                    if success:
+                        marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
+                        if len(marks) > 0:             
+                            self.df_landmarks.loc[count] = marks
+                            self.df_landmarks.to_csv(csv_path_name,header=True,mode="w", index_label="frame")
+                        else:
+                            logging.info("No face detect on image "+str(count))
+                        self.progression_of_place_landmarks(count, video_name)
+                        count += 1
             self.df_landmarks.to_csv(csv_path_name,header=True,mode="w") 
             
     def transoform_videos_with_sec_to_landmarks(self, face_recognition_type, sec):
@@ -126,7 +136,7 @@ class VideoToLandmarks:
             frame_count = int(list(self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"])[0])
             
             logging.info("Writing video : " + str(video_name))
-            csv_path_name = "data/stage_data_out/"+video_name+"_"+str(face_recognition_type)+".csv"
+            csv_path_name = "data/stage_data_out/"+video_name+"_"+str(face_recognition_type)+"_"+str(sec)+".csv"
             success, image = video.get("video").read()
             count = 0
             self.df_landmarks = pd.DataFrame(columns = make_landmarks_header()).rename(index={0 : "frame"})
