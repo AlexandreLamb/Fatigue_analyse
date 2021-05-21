@@ -1,3 +1,4 @@
+import os
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -52,23 +53,57 @@ class PvtReader():
         plt.show()
                 
                 
-    def plot_by_subject(self, subject, periode, num_min):
-        subject_serie_rt = self.serie_pvt_rt_total[(self.serie_pvt_rt_total.index.get_level_values('sujet') == subject) & (self.serie_pvt_rt_total.index.get_level_values('periode') == periode)]
-        subject_serie_lapse = self.serie_pvt_lapse_total[(self.serie_pvt_lapse_total.index.get_level_values('sujet') == subject) & (self.serie_pvt_lapse_total.index.get_level_values('periode') == periode)]
-        plt.subplot(2,1,1)
-        print(pd.DataFrame(subject_serie_rt.values[0][:num_min])[0].pct_change())
-        plt.errorbar(np.arange(num_min) , subject_serie_rt.values[0][:num_min], yerr=pd.DataFrame(subject_serie_rt.values[0][:num_min])[0].pct_change()*100)
-        plt.errorbar(np.arange(len(list(subject_serie_rt)),len(list(subject_serie_rt))-num_min, -1) , subject_serie_rt.values[0][-num_min:], yerr= pd.DataFrame(subject_serie_rt.values[0][-num_min:])[0].pct_change()*100)
-        plt.xlabel("min")
-        plt.ylabel("response time")
-        plt.title(subject_serie_lapse.index)
-        plt.subplot(2,1,2)
-        plt.errorbar(np.arange(num_min) , subject_serie_lapse.values[0][:num_min])
-        plt.errorbar(np.arange(len(list(subject_serie_lapse)),len(list(subject_serie_lapse))-num_min, -1) , subject_serie_lapse.values[0][-num_min:])
-        plt.xlabel("min")
-        plt.ylabel("lapse")
-        #plt.title(list(subject_serie_lapse.index))
+    def plot_by_subject(self, num_min = 0):
+        for subject in self.serie_pvt_rt_total.groupby(level=[0,1,2]):
+            #fig, axs = plt.subplots(2,1)
+            subject_index = "_".join(subject[0])
+            subject_title =  " ".join(subject[0])
+            """if num_min == 0:
+                axs[0].errorbar(np.arange(len(subject[1].values[0])),subject[1].values[0])
+                axs[1].errorbar(np.arange(len(subject[1].values[0])),pd.DataFrame(subject[1].values[0])[0].pct_change()*100)
+            else : 
+                axs[0].errorbar(np.arange(num_min) , subject[1].values[0][:num_min])
+                axs[0].errorbar(np.arange(len(list(subject[1])),len(list(subject[1]))-num_min, -1) , subject[1].values[0][-num_min:])
+                axs[1].errorbar(np.arange(num_min),pd.DataFrame(subject[1].values[0][:num_min])[0].pct_change()*100)
+                axs[1].errorbar(np.arange(len(list(subject[1])),len(list(subject[1]))-num_min, -1), pd.DataFrame(subject[1].values[0][-num_min:])[0].pct_change()*100)
+            
+            axs[0].set_xlabel("min")
+            axs[0].set_ylabel("response time")
+            axs[0].set_title(subject_title)
+             
+            axs[1].set_xlabel("min")
+            axs[1].set_ylabel("rate of chagne (%)")
+            
+            path_folder_to_save = "data/stage_data_out/resutls/img/"+subject_index+"/pvt/"
+            path_img_to_save = path_folder_to_save +"pvt.png"
+            if os.path.exists(path_folder_to_save) == False:
+                os.makedirs(path_folder_to_save)
+            fig = plt.gcf()
+            fig.set_size_inches((22, 10), forward=False)
+            fig.savefig(path_img_to_save, dpi=500) 
+            plt.close()
+            """
+        for subject in self.serie_pvt_lapse_total.groupby(level=[0,1,2]):
+            subject_index = "_".join(subject[0])
+            subject_title =  " ".join(subject[0])
+            fig, axs = plt.subplots(1,1)
+            if num_min == 0:
+                axs.errorbar(np.arange(len(subject[1].values[0])),subject[1].values[0])
+            else :   
+                axs.errorbar(np.arange(len(list(subject[1])),len(list(subject[1]))-num_min, -1) , subject[1].values[0][-num_min:])
+            axs.set_xlabel("min")
+            axs.set_ylabel("response time")
+            axs.set_title(subject_title)
         
-        plt.show()
+            path_folder_to_save = "data/stage_data_out/resutls/img/"+subject_index+"/lapse/"
+            path_img_to_save = path_folder_to_save +"lapse.png"
+            if os.path.exists(path_folder_to_save) == False:
+                os.makedirs(path_folder_to_save)
+            fig = plt.gcf()
+            fig.set_size_inches((22, 10), forward=False)
+            fig.savefig(path_img_to_save, dpi=500) 
+            plt.close()
+
 pvt = PvtReader("data/stage_data_out/sujets_data_pvt_perf.csv")
-pvt.plot_by_subject("H92", "T1", 10)
+pvt.plot_by_subject()
+

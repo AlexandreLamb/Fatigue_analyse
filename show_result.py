@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pandas.plotting import table
 import os
+from utils import parse_video_name
+
 def plot_measure(path_to_df, num_sec, fps, subject):
     df = pd.read_csv(path_to_df, index_col=0)
     measure_list = [measure for measure in list(df) if measure != "frame"]
@@ -48,7 +50,7 @@ def plot_measure(path_to_df, num_sec, fps, subject):
         tabla.set_fontsize(12) 
         tabla.scale(1.2, 1.2)
         
-        path_folder_to_save = "data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec)+"/measures/"
+        path_folder_to_save = "data/stage_data_out/resutls/img/"+parse_video_name([subject])[0]+"/"+str(num_sec)+"/measures/"
         path_img_to_save = path_folder_to_save + measure +".png"
         if os.path.exists(path_folder_to_save) == False:
             os.makedirs(path_folder_to_save)
@@ -85,8 +87,9 @@ def plot_pred(path_to_df, num_sec, fps, subject):
         plt.ylabel("percent of change")
         plt.title("Rate of change of " + measure + " prediction by "+ str(num_sec) + " sec per point")
         
-        path_folder_to_save = "data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec)+"/predictions/"
+        path_folder_to_save = "data/stage_data_out/resutls/img/"+parse_video_name([subject])[0]+"/"+str(num_sec)+"sec_threeshold/predictions/"
         path_img_to_save = path_folder_to_save + measure +".png"
+        print("img save into : " + path_img_to_save)
         if os.path.exists(path_folder_to_save) == False:
             os.makedirs(path_folder_to_save)
         fig = plt.gcf()
@@ -102,7 +105,7 @@ def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irb
         for subject in list_subject:
             plot_measure(csv_folder + "/" + subject + "/" + subject +".csv", num_sec, fps, subject)
             plot_pred("data/stage_data_out/predictions/pred.csv", num_sec, fps, subject)
-            print(subject + " plot is save in data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec))
+            #sprint(subject + " plot is save in data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec))
 
 
 generate_data_img()
