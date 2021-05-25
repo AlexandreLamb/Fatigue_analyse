@@ -61,6 +61,14 @@ def plot_measure(path_to_df, num_sec, fps, subject):
         plt.close()       
 
 def plot_pred(path_to_df, num_sec, fps, subject):
+    """function who plot the prediction of a model 
+
+    Args:
+        path_to_df ([type]): [description]
+        num_sec ([type]): [description]
+        fps ([type]): [description]
+        subject ([type]): [description]
+    """
     df = pd.read_csv(path_to_df, index_col=0)
     measure_list = [measure for measure in list(df)]
     df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
@@ -98,7 +106,12 @@ def plot_pred(path_to_df, num_sec, fps, subject):
         fig.savefig(path_img_to_save, dpi=500) 
         plt.savefig(path_img_to_save)  
         plt.close()
-        
+    
+def generate_mean_diff(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min"):
+    list_subject = os.listdir(csv_folder)
+    for subject in list_subject:
+        df_subject = pd.read_csv(csv_folder + "/" + subject + "/" + subject +".csv", index_col=0)
+        print(df_subject.describe().iloc["mean"])
 
 def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min", num_sec_to_test = [1,3,5,10,20,30,40,60], fps =10):
     list_subject = os.listdir(csv_folder)
@@ -108,6 +121,7 @@ def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irb
             plot_pred("data/stage_data_out/predictions/pred.csv", num_sec, fps, subject)
             #sprint(subject + " plot is save in data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec))
 
+generate_mean_diff()
 
 #generate_data_img()
 """
