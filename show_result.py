@@ -12,6 +12,8 @@ def plot_measure(path_to_df, num_sec, fps, subject):
     measure_list = [measure for measure in list(df) if measure != "frame"]
     df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
     df_plot = pd.DataFrame(columns=measure_list + [measure +"_roc" for measure in list(df) if measure != "frame"])
+    df_stat =  pd.DataFrame(columns=["subject","measure","target","mean", "std","min","max"]).set_index(["subject","measure","target"])
+    print(df_stat)
     for measure in measure_list:
         for index in range(0,int(len(df.index)/(num_sec*fps))-1) :
             df_plot.loc[index, measure] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].mean()
@@ -59,7 +61,6 @@ def plot_measure(path_to_df, num_sec, fps, subject):
         fig.set_size_inches((22, 10), forward=False)
         fig.savefig(path_img_to_save, dpi=500) 
         plt.close()       
-
 def plot_pred(path_to_df, num_sec, fps, subject):
     """function who plot the prediction of a model 
 
@@ -107,18 +108,37 @@ def plot_pred(path_to_df, num_sec, fps, subject):
         plt.savefig(path_img_to_save)  
         plt.close()
     
-def generate_mean_diff(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min"):
+def generate_mean_diff(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min", num_sec_list=[1,3,5,10,60], fps =10):
     list_subject = os.listdir(csv_folder)
-    for subject in list_subject:
-        df_subject = pd.read_csv(csv_folder + "/" + subject + "/" + subject +".csv", index_col=0)
-        print(df_subject.describe().iloc["mean"])
+    df_stat =  pd.DataFrame(columns=["subject","windows_size","measure","target","mean", "std","min","max"]).set_index(["subject","windows_size","measure","target"])
 
-def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min", num_sec_to_test = [1,3,5,10,20,30,40,60], fps =10):
+    for subject in list_subject:
+        df = pd.read_csv(csv_folder + "/" + subject + "/" + subject +".csv", index_col=0)
+        measure_list = [measure for measure in list(df) if measure != "frame"]
+        df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
+        df_plot = pd.DataFrame(columns=measure_list + [measure +"_roc" for measure in list(df) if measure != "frame"])
+        for num_sec in num_sec_list:
+            for measure in measure_list: 
+                for index in range(0,int(len(df.index)/(num_sec*fps))-1) :
+                    df_plot.loc[index, measure] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].mean()
+                    df_plot.loc[index, measure + "_std"] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].std()    
+            
+                df_1 = df_plot[measure][:int(5/(num_sec/60))]
+                df_2 = df_plot[measure][-int(5/(num_sec/60)):]
+                measure_describe_1 = pd.DataFrame(df_1.astype("float32").describe().round(3)).transpose().drop("count", axis=1)
+                measure_describe_2 = pd.DataFrame(df_2.astype("float32").describe().round(3)).transpose().drop("count", axis=1)
+                df_stat.loc[(subject, num_sec ,measure, "non_fatigue"),["mean","std","min","max"]] = measure_describe_1[["mean","std","min","max"]].values[0]
+                df_stat.loc[(subject, num_sec ,measure, "fatigue"),["mean","std","min","max"]] = measure_describe_2[["mean","std","min","max"]].values[0]
+                df_stat.loc[(subject, num_sec ,measure, "diff abs"),["mean","std","min","max"]] = np.absolute(np.subtract(measure_describe_1[["mean","std","min","max"]].values[0], measure_describe_2[["mean","std","min","max"]].values[0]))
+            #print(df_stat)
+    print(df_stat)
+    df_stat.to_csv("data/stage_data_out/resutls/statistiques.csv")
+def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min", num_sec_to_test = [1,3,5,10,60], fps =10):
     list_subject = os.listdir(csv_folder)
     for num_sec in num_sec_to_test:
         for subject in list_subject:
             plot_measure(csv_folder + "/" + subject + "/" + subject +".csv", num_sec, fps, subject)
-            plot_pred("data/stage_data_out/predictions/pred.csv", num_sec, fps, subject)
+            #plot_pred("data/stage_data_out/predictions/pred.csv", num_sec, fps, subject)
             #sprint(subject + " plot is save in data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec))
 
 generate_mean_diff()
