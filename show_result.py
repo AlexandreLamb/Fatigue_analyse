@@ -109,7 +109,7 @@ def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irb
             #sprint(subject + " plot is save in data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec))
 
 
-generate_data_img()
+#generate_data_img()
 """
 afficher : mean , std, min, max, variance sur un lapse de temps donné de
 
