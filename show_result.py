@@ -13,21 +13,21 @@ def plot_measure(path_to_df, num_sec, fps, subject):
     df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
     df_plot = pd.DataFrame(columns=measure_list + [measure +"_roc" for measure in list(df) if measure != "frame"])
     for measure in measure_list:
-        for index in range(0,int(len(df.index)/(num_sec*fps))) :
+        for index in range(0,int(len(df.index)/(num_sec*fps))-1) :
             df_plot.loc[index, measure] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].mean()
             df_plot.loc[index, measure + "_std"] = df[df["frame"].between( df["frame"][index * (num_sec*fps)],  df["frame"][(index+1) * (num_sec*fps)] )][measure].std()    
         
-        df_1 = df_plot[measure][:int(10/(num_sec/60))]
-        df_2 = df_plot[measure][-int(10/(num_sec/60)):]
+        df_1 = df_plot[measure][:int(5/(num_sec/60))]
+        df_2 = df_plot[measure][-int(5/(num_sec/60)):]
         fig, axs = plt.subplots(3,1)
         
-        axs[0].errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))])
-        axs[0].errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):])
+        axs[0].errorbar(np.arange(5/(num_sec/60)), df_plot[measure][:int(5/(num_sec/60))])
+        axs[0].errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-5/(num_sec/60), step=-1), df_plot[measure][-int(5/(num_sec/60)):])
         axs[0].set_ylabel(measure)
         axs[0].set_title(measure + " by "+ str(num_sec) + " sec per point")
     
-        axs[1].errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))].pct_change()*100)
-        axs[1].errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):].pct_change()*100)     
+        axs[1].errorbar(np.arange(5/(num_sec/60)), df_plot[measure][:int(5/(num_sec/60))].pct_change()*100)
+        axs[1].errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-5/(num_sec/60), step=-1), df_plot[measure][-int(5/(num_sec/60)):].pct_change()*100)     
         axs[1].set_xlabel(str(num_sec) + " sec / point")
         axs[1].set_ylabel("percent of change")
         axs[1].set_title("Rate of change of " + measure + " by "+ str(num_sec) + " sec per point")
@@ -50,8 +50,9 @@ def plot_measure(path_to_df, num_sec, fps, subject):
         tabla.set_fontsize(12) 
         tabla.scale(1.2, 1.2)
         
-        path_folder_to_save = "data/stage_data_out/resutls/img/"+parse_video_name([subject])[0]+"/"+str(num_sec)+"/measures/"
+        path_folder_to_save = "data/stage_data_out/resutls/img/"+parse_video_name([subject])[0]+"/"+str(num_sec)+"sec_threeshold/measures/"
         path_img_to_save = path_folder_to_save + measure +".png"
+      
         if os.path.exists(path_folder_to_save) == False:
             os.makedirs(path_folder_to_save)
         fig = plt.gcf()
@@ -73,16 +74,16 @@ def plot_pred(path_to_df, num_sec, fps, subject):
         
         plt.subplot(2,1,1)
         
-        plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))])
-        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):])
+        plt.errorbar(np.arange(5/(num_sec/60)), df_plot[measure][:int(5/(num_sec/60))])
+        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-5/(num_sec/60), step=-1), df_plot[measure][-int(5/(num_sec/60)):])
         plt.xlabel(str(num_sec) + " sec / point")
         plt.ylabel(measure)
         plt.title(measure + " prediciton by "+ str(num_sec) + " sec per point")
         
         plt.subplot(2,1,2)
         
-        plt.errorbar(np.arange(10/(num_sec/60)), df_plot[measure][:int(10/(num_sec/60))].pct_change()*100)
-        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-10/(num_sec/60), step=-1), df_plot[measure][-int(10/(num_sec/60)):].pct_change()*100)     
+        plt.errorbar(np.arange(5/(num_sec/60)), df_plot[measure][:int(5/(num_sec/60))].pct_change()*100)
+        plt.errorbar(np.arange(45/(num_sec/60),45/(num_sec/60)-5/(num_sec/60), step=-1), df_plot[measure][-int(5/(num_sec/60)):].pct_change()*100)     
         plt.xlabel(str(num_sec) + " sec / point")
         plt.ylabel("percent of change")
         plt.title("Rate of change of " + measure + " prediction by "+ str(num_sec) + " sec per point")
