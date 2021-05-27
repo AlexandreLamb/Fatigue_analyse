@@ -141,7 +141,7 @@ def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irb
             #plot_pred("data/stage_data_out/predictions/pred.csv", num_sec, fps, subject)
             #sprint(subject + " plot is save in data/stage_data_out/resutls/img/"+subject+"/"+str(num_sec))
 
-generate_mean_diff()
+#generate_mean_diff()
 
 #generate_data_img()
 """
@@ -154,3 +154,16 @@ afficher 2 graphs
     
     
 """
+def exctract_pvt_hours_from_eva_file():
+    file_list =  os.listdir("data/stage_data_out/eva_data/Resultat_EVA")
+    df_pvt_hours = pd.DataFrame(columns=["subject", "moment","date", "hours"]).set_index(["subject", "date","moment"])
+    for index, file in enumerate(file_list):
+        file_split = file.split("_")
+        subject = file_split[4]
+        moment = file_split[2]
+        date = file_split[5]
+        hours = file_split[-1].split(".")[0]
+        df_pvt_hours.loc[(subject,date,moment+"_pvt"),["hours"]] = hours
+    df_pvt_hours.sort_index().to_excel("data/stage_data_out/pvt_hours_by_subjects.xlsx")  
+
+    
