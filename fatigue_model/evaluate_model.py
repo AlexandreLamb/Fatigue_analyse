@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 
-model_path = "tensorboard/model/20210526-173148/model_lstm"
+model_path = "tensorboard/model/20210526-173148/model_lstm/1"
 model = tf.keras.models.load_model(model_path)
 
 video_to_test = os.listdir("data/stage_data_out/dataset_temporal/Irba_40_min")
@@ -30,7 +30,8 @@ for video in video_to_test:
     df_evaluate_metrics.loc[video] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     
     predictions = model.predict(preprocessing.dataset)
-    measure_list = list(pd.read_csv("data/stage_data_out/dataset_temporal/Irba_40_min/"+video+"/"+video+".csv"))
+    df_video = pd.read_csv("data/stage_data_out/dataset_temporal/Irba_40_min/"+video+"/"+video+".csv")
+    measure_list = list(df_video)
     df = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
     y_pred_list = []
     y_pred = []
@@ -41,6 +42,7 @@ for video in video_to_test:
     df.loc[lambda df: df["pred_mean"] >= 0.5,"target_pred_mean"] = 1
     df.loc[lambda df: df["pred_max"] < 0.5,"target_pred_max"] = 0
     df.loc[lambda df: df["pred_max"] >= 0.5,"target_pred_max"] = 1
+    df["target_real"] = df_video["target"]
     path_folder_to_save = "data/stage_data_out/predictions/"+video
     path_to_csv = path_folder_to_save + "/"+video+"_pred.csv"
     if os.path.exists(path_folder_to_save) == False:
