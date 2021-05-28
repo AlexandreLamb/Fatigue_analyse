@@ -11,7 +11,9 @@ from tensorboard.plugins.hparams import api as hp
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import datetime
-import os, sys 
+import os, sys
+
+from tensorflow.python.keras.activations import sigmoid 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
 dp = DataPreprocessing(path_to_dataset = "data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_30_17_21_26_05_2021.csv",batch_size= 32, isTimeSeries = True) 
@@ -28,18 +30,19 @@ test = dp.test
 val = dp.val
 
 model = tf.keras.models.Sequential([
-    tf.keras.layers.LSTM(32,input_shape=(5,30) , return_sequences=True),
     tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
-    tf.keras.layers.LSTM(128,input_shape=(5,30) , return_sequences=True),
+    #tf.keras.layers.Dense(units=32, activation = "relu"),
+    tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
+    #tf.keras.layers.Dense(units=64, activation = "relu"),
+    tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
 
-    tf.keras.layers.Dense(units=1)
+    tf.keras.layers.Dense(units=1, activation = "sigmoid")
 ])
-
 
 model.compile(optimizer='adam',
               loss=tf.losses.MeanSquaredError(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
-model.summary()
+#model.summary()
 model.fit(
         train, 
         validation_data= val,
