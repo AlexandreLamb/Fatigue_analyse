@@ -216,7 +216,20 @@ class DataFormator:
             df_measures = df_measures.append(pd.read_csv(path), ignore_index=False)
         #print(df_measures["target"].sum())
         df_measures.to_csv("data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv", index=False)
-        
+    
+    @staticmethod
+    def generate_cross_dataset(path_to_measure_folder, windows):
+        dir_measures = os.listdir(path_to_measure_folder)
+        date_id = datetime.now().strftime("%Y_%m_%d_%M_%H")
+        path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
+        df_measures = pd.DataFrame()
+        for video_exclude in dir_measures:
+            for path in [path for path in path_csv_arr if path != path_to_measure_folder+"/"+ video_exclude+"/"+video_exclude+".csv"]:
+                df_measures = df_measures.append(pd.read_csv(path), ignore_index=False)
+            path_folder_to_save = "data/stage_data_out/dataset_temporal/cross-dataset/exclude_"+video_exclude
+            if os.path.exists(path_folder_to_save) == False:
+                os.makedirs(path_folder_to_save)
+            df_measures.to_csv(path_folder_to_save + "/dataset.csv", index=False)
         
 ## TODO:  add video anme and stuff in csv video infos
 
