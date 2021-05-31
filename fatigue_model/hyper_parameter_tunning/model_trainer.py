@@ -86,9 +86,9 @@ class ModelTunning():
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
             session_num += 1          
                     
-json_path = "fatigue_model/model_trainning/hparms_dense.json"
-dataset_path = "data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_30_13_25_19_05_2021.csv"
+json_path = "fatigue_model/model_trainning/hparms_lstm.json"
+dataset_path = "data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_30_17_21_26_05_2021.csv"
 mt = ModelTunning(json_path, dataset_path, isTimeSeries = True, batch_size=32)
-mt.initialize_model("Dense")
+mt.initialize_model("LSTM")
 mt.tune_model()
 ## TODO : make global variable across module for path
