@@ -33,7 +33,8 @@ def get_model():
 def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     video_exclude = path_to_dataset.split("/")[-2].split("exclude_")[-1]
     dp = DataPreprocessing(path_to_dataset,batch_size= 32, isTimeSeries = True) 
-
+    logging.info("path to dataset")
+    logging.info(path_to_dataset)
     train = dp.train
     test = dp.test 
     val = dp.val
@@ -47,12 +48,16 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     model.fit(
         train, 
         validation_data= val,
-        epochs=1000,
+        epochs=2,
         shuffle=True,
         verbose =1,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='min')]) 
     path_to_model_to_save = "tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_lstm_exclude"+video_exclude
+   
+    logging.info("SAVING... into " + path_to_model_to_save)
     model.save(path_to_model_to_save)
+    logging.info("SAVE !")
+
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
     df_metrics_model_train.loc[video_exclude] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     return path_to_model_to_save, video_exclude
@@ -61,6 +66,10 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     
 def evaluate_model(model_path, video_exclude):
     model = tf.keras.models.load_model(model_path)
+    logging.info("model_path")
+    logging.info(model_path)
+    logging.info("video_exclude")
+    logging.info(video_exclude)
     
     video_to_test = os.listdir()
     df_evaluate_metrics = pd.DataFrame(columns=["video_exclude","binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index("video_exclude")
@@ -89,8 +98,9 @@ def evaluate_model(model_path, video_exclude):
     if os.path.exists(path_folder_to_save) == False:
                 os.makedirs(path_folder_to_save)
     df.to_csv(path_to_csv, index = False)
-
+    logging.info("SAVING...")
     df_evaluate_metrics.to_csv("data/stage_data_out/cross_predictions/"+video_exclude+"/metrics.csv")
+    logging.info("SAVE !")
 
 
 
