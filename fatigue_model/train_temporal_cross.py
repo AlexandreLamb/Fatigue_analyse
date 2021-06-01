@@ -18,17 +18,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
 from logger import logging
 
-def get_model():
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
-        #tf.keras.layers.Dense(units=32, activation = "relu"),
-        tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
-        #tf.keras.layers.Dense(units=64, activation = "relu"),
-        tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
 
-        tf.keras.layers.Dense(units=1, activation = "sigmoid")
-    ])
-    return model
+MODEL = tf.keras.models.Sequential([
+    tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
+    #tf.keras.layers.Dense(units=32, activation = "relu"),
+    tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
+    #tf.keras.layers.Dense(units=64, activation = "relu"),
+    tf.keras.layers.LSTM(64,input_shape=(5,30) , return_sequences=True),
+    tf.keras.layers.Dense(units=1, activation = "sigmoid")
+])
+
 
 def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     video_exclude = path_to_dataset.split("/")[-2].split("exclude_")[-1]
@@ -39,48 +38,47 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     test = dp.test 
     val = dp.val
     
-    model = get_model()
-    model.compile(optimizer='adam',
-              loss=tf.losses.MeanSquaredError(),
+    MODEL = get_model()
+    MODEL.compile(optimizer='adam',
+              loss=tf.losses.BinaryCrossentropy(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
-    model.summary()
+    MODEL.summary()
     logging.info("start fit model")
-    model.fit(
+    MODEL.fit(
         train, 
         validation_data= val,
-        epochs=2,
+        epochs=1,
         shuffle=True,
         verbose =1,
-        callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='min')]) 
-    path_to_model_to_save = "tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_lstm_exclude"+video_exclude
+        callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='auto')]) 
+    path_to_model_to_save = "tensorboard/model/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_lstm_exclude_"+video_exclude
    
     logging.info("SAVING... into " + path_to_model_to_save)
-    model.save(path_to_model_to_save)
+    MODEL.save(path_to_model_to_save)
     logging.info("SAVE !")
 
-    _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
+    _ ,binary_accuracy, binary_crossentropy, mean_squared_error = MODEL.evaluate(test)
     df_metrics_model_train.loc[video_exclude] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     return path_to_model_to_save, video_exclude
     
     
     
 def evaluate_model(model_path, video_exclude):
-    model = tf.keras.models.load_model(model_path)
+    MODEL = tf.keras.models.load_model(model_path)
     logging.info("model_path")
     logging.info(model_path)
     logging.info("video_exclude")
     logging.info(video_exclude)
     
-    video_to_test = os.listdir()
     df_evaluate_metrics = pd.DataFrame(columns=["video_exclude","binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index("video_exclude")
     
     preprocessing = DataPreprocessing("data/stage_data_out/dataset_temporal/Irba_40_min/"+video_exclude+"/"+video_exclude+".csv", isTimeSeries = True, batch_size = 1, evaluate = True)
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
     
-    _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
+    _ ,binary_accuracy, binary_crossentropy, mean_squared_error = MODEL.evaluate(preprocessing.dataset)
     df_evaluate_metrics.loc[video_exclude] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     
-    predictions = model.predict(preprocessing.dataset)
+    predictions = MODEL.predict(preprocessing.dataset)
     
     df_video = pd.read_csv("data/stage_data_out/dataset_temporal/Irba_40_min/"+video_exclude+"/"+video_exclude+".csv")
     measure_list = list(df_video)

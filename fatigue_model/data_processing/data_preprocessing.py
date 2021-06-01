@@ -63,11 +63,6 @@ class DataPreprocessing():
         val_size = self.val.reduce(0, lambda x, _: x + 1).numpy()
         test_size = self.test.reduce(0, lambda x, _: x + 1).numpy()
 
-        print("Full dataset size:", dataset_size)
-        print("Train dataset size:", train_size)
-        print("Val dataset size:", val_size)
-        print("Test dataset size:", test_size)
-
         #if self.isTimeSeries == False:
         self.train = self.train.batch(self.batch_size)
         self.val = self.val.batch(self.batch_size)
@@ -75,14 +70,6 @@ class DataPreprocessing():
 
         self.train = self.train.shuffle(buffer_size = train_size)
         self.val = self.val.shuffle(buffer_size = val_size)
-        
-        for feature_batch, label_batch in self.train.take(1):
-                print('A shape of features:', tf.rank(feature_batch))
-                print('A shape of targets:', tf.rank(label_batch.shape))
-                print('A shape of features:', feature_batch.shape)
-                print('A shape of targets:', label_batch.shape)
-                print('A batch of features:', feature_batch.numpy())
-                print('A batch of targets:', label_batch.numpy())
 
         
     def load_dataset(self):                  
@@ -149,11 +136,3 @@ class DataPreprocessing():
         for index, serie in enumerate(time_series):
             serie =  np.append(serie,np.squeeze(features_addition_embeding.numpy()), axis=0)
         return time_series
-           
-
-"""
-dp = DataPreprocessing("data/stage_data_out/dataset_ear/DESFAM-F_H99_VENDREDI/DESFAM-F_H99_VENDREDI.csv",batch_size=12 ,isTimeSeries = True)
-for feature_batch, label_batch in dp.train.take(1):
-    print('A batch of features:', feature_batch)
-    print('A batch of targets:', label_batch)
-"""
