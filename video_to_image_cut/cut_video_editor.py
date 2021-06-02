@@ -22,14 +22,15 @@ def video_cut(path_to_video):
     video_name = path_to_video.split("/")[-1]
     for windows_to_cut in windows_to_cut_frame:
         for frame in range(number_frame_to_cut+1):
-            #cap.set(2,(frame+windows_to_cut)/frame_count) 
-            #success, image = cap.read()
+            cap.set(2,(frame+windows_to_cut)/frame_count) 
+            success, image = cap.read()
             path_folder_to_save = "data/stage_data_out/image_for_irba/"+video_name
             path_img_to_save = path_folder_to_save + video_name+'_frame_'+str(frame+windows_to_cut)+'.png'
-            print((frame+windows_to_cut)/frame_count)
-        """
         if os.path.exists(path_folder_to_save) == False:
             os.makedirs(path_folder_to_save)
         cv2.imwrite(path_img_to_save,image)
-        """
+
+
 video_cut("")
+
+subject_list = ["H90", "H91", "H95", "H98", "H103", "H105"]
