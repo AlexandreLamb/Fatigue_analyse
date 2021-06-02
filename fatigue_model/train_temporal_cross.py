@@ -58,7 +58,7 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train):
 
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = MODEL.evaluate(test)
     df_metrics_model_train.loc[video_exclude] = [binary_accuracy, binary_crossentropy, mean_squared_error]
-    return path_to_model_to_save, video_exclude
+    return path_to_model_to_save, video_exclude, df_metrics_model_train
     
     
     
@@ -111,7 +111,8 @@ def train_cross_model():
     df_metrics_model_train = pd.DataFrame(columns=["video_exclude","binary_accuracy","binary_crossentropy","mean_squared_error"]).set_index("video_exclude")
     for dataset in path_dataset:
         logging.info("start with  :" + dataset)
-        path_to_model, video_to_exclude = train_evaluate_model(dataset, df_metrics_model_train)
+        path_to_model, video_to_exclude, df_metrics_model_train = train_evaluate_model(dataset, df_metrics_model_train)
         evaluate_model(path_to_model, video_to_exclude)
-   
+    df_metrics_model_train.to_csv("data/stage_data_out/cross_predictions/metrics_train_model.csv")
+
 train_cross_model()
