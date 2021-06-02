@@ -21,7 +21,7 @@ def video_cut(path_to_video):
     windows_to_cut_frame = [0, 15*60*fps , 30*60*fps, frame_count - number_frame_to_cut ]
     video_name = path_to_video.split("/")[-1]
     for windows_to_cut in windows_to_cut_frame:
-        for frame in range(number_frame_to_cut):
+        for frame in range(number_frame_to_cut+1):
             #cap.set(2,(frame+windows_to_cut)/frame_count) 
             #success, image = cap.read()
             path_folder_to_save = "data/stage_data_out/image_for_irba/"+video_name
