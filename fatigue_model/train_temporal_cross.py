@@ -38,7 +38,6 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     test = dp.test 
     val = dp.val
     
-    MODEL = get_model()
     MODEL.compile(optimizer='adam',
               loss=tf.losses.BinaryCrossentropy(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
@@ -47,7 +46,7 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train):
     MODEL.fit(
         train, 
         validation_data= val,
-        epochs=1,
+        epochs=1000,
         shuffle=True,
         verbose =1,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='auto')]) 

@@ -126,7 +126,7 @@ class DataPreprocessing():
         list_measures = [measure for measure in list(df) if measure != "target"]
         format = lambda x : x.replace("[","").replace("]","").split(",")
         to_float = lambda x : [float(el) for el in x]
-        for series in df[list_measures][borne_inf:borne_sup].applymap(format).applymap(to_float).itertuples(index=False):
+        for series in df[list_measures].applymap(format).applymap(to_float).itertuples(index=False):
                 array_measure.append([s for s in series])
         return array_measure
     
