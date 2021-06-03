@@ -55,7 +55,7 @@ class DataPreprocessing():
 
         
     def load_dataset(self):
-        if self.path_to_dataset == None:                 
+        if self.path_to_dataset != None:                 
             df = pd.read_csv(self.path_to_dataset)
         else :
             df = self.df_dataset
@@ -142,4 +142,3 @@ class DataPreprocessing():
             serie =  np.append(serie,np.squeeze(features_addition_embeding.numpy()), axis=0)
         return time_series
     
-dp = DataPreprocessing("data/stage_data_out/dataset_temporal/cross-dataset/exclude_DESFAM_F_H91_VENDREDI/dataset.csv",batch_size= 32, isTimeSeries = True) 
