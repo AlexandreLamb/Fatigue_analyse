@@ -59,7 +59,7 @@ class ModelTunning():
             callbacks=[ 
                 tf.keras.callbacks.TensorBoard(log_dir = self.logdir),  # log metrics
                 hp.KerasCallback(self.logdir, hparams),  # log self.hparams
-                tf.keras.callbacks.EarlyStopping(monitor='mean_squared_error', patience=10),
+                tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='min')
             ]
         )
         model.summary()

@@ -39,8 +39,8 @@ model = tf.keras.models.Sequential([
     tf.keras.layers.Dense(units=1, activation = "sigmoid")
 ])
 
-model.compile(optimizer='adam',
-              loss=tf.losses.MeanSquaredError(),
+model.compile(optimizer='rmsprop',
+              loss=tf.losses.BinaryCrossentropy(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
 #model.summary()
 model.fit(
