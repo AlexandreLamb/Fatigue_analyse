@@ -77,7 +77,7 @@ def evaluate_model(model_path, video_exclude, cross_measures):
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
     
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = MODEL.evaluate(preprocessing.dataset)
-    df_evaluate_metrics.loc[(video_exclude, cross_measures)] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+    df_evaluate_metrics.loc[(video_exclude, cross_measures),["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     
     predictions = MODEL.predict(preprocessing.dataset)
     

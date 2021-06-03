@@ -16,3 +16,4 @@ tensorboard/
 dlib_trainer/dataset
 fatigue_model/model_save/
 fatigue_analyse.code-workspace/
+.vscode/settings.json
