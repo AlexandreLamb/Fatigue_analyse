@@ -34,6 +34,8 @@ def define_model(measure_len) :
 def train_evaluate_model(path_to_dataset, df_metrics_model_train, df, date_id):
     video_exclude = path_to_dataset.split("/")[-2].split("exclude_")[-1]
     measure_combinaition = [measure for measure in list(df) if measure != "target"]
+    logging.info(str(measure_combinaition))
+    logging.info("_".join(measure_combinaition))
     dp = DataPreprocessing(path_to_dataset = None,batch_size= 32, isTimeSeries = True, df_dataset = df) 
     logging.info("path to dataset")
     logging.info(path_to_dataset)
@@ -60,7 +62,8 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train, df, date_id):
     logging.info("SAVE !")
 
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
-    df_metrics_model_train.loc[(video_exclude, "_".join(measure_combinaition))] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+    
+    df_metrics_model_train.loc[(video_exclude, "_".join(measure_combinaition)),["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     return path_to_model_to_save, video_exclude, df_metrics_model_train
     
     
@@ -79,7 +82,7 @@ def evaluate_model(model_path, video_exclude, cross_measures):
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
     
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
-    df_evaluate_metrics.loc[(video_exclude, cross_measures)] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+    df_evaluate_metrics.loc[(video_exclude, "_".join(cross_measures)), ["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     
     predictions = model.predict(preprocessing.dataset)
     
@@ -92,14 +95,14 @@ def evaluate_model(model_path, video_exclude, cross_measures):
     df_pred.loc[lambda df_pred: df_pred["pred_mean"] >= 0.5,"target_pred_mean"] = 1
     df_pred.loc[lambda df_pred: df_pred["pred_max"] < 0.5,"target_pred_max"] = 0
     df_pred.loc[lambda df_pred: df_pred["pred_max"] >= 0.5,"target_pred_max"] = 1
-    df_pred["target_real"] = sub_df["target"]
-    path_folder_to_save = "data/stage_data_out/cross_predictions/"+video_exclude+"/"+cross_measures
+    df_pred["target_real"] = df["target"]
+    path_folder_to_save = "data/stage_data_out/cross_predictions/"+video_exclude+"/"+"_".join(cross_measures)
     path_to_csv = path_folder_to_save + "/pred.csv"
     if os.path.exists(path_folder_to_save) == False:
                 os.makedirs(path_folder_to_save)
     df_pred.to_csv(path_to_csv, index = False)
     logging.info("SAVING...")
-    df_evaluate_metrics.to_csv("data/stage_data_out/cross_predictions/" + video_exclude + "/" + cross_measures + "/metrics.csv")
+    df_evaluate_metrics.to_csv("data/stage_data_out/cross_predictions/" + video_exclude + "/" + "_".join(cross_measures) + "/metrics.csv")
     logging.info("SAVE !")
    
 def train_cross_model():
