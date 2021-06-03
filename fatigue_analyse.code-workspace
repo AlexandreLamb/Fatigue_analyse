@@ -3,5 +3,9 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"jupyter.jupyterServerType": "local",
+		"python.pythonPath": "/usr/bin/python3"
+	}
 }
