@@ -10,8 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from logger import logging
 
 class DataPreprocessing():
-    def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32, evaluate = False):
+    def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32, evaluate = False, df_dataset = None):
         self.path_to_dataset = path_to_dataset
+        self.df_dataset = df_dataset
         self.dataset = None
         self.train = None
         self.test = None
@@ -53,8 +54,11 @@ class DataPreprocessing():
         self.val = self.val.shuffle(buffer_size = val_size)
 
         
-    def load_dataset(self):                  
-        df = pd.read_csv(self.path_to_dataset)
+    def load_dataset(self):
+        if self.path_to_dataset == None:                 
+            df = pd.read_csv(self.path_to_dataset)
+        else :
+            df = self.df_dataset
         self.dataset_size = len(df)
         if self.isTimeSeries :          
             target = df.pop("target")
