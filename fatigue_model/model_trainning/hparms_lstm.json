@@ -4,8 +4,8 @@
         "num_units_2" : [32,64,128],
         "num_units_3" : [32,64,128],
         "number_of_lstm_layer" : [3],
-        "optimizer" : ["adam","adadelta","rmsprop"],
-        "activation_output" : ["sigmoid", "softmax"]
+        "optimizer" : ["adam"],
+        "activation_output" : ["sigmoid"]
     },
     "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
     "num_of_target" : 1,
