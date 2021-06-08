@@ -16,7 +16,7 @@ import os, sys
 from tensorflow.python.keras.activations import sigmoid 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
-dp = DataPreprocessing(path_to_dataset = "data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_30_17_21_26_05_2021.csv",batch_size= 32, isTimeSeries = True) 
+dp = DataPreprocessing(path_to_dataset = "data/stage_data_out/dataset_temporal/Merge_Dataset_Debt/dataset_merge_30_16_16_08_06_2021.csv",batch_size= 32, isTimeSeries = True) 
 for feature_batch, label_batch in dp.train.take(1):
     print('A rank of features:', tf.rank(feature_batch))
     print('A rank of targets:', tf.rank(label_batch.shape))

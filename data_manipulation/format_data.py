@@ -203,7 +203,9 @@ class DataFormator:
         return df
     
     @staticmethod
-    def create_dataset_from_measure_folder(path_to_measure_folder, windows):
+    def create_dataset_from_measure_folder(path_to_measure_folder, windows, path_folder_to_save = None):
+        if path_folder_to_save == None:
+            path_folder_to_save = "data/stage_data_out/dataset_temporal/Merge_Dataset/"
         dir_measures = os.listdir(path_to_measure_folder)
         date_id = datetime.now().strftime("%H_%M_%d_%m_%Y")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
@@ -212,7 +214,9 @@ class DataFormator:
             print(pd.read_csv(path))
             df_measures = df_measures.append(pd.read_csv(path), ignore_index=False)
         #print(df_measures["target"].sum())
-        df_measures.to_csv("data/stage_data_out/dataset_temporal/Merge_Dataset/dataset_merge_"+str(windows[0])+"_"+date_id+".csv", index=False)
+        if os.path.exists(path_folder_to_save) == False:
+                os.makedirs(path_folder_to_save)
+        df_measures.to_csv(path_folder_to_save+"dataset_merge_"+str(windows[0])+"_"+date_id+".csv", index=False)
     
     @staticmethod
     def generate_cross_dataset(path_to_measure_folder, windows):

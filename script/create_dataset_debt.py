@@ -46,5 +46,5 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     #df_ear_all = df_ear_all.append(df_measures)
     for df_to_save in df_tab:
         DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0], dataset_path="data/stage_data_out/dataset_temporal/Irba_40_min_debt")
-    DataFormator.save_df(df_merge, video_name, dataset_path="data/stage_data_out/dataset_temporal/Irba_40_min")
-DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset_temporal/Irba_40_min_debt", windows_size)
+    DataFormator.save_df(df_merge, video_name, dataset_path="data/stage_data_out/dataset_temporal/Irba_40_min_debt")
+DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset_temporal/Irba_40_min_debt/", windows_size, path_folder_to_save = "data/stage_data_out/dataset_temporal/Merge_Dataset_Debt/")
