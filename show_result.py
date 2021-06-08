@@ -1,12 +1,14 @@
+from numpy.lib import index_tricks
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 #matplotlib.use('TkAgg', force=True)
 import numpy as np
 from pandas.plotting import table
 import os
 from utils import parse_video_name
-
+import time
 def plot_measure(path_to_df, num_sec, fps, subject):
     df = pd.read_csv(path_to_df, index_col=0)
     measure_list = [measure for measure in list(df) if measure != "frame"]
@@ -168,4 +170,31 @@ def exctract_pvt_hours_from_eva_file():
 
     
 def show_cross_validation_resutlt():
-    print("")
+    path_to_cross_folder = "/home/AlexandreL/work/Fatigue_analyse/data/stage_data_out/cross_predictions/"
+    df_metrics = pd.DataFrame()
+    df_pred = pd.DataFrame()
+    dict_pred = {}
+    for video_name in [path for path in os.listdir(path_to_cross_folder)]:
+        dict_pred[video_name] = {}
+        for sub_path in [os.path.join(path_to_cross_folder , video_name, sub_path) for sub_path in os.listdir(path_to_cross_folder + video_name)] : 
+           if os.path.isdir(sub_path) :
+                path_arr_file = [os.path.join(sub_path, file) for file in os.listdir(sub_path)]
+                for file in path_arr_file:
+                    if "metrics" in file:
+                        df_metrics = df_metrics.append(pd.read_csv(file, index_col=[0,1]))
+                    elif "pred" in file:
+                        df_csv = pd.read_csv(file, usecols=["pred_mean","pred_max","target_pred_mean","target_pred_max","target_real"])
+                        measure_combination = file.split("/")[-2]
+                        video_exclude = file.split("/")[-3]
+                        
+                        dict_pred[video_exclude][measure_combination] =  df_csv
+                        #print(confusion_matrix(df_csv["target_real"],df_csv["target_pred_mean"]))
+                        #df_pred = df_pred.append(df_csv)
+    intersting_mertics = df_metrics[df_metrics["binary_accuracy"]>= 0.85].sort_values("binary_accuracy", ascending=False).index.values
+    print(df_metrics.sort_values("binary_accuracy", ascending=False))
+    for metrics in intersting_mertics:
+        print(metrics[0],metrics[1])
+        print(confusion_matrix(dict_pred[metrics[0]][metrics[1]]["target_real"],dict_pred[metrics[0]][metrics[1]]["target_pred_mean"]))
+    #print(dict_pred["DESFAM_F_H95_VENDREDI"])
+    #print(df_metrics.)
+show_cross_validation_resutlt()
