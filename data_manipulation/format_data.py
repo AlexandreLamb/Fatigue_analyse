@@ -88,8 +88,7 @@ class DataFormator:
         df_videos_merge_infos.to_csv("data/data_out/videos_infos.csv", mode="a", header=False)
         return csv_path.split(".")[0]
     @staticmethod
-    def make_label_df(num_min, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None):
-        
+    def make_label_df(num_min, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
         df_video_infos = pd.read_csv(DataFormator.VIDEOS_INFOS_PATH)
         if fps == None:
             fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
@@ -108,9 +107,6 @@ class DataFormator:
         df_label = df_label.set_index("frame")
         columns_measures = [col for col in df_label.columns if col !=  "Target"]
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
-        #print(video_name)
-        #print("ratio")
-        #print(df_label["Target"].sum()/len(df_label))
         dataset_path = "data/stage_data_out/dataset_non_temporal/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
             os.mkdir(os.path.join(dataset_path,video_name))
@@ -174,10 +170,11 @@ class DataFormator:
         return df_tab
 
     @staticmethod
-    def save_df(df, video_name, windows=""):
-        dataset_path = "data/stage_data_out/dataset_temporal/Irba_40_min"
+    def save_df(df, video_name, windows="", dataset_path =None):
+        if dataset_path == None:
+            dataset_path = "data/stage_data_out/dataset_temporal/Irba_40_min"
         if os.path.exists(os.path.join(dataset_path,video_name)) == False:
-            os.mkdir(os.path.join(dataset_path,video_name))
+            os.makedirs(os.path.join(dataset_path,video_name))
         print(df)
         if windows == "":
             df.to_csv(os.path.join(dataset_path,video_name,video_name+".csv"), index = False)
@@ -230,7 +227,34 @@ class DataFormator:
             if os.path.exists(path_folder_to_save) == False:
                 os.makedirs(path_folder_to_save)
             df_measures.to_csv(path_folder_to_save + "/dataset.csv", index=False)
-        
+            
+            
+    @staticmethod
+    def generate_dataset_debt_sleep(video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
+        df_pvt_total = pd.read_csv("data/stage_data_out/sujets_data_pvt_perf.csv", sep=";", index_col = [0,1])
+        subject_conditions = dict(df_pvt_total.index)
+        subject_to_label = video_name.split("_")[2]
+        condition = subject_conditions[subject_to_label]
+        df_video_infos = pd.read_csv(DataFormator.VIDEOS_INFOS_PATH)
+        if fps == None:
+            fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
+        #num_sec = num_min*60
+        #num_frame_by_num_min = int(fps*num_sec)
+        #print("num frame by min : " +str(num_frame_by_num_min))
+        if path != None:
+            df = pd.read_csv(path)
+        if not df_measure.empty:
+            df = df_measure[measures]
+            df_label = df.append( pd.DataFrame(columns=['Target']))
+            #print(df_label[df_label["frame"].between(0,num_frame_by_num_min*2)])
+            if condition == "dette" : 
+                df_label["Target"] = 1
+            else :
+                df_label["Target"] = 0
+        df_label = df_label.set_index("frame")
+        columns_measures = [col for col in df_label.columns if col !=  "Target"]
+        df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
+        return df_label
 ## TODO:  add video anme and stuff in csv video infos
 
 ## TODO: make mother class for herite some commun variable (csv_infos ect...)
