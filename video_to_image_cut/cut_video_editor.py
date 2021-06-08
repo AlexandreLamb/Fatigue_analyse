@@ -25,7 +25,6 @@ def video_cut(path_to_video):
             #cap.set(cv2.CAP_PROP_POS_FRAMES,(frame+windows_to_cut)/frame_count)
             _, image = cap.read()
             position = cap.get(cv2.CAP_PROP_POS_FRAMES)
-            print(position)
             img_array.append(image)
             path_folder_to_save = "data/stage_data_out/image_for_irba/"+video_name+"/sequence_"+str(random_sequence_order[index])
             path_img_to_save = path_folder_to_save +"/" +video_name+'_frame_'+str(frame)+'.png'
@@ -38,7 +37,10 @@ def video_cut(path_to_video):
         for i in range(len(img_array)):
             out.write(img_array[i])
         out.release()
+        print(video_name+"_"+str(random_sequence_order[index]) + " is save")
         img_array = []
+        cap.release()
+        cv2.destroyAllWindows()
     if os.path.isfile("data/stage_data_out/image_for_irba/sequence_order.csv") == False:
         df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv",mode="w", header=True ) 
     else : df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv",mode="a", header=False )
@@ -51,9 +53,11 @@ subject_list = ["H90", "H91", "H95", "H98", "H103", "H105"]
 subject_list_lundi = [ "DESFAM_F_"+subject+"_LUNDI.avi" for subject in subject_list ]
 subject_list_vendredi = [ "DESFAM_F_"+subject+"_VENDREDI.avi" for subject in subject_list ]
 file_path = ["/mnt/feb02e35-bf58-4dba-aec4-589661cff1a5/data/OneDrive/IRBA/Video_IRBA_40_min/"+video_path for video_path in subject_list_vendredi + subject_list_lundi if os.path.isfile("/mnt/feb02e35-bf58-4dba-aec4-589661cff1a5/data/OneDrive/IRBA/Video_IRBA_40_min/"+video_path) == True]
-file_path = file_path + ["/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/"+video_path for video_path in subject_list_vendredi + subject_list_lundi if os.path.isfile("/media/simeon/Data/DESFAM-F/"+video_path) == True]
+file_path = file_path + ["/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/"+video_path for video_path in subject_list_vendredi + subject_list_lundi if os.path.isfile("/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/"+video_path) == True]
 print(file_path)
 for path_to_cut in file_path:
     video_cut(path_to_cut)
-"""df_sequence = pd.read_csv("data/stage_data_out/image_for_irba/sequence_order.csv", index_col=["subject","day"]) 
-df_sequence.sort_index().to_excel("data/stage_data_out/image_for_irba/sequence_order.xlsx")"""
+df_sequence = pd.read_csv("data/stage_data_out/image_for_irba/sequence_order.csv", index_col=["subject","day"]) 
+df_sequence.sort_index().to_excel("data/stage_data_out/image_for_irba/sequence_order.xlsx")
+
+##TODO: why is so long
