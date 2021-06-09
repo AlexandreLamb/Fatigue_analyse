@@ -190,11 +190,31 @@ def show_cross_validation_resutlt():
                         dict_pred[video_exclude][measure_combination] =  df_csv
                         #print(confusion_matrix(df_csv["target_real"],df_csv["target_pred_mean"]))
                         #df_pred = df_pred.append(df_csv)
+    print(df_metrics.loc["DESFAM_F_H95_VENDREDI"].sort_values("binary_accuracy", ascending=False))
     intersting_mertics = df_metrics[df_metrics["binary_accuracy"]>= 0.85].sort_values("binary_accuracy", ascending=False).index.values
-    print(df_metrics.sort_values("binary_accuracy", ascending=False))
-    for metrics in intersting_mertics:
+    #print(df_metrics.sort_values("binary_accuracy", ascending=False))
+    """for metrics in intersting_mertics:
         print(metrics[0],metrics[1])
         print(confusion_matrix(dict_pred[metrics[0]][metrics[1]]["target_real"],dict_pred[metrics[0]][metrics[1]]["target_pred_mean"]))
+    """
     #print(dict_pred["DESFAM_F_H95_VENDREDI"])
     #print(df_metrics.)
+
+
+
+def show_pred_result_video():
+    df_pred = pd.read_csv("data/stage_data_out/cross_predictions/DESFAM_F_H95_VENDREDI/ear_30_eye_area_30_jaw_dropping_30_eyebrow_eye_30/pred.csv") 
+    print(list(df_pred.index))
+    pred_index = list(df_pred.index)
+    num_sec = 3
+    num_frame = 0
+    for idx in pred_index :     
+        print(str(num_sec) + " s et " + str(num_frame))
+        num_frame  = num_frame + 1
+        if num_frame == 30:
+            num_sec = num_sec + 1
+            num_frame = 0
+
+
 show_cross_validation_resutlt()
+
