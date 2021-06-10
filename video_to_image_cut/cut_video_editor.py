@@ -3,31 +3,6 @@ import cv2
 import os
 import random
 import pandas as pd
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-from moviepy.editor import *
-
-
-def video_cut_movie(path_to_video):    
-    video_name = path_to_video.split("/")[-1].split(".")[0]
-    subject_info = video_name.split("_")
-    random_sequence_order = [chr(el) for el in random.sample(range(65,69),4)]
-    df_sequence = pd.DataFrame(columns=["subject", "day", "0 min", "15 min", "30 min", "45 min"]).set_index(["subject", "day"])
-    df_sequence.loc[(subject_info[-2], subject_info[-1]),["0 min", "15 min", "30 min", "45 min"]] = random_sequence_order
-    video_infos = VideoFileClip(path_to_video)
-    
-    windows_to_cut_frame = [0, int(15*60) , 30*60, video_infos.duration-10]
-    
-    time_to_cut = 10
-    for index, window in enumerate(windows_to_cut_frame):
-        video = VideoFileClip(path_to_video)
-        video = video.subclip(window, window + time_to_cut)
-        create_folder_video(video_name)    
-        #video.ipython_display()
-        video.write_videofile("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+random_sequence_order[index]+".mp4")
-        video.close()
-        #ffmpeg_extract_subclip(path_to_video, window, window + time_to_cut , targetname="data/stage_data_out/image_for_irba/"+video_name+"_"+random_sequence_order[index]+".avi")
-        print(video_name+"_"+random_sequence_order[index] + " is save")
-    save_csv_sequences_order(df_sequence)
     
 def video_cut(path_to_video):
     
@@ -67,34 +42,12 @@ def video_cut(path_to_video):
                     print(video_name+"_"+str(random_sequence_order[cmp_sequence]) + " is save")
                     out.release()
                     cmp_sequence = cmp_sequence + 1
+                    img_array = []
             success, image = cap.read()
             cmp_frame = cmp_frame + 1
     cap.release()
                          
-       
-def read_video_sequence(path_to_video,windows_to_cut, video_name):
-    cap = cv2.VideoCapture(path_to_video)
-    img_array = []
-    success, image = cap.read()
-    cmp_frame  = 0
-    random_sequence_order = 0
-    while(success) : 
-            if [el for el in windows_to_cut if el[0]<cmp_frame<el[1] ] :
-                img_array.append(image)
-                print(cmp_frame)
-            if cmp_frame == [el[1] for el in a if el[0]<cmp_frame<el[1]][0] : 
-                height, width, layers = img_array[0].shape
-                size = (width,height)
-                out = cv2.VideoWriter("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+str(random_sequence_order)+".avi",cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
-                for i in range(len(img_array)):
-                    out.write(img_array[i])
-                out.release()
-                random_sequence_order = random_sequence_order + 1
-                img_array = []
-            success, image = cap.read()
-            cmp_frame = cmp_frame + 1
-    cap.release()
-    return img_array
+ 
 
 def write_save_video(img_array,video_name,random_sequence_order):
     height, width, layers = img_array[0].shape
