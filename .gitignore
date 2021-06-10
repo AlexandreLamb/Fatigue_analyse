@@ -19,3 +19,4 @@ fatigue_analyse.code-workspace/
 .vscode/settings.json
 fatigue_analyse.code-workspace
 __temp__.mp4
+env_file/.env
