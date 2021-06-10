@@ -2,6 +2,9 @@ import pandas as pd
 from datetime import datetime
 import numpy as np
 import re
+import paramiko as pm
+import sys
+
 
 def make_landmarks_header():
     csv_header = []
@@ -63,4 +66,26 @@ date_id = lambda : datetime.now().strftime("%H_%M_%S_%d_%m_%Y")
 
 make_landmarks_pair  = lambda marks : list(zip(marks[::2],marks[1::2]))
 
-#print(parse_video_name(["DESFAM-F_H92_LUNDI_P1"]))
+
+def remote_file_to_dask_dataframe(remote_path):
+
+   if isinstance(remote_path, (str)):
+      try:
+         client = pm.SSHClient()
+         client.load_system_host_keys()
+         client.connect('10.6.10.37', username='simeon', password='gkc1pc')
+         sftp_client = client.open_sftp()
+         remote_file = sftp_client.open(remote_path)
+         df = pd.read_csv(remote_file)
+         remote_file.close()
+         sftp_client.close()
+         return df 
+      except:
+         print("An error occurred.")
+         sftp_client.close()
+         remote_file.close()
+   else:
+      raise ValueError("Path to remote file as string required")
+  
+  
+print(remote_file_to_dask_dataframe(remote_path="/home/simeon/Desktop/test.csv"))
