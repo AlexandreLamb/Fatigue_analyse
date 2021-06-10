@@ -20,7 +20,7 @@ def video_cut(path_to_video):
     print("video fps : " +str(fps))
     print("windows to cut : " + str(list(zip(windows_to_cut_frame, windows_to_cut_frame_shift))))
     print("---------------------------")
-    
+    """
     random_sequence_order = [chr(el) for el in random.sample(range(65,69),4)]
     df_sequence = pd.DataFrame(columns=["subject", "day", "0 min", "15 min", "30 min", "45 min"]).set_index(["subject", "day"])
     df_sequence.loc[(subject_info[-2], subject_info[-1]),["0 min", "15 min", "30 min", "45 min"]] = random_sequence_order
@@ -51,7 +51,7 @@ def video_cut(path_to_video):
             success, image = cap.read()
             cmp_frame = cmp_frame + 1
     cap.release()
-                         
+    """                  
  
 
 def write_save_video(img_array,video_name,random_sequence_order):
@@ -93,9 +93,9 @@ PATH_TO_HDD_VIDEO_FOLDER_2 = "/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F
 subject_list = ["H90", "H91", "H95", "H98", "H103"]
 file_path = get_file_path(subject_list)
 
-for path in file_path:
+"""for path in file_path:
     video_cut(path)
 convert_csv_to_xlsx_save()
-
-#video_cut("/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/DESFAM_F_H98_LUNDI.avi")
+"""
+video_cut("/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/DESFAM_F_H98_LUNDI.avi")
 ##TODO: why is so long
