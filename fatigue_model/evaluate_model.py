@@ -17,20 +17,20 @@ import matplotlib.pyplot as plt
 import time
 import os
 
-model_path = "tensorboard/model/20210526-173148/model_lstm/1"
+model_path = "/home/simeon/Desktop/Fatigue_analyse/tensorboard/model/ear_30_eye_area_30_jaw_dropping_30_eyebrow_eye_30"
 model = tf.keras.models.load_model(model_path)
 
-video_to_test = os.listdir("data/stage_data_out/dataset_temporal/Irba_40_min")
+video_to_test = os.listdir("data/stage_data_out/dataset_temporal/irba_40_min_temp")
 df_evaluate_metrics = pd.DataFrame(columns=["video_name","binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index("video_name")
 for video in video_to_test:
-    preprocessing = DataPreprocessing("data/stage_data_out/dataset_temporal/Irba_40_min/"+video+"/"+video+".csv", isTimeSeries = True, batch_size = 1, evaluate = True)
+    preprocessing = DataPreprocessing("data/stage_data_out/dataset_temporal/irba_40_min_temp/"+video+"/"+video+".csv", isTimeSeries = True, batch_size = 1, evaluate = True)
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
 
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
     df_evaluate_metrics.loc[video] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     
     predictions = model.predict(preprocessing.dataset)
-    df_video = pd.read_csv("data/stage_data_out/dataset_temporal/Irba_40_min/"+video+"/"+video+".csv")
+    df_video = pd.read_csv("data/stage_data_out/dataset_temporal/irba_40_min_temp/"+video+"/"+video+".csv")
     measure_list = list(df_video)
     df = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
     y_pred_list = []
@@ -49,6 +49,6 @@ for video in video_to_test:
                 os.makedirs(path_folder_to_save)
     df.to_csv(path_to_csv, index = False)
 
-df_evaluate_metrics.to_csv("data/stage_data_out/predictions/metrics.csv")
+df_evaluate_metrics.to_csv(path_folder_to_save+"/metrics.csv")
 
 

@@ -29,8 +29,8 @@ df_ear_all = pd.DataFrame()
 measure_full = ["frame","ear","eyebrow_nose","eye_area","jaw_dropping","eyebrow_eye"]
 measure_short = ["frame", "ear","eye_area"]
 for index, csv_landmarks_path in enumerate(csv_array_path) :
-    video_name = csv_array_name[index].split("_mtcnn.")[0]
-
+    video_name = csv_array_name[index].split("_mtcnn")[0]
+    print(video_name)
     analyse_data = AnalyseData(csv_landmarks_path)
     #TODO: make a function who take a json file of meaurec
     analyse_data.measure_ear()
@@ -44,6 +44,6 @@ for index, csv_landmarks_path in enumerate(csv_array_path) :
     df_merge = DataFormator.concat_dataset(df_tab)
     #df_ear_all = df_ear_all.append(df_measures)
     for df_to_save in df_tab:
-        DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0])
-    DataFormator.save_df(df_merge, video_name)
-DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset_temporal/Irba_40_min", windows_size)
+        DataFormator.save_df(df_to_save, video_name, df_to_save.columns[0],"data/stage_data_out/dataset_temporal/Irba_40_min_all")
+    DataFormator.save_df(df_merge, video_name,dataset_path = "data/stage_data_out/dataset_temporal/Irba_40_min_all")
+DataFormator.create_dataset_from_measure_folder( "data/stage_data_out/dataset_temporal/Irba_40_min_all", windows_size)

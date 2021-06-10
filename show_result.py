@@ -203,18 +203,17 @@ def show_cross_validation_resutlt():
 
 
 def show_pred_result_video():
-    df_pred = pd.read_csv("data/stage_data_out/cross_predictions/DESFAM_F_H95_VENDREDI/ear_30_eye_area_30_jaw_dropping_30_eyebrow_eye_30/pred.csv") 
-    print(list(df_pred.index))
-    pred_index = list(df_pred.index)
-    num_sec = 3
-    num_frame = 0
-    for idx in pred_index :     
-        print(str(num_sec) + " s et " + str(num_frame))
-        num_frame  = num_frame + 1
-        if num_frame == 30:
-            num_sec = num_sec + 1
-            num_frame = 0
-
-
-show_cross_validation_resutlt()
+    df_pred = pd.read_csv("data/stage_data_out/predictions/DESFAM_F_H95_VENDREDI/DESFAM_F_H95_VENDREDI_pred.csv") 
+    windows_sec_0 = np.arange(0,50,10)*600
+    windows_sec_5 = np.arange(5,50,10)*600
+    print(df_pred)
+    for index_inf, index_sup in zip(windows_sec_0, windows_sec_5):
+        print(index_inf," to " ,index_sup)
+        print("pred_mean",df_pred.loc[index_inf:index_sup]["pred_mean"].mean())
+        #print("target_pred_mean",df_pred.loc[index_inf:index_sup]["target_pred_mean"].mean())
+        #print("pred_max",df_pred.loc[index_inf:index_sup]["pred_max"].mean())
+        #print("target_pred_max",df_pred.loc[index_inf:index_sup]["target_pred_max"].mean())
+    
+    
+show_pred_result_video()
 

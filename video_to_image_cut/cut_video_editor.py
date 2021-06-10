@@ -34,36 +34,65 @@ def video_cut(path_to_video):
     video_infos = cv2.VideoCapture(path_to_video)
     fps = video_infos.get(cv2.CAP_PROP_FPS)
     frame_count =video_infos.get(cv2.CAP_PROP_FRAME_COUNT)
-    time_to_cut_sec = 23
+    time_to_cut_sec = 15
     number_frame_to_cut = int(time_to_cut_sec  * fps)
     windows_to_cut_frame = [0, int(15*60*fps) , int(30*60*fps), int(frame_count - number_frame_to_cut) ]
+    windows_to_cut_frame_shift = [0+number_frame_to_cut, int(15*60*fps)+number_frame_to_cut , int(30*60*fps)+number_frame_to_cut, int(frame_count - number_frame_to_cut)+number_frame_to_cut ]
     video_name = path_to_video.split("/")[-1].split(".")[0]
     subject_info = video_name.split("_")
     
     random_sequence_order = [chr(el) for el in random.sample(range(65,69),4)]
     df_sequence = pd.DataFrame(columns=["subject", "day", "0 min", "15 min", "30 min", "45 min"]).set_index(["subject", "day"])
     df_sequence.loc[(subject_info[-2], subject_info[-1]),["0 min", "15 min", "30 min", "45 min"]] = random_sequence_order
-
-    for index, windows_to_cut in enumerate(windows_to_cut_frame):
-        
-        img_array = read_video_sequence (path_to_video, number_frame_to_cut, windows_to_cut) 
-        if len(img_array) > 0 :
-            create_folder_video(video_name)
-            write_save_video(img_array, video_name, random_sequence_order[index])
-            print(video_name+"_"+str(random_sequence_order[index]) + " is save")
-            save_csv_sequences_order(df_sequence)
-        else :
-            print("error, img array Null : " + img_array)   
+    create_folder_video(video_name)
+    save_csv_sequences_order(df_sequence)
+    windows_to_cut = list(zip(windows_to_cut_frame,windows_to_cut_frame_shift))
     
-def read_video_sequence(path_to_video, number_frame_to_cut,windows_to_cut):
     cap = cv2.VideoCapture(path_to_video)
     img_array = []
-    for frame in range(number_frame_to_cut+1):
-            cap.set(cv2.CAP_PROP_POS_FRAMES,frame+windows_to_cut)
-            #cap.set(cv2.CAP_PROP_POS_FRAMES,(frame+windows_to_cut)/frame_count)
-            _, image = cap.read()
-            position = cap.get(cv2.CAP_PROP_POS_FRAMES)
-            img_array.append(image)
+    success, image = cap.read()
+    cmp_frame  = 0
+    cmp_sequence = 0
+    while(success) : 
+            if [el for el in windows_to_cut if el[0]<cmp_frame<el[1] ] :
+                img_array.append(image)
+                print(cmp_frame)
+            if len([el[1] for el in windows_to_cut if el[0]<=cmp_frame<=el[1]]) > 0:
+                if cmp_frame == [el[1] for el in windows_to_cut if el[0]<=cmp_frame<=el[1]][0] : 
+                    height, width, layers = img_array[0].shape
+                    size = (width,height)
+                    out = cv2.VideoWriter("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+str(random_sequence_order[cmp_sequence])+".avi",cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+                    for i in range(len(img_array)):
+                        out.write(img_array[i])
+                    print(video_name+"_"+str(random_sequence_order[cmp_sequence]) + " is save")
+                    out.release()
+                    cmp_sequence = cmp_sequence + 1
+            success, image = cap.read()
+            cmp_frame = cmp_frame + 1
+    cap.release()
+                         
+       
+def read_video_sequence(path_to_video,windows_to_cut, video_name):
+    cap = cv2.VideoCapture(path_to_video)
+    img_array = []
+    success, image = cap.read()
+    cmp_frame  = 0
+    random_sequence_order = 0
+    while(success) : 
+            if [el for el in windows_to_cut if el[0]<cmp_frame<el[1] ] :
+                img_array.append(image)
+                print(cmp_frame)
+            if cmp_frame == [el[1] for el in a if el[0]<cmp_frame<el[1]][0] : 
+                height, width, layers = img_array[0].shape
+                size = (width,height)
+                out = cv2.VideoWriter("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+str(random_sequence_order)+".avi",cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+                for i in range(len(img_array)):
+                    out.write(img_array[i])
+                out.release()
+                random_sequence_order = random_sequence_order + 1
+                img_array = []
+            success, image = cap.read()
+            cmp_frame = cmp_frame + 1
     cap.release()
     return img_array
 
@@ -82,9 +111,7 @@ def create_folder_video(video_name):
         os.makedirs(path_folder_to_save)
         
 def save_csv_sequences_order(df_sequence):
-    if os.path.isfile("data/stage_data_out/image_for_irba/sequence_order.csv") == False:
-        df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv",mode="w", header=True ) 
-    else : df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv",mode="a", header=False )
+    df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv") 
 
 def get_file_path(subject_list):
     subject_list_lundi = [ "DESFAM_F_"+subject+"_LUNDI.avi" for subject in subject_list ]
@@ -105,7 +132,7 @@ subject_list = ["H90", "H91", "H95", "H98", "H103", "H105"]
 file_path = get_file_path(subject_list)
 
 for path in file_path:
-    video_cut_movie(path)
+    video_cut(path)
 convert_csv_to_xlsx_save()
 
 ##TODO: why is so long
