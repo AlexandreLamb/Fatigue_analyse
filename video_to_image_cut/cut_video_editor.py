@@ -15,7 +15,12 @@ def video_cut(path_to_video):
     windows_to_cut_frame_shift = [0+number_frame_to_cut, int(15*60*fps)+number_frame_to_cut , int(30*60*fps)+number_frame_to_cut, int(frame_count - number_frame_to_cut)+number_frame_to_cut ]
     video_name = path_to_video.split("/")[-1].split(".")[0]
     subject_info = video_name.split("_")
-    
+    print("------ "+video_name+ " ------")
+    print("video total frame : " +str(frame_count))
+    print("video fps : " +str(fps))
+    print("windows to cut : " + str(list(zip(windows_to_cut_frame, windows_to_cut_frame_shift))))
+    print("---------------------------")
+    """
     random_sequence_order = [chr(el) for el in random.sample(range(65,69),4)]
     df_sequence = pd.DataFrame(columns=["subject", "day", "0 min", "15 min", "30 min", "45 min"]).set_index(["subject", "day"])
     df_sequence.loc[(subject_info[-2], subject_info[-1]),["0 min", "15 min", "30 min", "45 min"]] = random_sequence_order
@@ -33,7 +38,7 @@ def video_cut(path_to_video):
                 img_array.append(image)
                 print(cmp_frame)
             if len([el[1] for el in windows_to_cut if el[0]<=cmp_frame<=el[1]]) > 0:
-                if cmp_frame == [el[1] for el in windows_to_cut if el[0]<=cmp_frame<=el[1]][0] : 
+                if cmp_frame == [el[1] for el in windows_to_cut if el[0]<=cmp_frame<=el[1]][0]-1 : 
                     height, width, layers = img_array[0].shape
                     size = (width,height)
                     out = cv2.VideoWriter("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+str(random_sequence_order[cmp_sequence])+".avi",cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
@@ -46,7 +51,7 @@ def video_cut(path_to_video):
             success, image = cap.read()
             cmp_frame = cmp_frame + 1
     cap.release()
-                         
+    """                  
  
 
 def write_save_video(img_array,video_name,random_sequence_order):
@@ -64,7 +69,11 @@ def create_folder_video(video_name):
         os.makedirs(path_folder_to_save)
         
 def save_csv_sequences_order(df_sequence):
-    df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv") 
+    if os.path.exists("data/stage_data_out/image_for_irba/sequence_order.csv"):
+        df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv", mode="a", header=False)
+    else:
+        df_sequence.to_csv("data/stage_data_out/image_for_irba/sequence_order.csv", mode="w", header=True)
+         
 
 def get_file_path(subject_list):
     subject_list_lundi = [ "DESFAM_F_"+subject+"_LUNDI.avi" for subject in subject_list ]
@@ -81,11 +90,12 @@ def convert_csv_to_xlsx_save():
 
 PATH_TO_HDD_VIDEO_FOLDER_1 = "/mnt/feb02e35-bf58-4dba-aec4-589661cff1a5/data/OneDrive/IRBA/Video_IRBA_40_min/"
 PATH_TO_HDD_VIDEO_FOLDER_2 = "/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/"
-subject_list = ["H90", "H91", "H95", "H98", "H103", "H105"]
+subject_list = ["H90", "H91", "H95", "H98", "H103"]
 file_path = get_file_path(subject_list)
 
-for path in file_path:
+"""for path in file_path:
     video_cut(path)
 convert_csv_to_xlsx_save()
-
+"""
+video_cut("/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/DESFAM_F_H98_LUNDI.avi")
 ##TODO: why is so long
