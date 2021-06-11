@@ -7,6 +7,9 @@ import os
 import pandas as pd
 import time
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
+
 parser=argparse.ArgumentParser()
 
 
