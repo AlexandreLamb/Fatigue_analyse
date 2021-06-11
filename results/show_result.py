@@ -7,10 +7,20 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 from pandas.plotting import table
 import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+
+from tensorflow.python.ops.gen_io_ops import reader_read
 from utils import parse_video_name
 import time
+from dotenv import load_dotenv
+load_dotenv("env_file/.env")
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
+PATH_TO_RESULTS = os.environ.get("PATH_TO_RESULTS")
+PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
+PATH_TO_RESULTS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_PREDICTIONS")
+
 def plot_measure(path_to_df, num_sec, fps, subject):
-    df = pd.read_csv(path_to_df, index_col=0)
+    df = read_remote_df(path_to_df, index_col=0)
     measure_list = [measure for measure in list(df) if measure != "frame"]
     df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
     df_plot = pd.DataFrame(columns=measure_list + [measure +"_roc" for measure in list(df) if measure != "frame"])
@@ -72,7 +82,7 @@ def plot_pred(path_to_df, num_sec, fps, subject):
         fps ([type]): [description]
         subject ([type]): [description]
     """
-    df = pd.read_csv(path_to_df, index_col=0)
+    df = read_remote_df(path_to_df, index_col=0)
     measure_list = [measure for measure in list(df)]
     df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
     df_plot = pd.DataFrame(columns=measure_list)
@@ -111,11 +121,11 @@ def plot_pred(path_to_df, num_sec, fps, subject):
         plt.close()
     
 def generate_mean_diff(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min", num_sec_list=[1,3,5,10,60], fps =10):
-    list_subject = os.listdir(csv_folder)
+    list_subject = list_dir_remote(csv_folder)
     df_stat =  pd.DataFrame(columns=["subject","windows_size","measure","target","mean", "std","min","max"]).set_index(["subject","windows_size","measure","target"])
 
     for subject in list_subject:
-        df = pd.read_csv(csv_folder + "/" + subject + "/" + subject +".csv", index_col=0)
+        df = read_remote_df(csv_folder + "/" + subject + "/" + subject +".csv", index_col=0)
         measure_list = [measure for measure in list(df) if measure != "frame"]
         df[measure_list] = (df[measure_list]-df[measure_list].min())/(df[measure_list].max()-df[measure_list].min())
         df_plot = pd.DataFrame(columns=measure_list + [measure +"_roc" for measure in list(df) if measure != "frame"])
@@ -133,10 +143,10 @@ def generate_mean_diff(csv_folder = "data/stage_data_out/dataset_non_temporal/Ir
                 df_stat.loc[(subject, num_sec ,measure, "fatigue"),["mean","std","min","max"]] = measure_describe_2[["mean","std","min","max"]].values[0]
                 df_stat.loc[(subject, num_sec ,measure, "diff abs"),["mean","std","min","max"]] = np.absolute(np.subtract(measure_describe_1[["mean","std","min","max"]].values[0], measure_describe_2[["mean","std","min","max"]].values[0]))
             #print(df_stat)
-    print(df_stat)
-    df_stat.to_csv("data/stage_data_out/resutls/statistiques.csv")
+    path_to_csv_stat = os.path.join(PATH_TO_RESULTS, "statistiques.csv")
+    save_remote_df(path_to_csv_stat, df_stat)
 def generate_data_img(csv_folder = "data/stage_data_out/dataset_non_temporal/Irba_40_min", num_sec_to_test = [1,3,5,10,60], fps =10):
-    list_subject = os.listdir(csv_folder)
+    list_subject = list_dir_remote(csv_folder)
     for num_sec in num_sec_to_test:
         for subject in list_subject:
             plot_measure(csv_folder + "/" + subject + "/" + subject +".csv", num_sec, fps, subject)
@@ -157,7 +167,7 @@ afficher 2 graphs
     
 """
 def exctract_pvt_hours_from_eva_file():
-    file_list =  os.listdir("data/stage_data_out/eva_data/Resultat_EVA")
+    file_list =  list_dir_remote("data/stage_data_out/eva_data/Resultat_EVA")
     df_pvt_hours = pd.DataFrame(columns=["subject", "moment","date", "hours"]).set_index(["subject", "date","moment"])
     for index, file in enumerate(file_list):
         file_split = file.split("_")
@@ -170,20 +180,20 @@ def exctract_pvt_hours_from_eva_file():
 
     
 def show_cross_validation_resutlt():
-    path_to_cross_folder = "/home/AlexandreL/work/Fatigue_analyse/data/stage_data_out/cross_predictions/"
+    path_to_cross_folder = PATH_TO_RESULTS_CROSS_PREDICTIONS
     df_metrics = pd.DataFrame()
     df_pred = pd.DataFrame()
     dict_pred = {}
-    for video_name in [path for path in os.listdir(path_to_cross_folder)]:
+    for video_name in [path for path in list_dir_remote(path_to_cross_folder)]:
         dict_pred[video_name] = {}
-        for sub_path in [os.path.join(path_to_cross_folder , video_name, sub_path) for sub_path in os.listdir(path_to_cross_folder + video_name)] : 
+        for sub_path in [os.path.join(path_to_cross_folder , video_name, sub_path) for sub_path in list_dir_remote(path_to_cross_folder + video_name)] : 
            if os.path.isdir(sub_path) :
-                path_arr_file = [os.path.join(sub_path, file) for file in os.listdir(sub_path)]
+                path_arr_file = [os.path.join(sub_path, file) for file in list_dir_remote(sub_path)]
                 for file in path_arr_file:
                     if "metrics" in file:
-                        df_metrics = df_metrics.append(pd.read_csv(file, index_col=[0,1]))
+                        df_metrics = df_metrics.append(read_remote_df(file, index_col=[0,1]))
                     elif "pred" in file:
-                        df_csv = pd.read_csv(file, usecols=["pred_mean","pred_max","target_pred_mean","target_pred_max","target_real"])
+                        df_csv = read_remote_df(file, usecols=["pred_mean","pred_max","target_pred_mean","target_pred_max","target_real"])
                         measure_combination = file.split("/")[-2]
                         video_exclude = file.split("/")[-3]
                         
@@ -203,7 +213,7 @@ def show_cross_validation_resutlt():
 
 
 def show_pred_result_video():
-    df_pred = pd.read_csv("data/stage_data_out/predictions/DESFAM_F_H95_VENDREDI/DESFAM_F_H95_VENDREDI_pred.csv") 
+    df_pred = read_remote_df(os.path.join(PATH_TO_RESULTS_PREDICTIONS+"DESFAM_F_H95_VENDREDI","DESFAM_F_H95_VENDREDI_pred.csv"))
     windows_sec_0 = np.arange(0,50,10)*600
     windows_sec_5 = np.arange(5,50,10)*600
     print(df_pred)

@@ -17,7 +17,12 @@ from tensorflow.python.keras.activations import sigmoid
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
 from logger import logging
-
+from dotenv import load_dotenv
+load_dotenv("env_file/.env")
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
+PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
+PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
+PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
 
 def define_model(measure_len) :
     return tf.keras.models.Sequential([
@@ -76,7 +81,7 @@ def evaluate_model(model_path, video_exclude, cross_measures):
     logging.info(video_exclude)
     
     df_evaluate_metrics = pd.DataFrame(columns=["video_exclude", "measure_combination", "binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index(["video_exclude","measure_combination"])
-    df = pd.read_csv("data/stage_data_out/dataset_temporal/Irba_40_min/"+video_exclude+"/"+video_exclude+".csv")
+    df = read_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO, video_exclude, video_exclude+".csv"))
     sub_df = df[cross_measures + ["target"]]
     preprocessing = DataPreprocessing(path_to_dataset = None, isTimeSeries = True, batch_size = 1, evaluate = True, df_dataset=sub_df)
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
@@ -96,24 +101,23 @@ def evaluate_model(model_path, video_exclude, cross_measures):
     df_pred.loc[lambda df_pred: df_pred["pred_max"] < 0.5,"target_pred_max"] = 0
     df_pred.loc[lambda df_pred: df_pred["pred_max"] >= 0.5,"target_pred_max"] = 1
     df_pred["target_real"] = df["target"]
-    path_folder_to_save = "data/stage_data_out/cross_predictions/"+video_exclude+"/"+"_".join(cross_measures)
-    path_to_csv = path_folder_to_save + "/pred.csv"
-    if os.path.exists(path_folder_to_save) == False:
-                os.makedirs(path_folder_to_save)
-    df_pred.to_csv(path_to_csv, index = False)
+    
+    path_to_csv_pred =os.join(PATH_TO_RESULTS_CROSS_PREDICTIONS, video_exclude, "_".join(cross_measures),"/pred.csv") 
+    path_to_csv_metrics =os.join(PATH_TO_RESULTS_CROSS_PREDICTIONS, video_exclude, "_".join(cross_measures),"/metrics.csv") 
     logging.info("SAVING...")
-    df_evaluate_metrics.to_csv("data/stage_data_out/cross_predictions/" + video_exclude + "/" + "_".join(cross_measures) + "/metrics.csv")
+    save_remote_df(path_to_csv_pred, df_pred, index = False)
+    save_remote_df(path_to_csv_metrics, df_evaluate_metrics)
     logging.info("SAVE !")
    
 def train_cross_model():
     cross_combinations = lambda df : sum([list(map(list, combinations(df, i))) for i in range(len(df) + 1) if i != 0],[])
-    cross_dataset_path = "data/stage_data_out/dataset_temporal/cross-dataset/"
-    folder_dataset = os.listdir(cross_dataset_path)
+    cross_dataset_path = PATH_TO_TIME_ON_TASK_CROSS
+    folder_dataset = list_dir_remote(cross_dataset_path)
     path_dataset = [ cross_dataset_path + folder + "/dataset.csv" for folder in  folder_dataset ]
     date_id = str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     df_metrics_model_train = pd.DataFrame(columns=["video_exclude","measure_combination","binary_accuracy","binary_crossentropy","mean_squared_error"]).set_index(["video_exclude","measure_combination"])
     for dataset in path_dataset:
-        df = pd.read_csv(dataset)
+        df = read_remote_df(dataset)
         cross_combinations_measure = cross_combinations([measure for measure in list(df) if measure != "target"])
         for measures in cross_combinations_measure:
             sub_df = df[measures + ["target"]]
@@ -121,6 +125,6 @@ def train_cross_model():
             logging.info("start with comniation of measure : " + str(measures))
             path_to_model, video_to_exclude, df_metrics_model_train = train_evaluate_model(dataset, df_metrics_model_train, sub_df, date_id)
             evaluate_model(path_to_model, video_to_exclude, measures)
-    df_metrics_model_train.to_csv("data/stage_data_out/cross_predictions/metrics_train_model.csv")
-
+    path_to_csv_metrics_model_train = os.path.join(PATH_TO_RESULTS_CROSS_PREDICTIONS,"metrics_train_model.csv")
+    save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)
 train_cross_model()

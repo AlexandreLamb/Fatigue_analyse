@@ -2,10 +2,12 @@ import os
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
 
 class PvtReader():
     def __init__(self, path_to_df_pvt):
-        self.df_pvt_total = pd.read_csv(path_to_df_pvt, sep=";", index_col = [0,1,2])
+        self.df_pvt_total = read_remote_df(path_to_df_pvt, sep=";", index_col = [0,1,2])
         self.serie_pvt_rt_total = self.df_pvt_total.filter(regex=("rt_")).iloc[:,12:]
         self.serie_pvt_lapse_total = self.df_pvt_total.filter(regex=("lapse_"))
     """                 

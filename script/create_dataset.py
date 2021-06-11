@@ -20,7 +20,7 @@ windows_size = args.windows
 print(windows_size)
 #json_measure = json.load(args.json_measure)
 
-csv_array_name  = os.listdir(args.path)
+csv_array_name  = list_dir_remote(args.path)
 print(csv_array_name)
 
 csv_array_path = [args.path + "/" +  name for name in csv_array_name]
