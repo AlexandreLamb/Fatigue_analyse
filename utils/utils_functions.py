@@ -66,6 +66,6 @@ def parse_video_name(video_name_list):
             subject_list.append(subject_clean[0] +"_"+condition + "_T2")
     return subject_list
 
-date_id = lambda : datetime.now().strftime("%H_%M_%S_%d_%m_%Y")
+date_id = lambda : datetime.now().strftime("%Y_%m_%d_%M_%H")
 
 make_landmarks_pair  = lambda marks : list(zip(marks[::2],marks[1::2]))

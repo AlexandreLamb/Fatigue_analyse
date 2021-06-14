@@ -139,7 +139,7 @@ class DataFormator:
     def create_dataset_from_measure_folder(path_to_measure_folder, windows, path_folder_to_save):
         ##TODODATABASE: list dir methode 
         dir_measures = list_dir_remote(path_to_measure_folder)
-        date_id = datetime.now().strftime("%H_%M_%d_%m_%Y")
+        date_id = datetime.now().strftime("%Y_%m_%d_%M_%H")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
