@@ -21,7 +21,7 @@ PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
 PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_MIN")
 WINDOWS_SIZE = os.environ.get("WINDOWS_SIZE")
 
-def create_dataset(dataset_path, path_folder_to_save):
+def create_dataset(dataset_path, path_folder_to_saven, dataset_type):
     csv_array_name  = list_dir_remote(PATH_TO_LANDMARKS_DESFAM_F_5_MIN)
 
     csv_array_path = [PATH_TO_LANDMARKS_DESFAM_F_5_MIN + "/" +  name for name in csv_array_name]
@@ -38,7 +38,10 @@ def create_dataset(dataset_path, path_folder_to_save):
         analyse_data.nose_wrinkles()
         analyse_data.jaw_dropping()
         analyse_data.measure_eye_area()
-        df_measures = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures =measure_full , df_measure= analyse_data.df_measure, fps = 10)
+        if dataset_type == "time_on_task":
+            df_measures = DataFormator.make_label_df(num_min = 5, video_name = video_name, measures =measure_full , df_measure= analyse_data.df_measure, fps = 10)
+        elif dataset_type == "debt" :
+            df_measures = DataFormator.generate_dataset_debt_sleep(video_name = video_name, measures =measure_full , df_measure= analyse_data.df_measure, fps = 10)        
         df_temporal, df_label = DataFormator.make_df_temporal_label(WINDOWS_SIZE , df_measures)
         df_tab = DataFormator.make_df_feature(df_temporal, df_label, WINDOWS_SIZE)
         df_merge = DataFormator.concat_dataset(df_tab)
@@ -47,5 +50,5 @@ def create_dataset(dataset_path, path_folder_to_save):
         DataFormator.save_df(df_merge, video_name,dataset_path = dataset_path)
     DataFormator.create_dataset_from_measure_folder(dataset_path, WINDOWS_SIZE, path_folder_to_save = path_folder_to_save)
 
-create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE)
-create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE)
+create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, type="time_on_task")
+create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, type="debt")
