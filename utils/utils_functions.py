@@ -9,7 +9,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 from dotenv import load_dotenv
 load_dotenv("env_file/.env")
-
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
 
 def make_landmarks_header():
@@ -66,6 +65,11 @@ def parse_video_name(video_name_list):
             subject_list.append(subject_clean[0] +"_"+condition + "_T2")
     return subject_list
 
-date_id = lambda : datetime.now().strftime("%Y_%m_%d_%M_%H")
+date_id = lambda : datetime.now().strftime("%Y_%m_%d_%H_%M")
 
 make_landmarks_pair  = lambda marks : list(zip(marks[::2],marks[1::2]))
+
+
+def get_last_date_item(path_to_folder):
+    dataset_array = list_dir_remote(path_to_folder)
+    return dataset_array.sort()[-1]

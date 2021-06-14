@@ -1,19 +1,27 @@
 import os
+from script.create_dataset import PATH_TO_DEBT_MERGE
 import sys
 import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from model_trainning import DenseAnn, LSTMAnn
 from data_processing import DataPreprocessing
 from hparams import Hparams
+from utils import get_last_date_item
 import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
+from dotenv import load_dotenv
+
+load_dotenv("env_file/.env")
+
+PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
+PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
 
 class ModelTunning():
-    def __init__(self, json_path, path_to_dataset, isTimeSeries, batch_size =32,):      
+    def __init__(self, json_path, path_to_merge_dataset_folder, isTimeSeries, batch_size =32,):      
         self.save_model_on_training = True
         self.model_generator = None
         
-        self.preprocessing = DataPreprocessing(path_to_dataset, isTimeSeries = isTimeSeries, batch_size = batch_size)
+        self.preprocessing = DataPreprocessing(get_last_date_item(), isTimeSeries = isTimeSeries, batch_size = batch_size)
         self.all_features = self.preprocessing.all_features
         self.all_inputs = self.preprocessing.all_inputs
         self.val = self.preprocessing.val
@@ -87,8 +95,9 @@ class ModelTunning():
             session_num += 1          
                     
 json_path = "fatigue_model/model_trainning/hparms_lstm.json"
-dataset_path = "data/stage_data_out/dataset_temporal/Merge_Dataset_Debt/dataset_merge_30_16_16_08_06_2021.csv"
-mt = ModelTunning(json_path, dataset_path, isTimeSeries = True, batch_size=32)
+path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
+
+mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
 mt.initialize_model("LSTM")
 mt.tune_model()
 ## TODO : make global variable across module for path
