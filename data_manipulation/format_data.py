@@ -108,11 +108,11 @@ class DataFormator:
         return df_tab
 
     @staticmethod
-    def save_df(df, video_name, dataset_path, windows=""):
-        if windows == "":
+    def save_df(df, video_name, dataset_path, measure=""):
+        if measure == "":
             save_remote_df(os.path.join(dataset_path,video_name,video_name+".csv"), index = False)
         else : 
-            save_remote_df(os.path.join(dataset_path,video_name,video_name+"_"+str(windows)+".csv"), df, index =False)
+            save_remote_df(os.path.join(dataset_path,video_name,video_name+"_"+str(measure)+".csv"), df, index =False)
 
     
     
