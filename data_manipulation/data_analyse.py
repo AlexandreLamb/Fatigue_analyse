@@ -17,10 +17,11 @@ PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDIC
 PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 
 class AnalyseData():
-    def __init__(self, csv_path):
-        self.df_landmarks = read_remote_df(csv_path).rename(columns={"Unnamed: 0" : "frame"})
+    def __init__(self,sftp_client, csv_path):
+        self.sftp_client = sftp_client
+        self.df_landmarks = read_remote_df(self.sftp_client,csv_path).rename(columns={"Unnamed: 0" : "frame"})
         self.df_measure = pd.DataFrame( self.df_landmarks["frame"])
-        self.df_videos_infos = read_remote_df(os.path.join(PATH_TO_LANDMARKS_DESFAM_F,"videos_infos.csv"))
+        self.df_videos_infos = read_remote_df(self.sftp_client,os.path.join(PATH_TO_LANDMARKS_DESFAM_F,"videos_infos.csv"))
         self.video_name = parse_path_to_name(csv_path)
         self.measures_computes = []
 
