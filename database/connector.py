@@ -11,9 +11,8 @@ REMOTE_PASSWORD = os.environ.get("REMOTE_PASSWORD")
 REMOTE_DATA_URI = os.environ.get("REMOTE_DATA_URI")
 PATH_TO_HDD_VIDEO_FOLDER_1 = os.environ.get("PATH_TO_HDD_VIDEO_FOLDER_1")
 PATH_TO_HDD_VIDEO_FOLDER_2 = os.environ.get("PATH_TO_HDD_VIDEO_FOLDER_2")
-user = os.environ.get("USERNAM")
-print(user)
-  
+
+
 def read_remote_df(remote_path):    
     if isinstance(remote_path, (str)):
         try:
@@ -48,4 +47,4 @@ def save_remote_df(remote_path, df):
             
     else:
         raise ValueError("Path to remote file as string required")  
-  
+print(read_remote_df("/home/simeon/fatigue_database/env_file"))
