@@ -21,7 +21,7 @@ PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
 PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_MIN")
 WINDOWS_SIZE = os.environ.get("WINDOWS_SIZE")
 
-def create_dataset(dataset_path, path_folder_to_saven, dataset_type):
+def create_dataset(dataset_path, path_folder_to_save, dataset_type):
     csv_array_name  = list_dir_remote(PATH_TO_LANDMARKS_DESFAM_F_5_MIN)
 
     csv_array_path = [PATH_TO_LANDMARKS_DESFAM_F_5_MIN + "/" +  name for name in csv_array_name]

@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.signal import find_peaks
 from itertools import groupby
 from operator import itemgetter
-import os
+import os, sys
 from utils import parse_path_to_name
 from matplotlib.figure import Figure
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
