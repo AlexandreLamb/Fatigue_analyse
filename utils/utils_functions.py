@@ -5,6 +5,11 @@ import re
 import sys
 import os
 import cv2
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
+from dotenv import load_dotenv
+load_dotenv("env_file/.env")
+PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
 
 def make_landmarks_header():
     csv_header = []
@@ -21,7 +26,7 @@ def parse_path_to_name(path):
 def paths_to_df(csv_array):
     df_array = []
     for path in csv_array:
-        df_array.append(pd.read_csv(path).rename(columns={"Unnamed: 0" : "frame"}))
+        df_array.append(read_remote_df(path).rename(columns={"Unnamed: 0" : "frame"}))
     return df_array
 
 def generate_columns_name(windows):
@@ -40,10 +45,8 @@ def make_box_from_landmarks(row, threeshold_px = 20):
 
 
 def parse_video_name(video_name_list):
-    #video_name_list = list(pd.read_csv("/home/simeon/Documents/Fatigue_analyse/data/stage_data_out/videos_infos.csv")["video_name"])
-    subject_condition = list(pd.read_csv("data/stage_data_out/sujets_data_pvt_perf.csv", sep=";", index_col = [0,1]).index)
+    subject_condition = list(read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1]).index)
     jour_1_to_parse = ["LUNDI", "lundi"]
-    jour_2_to_parse = ["VENDREDI", "vendredi"]
 
     string_to_remove = ["DESFAM", "DESFAM-F", "PVT", "P1", "P2", "DEBUT", "FIN", "retard","min","de" , "avant PVT", "avant", "PVT", "F", "Semaine","1", "08", "8"]
     subject_list = []
@@ -62,6 +65,11 @@ def parse_video_name(video_name_list):
             subject_list.append(subject_clean[0] +"_"+condition + "_T2")
     return subject_list
 
-date_id = lambda : datetime.now().strftime("%H_%M_%S_%d_%m_%Y")
+date_id = lambda : datetime.now().strftime("%Y_%m_%d_%H_%M")
 
 make_landmarks_pair  = lambda marks : list(zip(marks[::2],marks[1::2]))
+
+
+def get_last_date_item(path_to_folder):
+    dataset_array = list_dir_remote(path_to_folder)
+    return dataset_array.sort()[-1]

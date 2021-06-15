@@ -12,25 +12,33 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import datetime
 from sklearn.model_selection import train_test_split
-from data_processing import DataPreprocessing
 import matplotlib.pyplot as plt
 import time
 import os
+from dotenv import load_dotenv
+load_dotenv("env_file/.env")
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
+from data_processing import DataPreprocessing
 
+PATH_TO_RESULTS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_PREDICTIONS")
+PATH_TO_TIME_ON_TASK_VIDEO_TO_TEST = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO_TO_TEST") 
+
+##TODOMODEL/load/save model tf
 model_path = "/home/simeon/Desktop/Fatigue_analyse/tensorboard/model/ear_30_eye_area_30_jaw_dropping_30_eyebrow_eye_30"
 model = tf.keras.models.load_model(model_path)
 
-video_to_test = os.listdir("data/stage_data_out/dataset_temporal/irba_40_min_temp")
+video_to_test = list_dir_remote(PATH_TO_TIME_ON_TASK_VIDEO_TO_TEST)
 df_evaluate_metrics = pd.DataFrame(columns=["video_name","binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index("video_name")
 for video in video_to_test:
-    preprocessing = DataPreprocessing("data/stage_data_out/dataset_temporal/irba_40_min_temp/"+video+"/"+video+".csv", isTimeSeries = True, batch_size = 1, evaluate = True)
+    preprocessing = DataPreprocessing(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO_TO_TEST,video,"/"+video+".csv"), isTimeSeries = True, batch_size = 1, evaluate = True)
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
 
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
     df_evaluate_metrics.loc[video] = [binary_accuracy, binary_crossentropy, mean_squared_error]
     
     predictions = model.predict(preprocessing.dataset)
-    df_video = pd.read_csv("data/stage_data_out/dataset_temporal/irba_40_min_temp/"+video+"/"+video+".csv")
+    df_video = read_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO_TO_TEST,video,"/"+video+".csv"))
     measure_list = list(df_video)
     df = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
     y_pred_list = []
@@ -43,12 +51,8 @@ for video in video_to_test:
     df.loc[lambda df: df["pred_max"] < 0.5,"target_pred_max"] = 0
     df.loc[lambda df: df["pred_max"] >= 0.5,"target_pred_max"] = 1
     df["target_real"] = df_video["target"]
-    path_folder_to_save = "data/stage_data_out/predictions/"+video
-    path_to_csv = path_folder_to_save + "/"+video+"_pred.csv"
-    if os.path.exists(path_folder_to_save) == False:
-                os.makedirs(path_folder_to_save)
-    df.to_csv(path_to_csv, index = False)
+    path_to_csv = os.path.join(PATH_TO_RESULTS_PREDICTIONS, video, video+"_pred.csv")
+    save_remote_df(path_to_csv, df, index=False)
 
-df_evaluate_metrics.to_csv(path_folder_to_save+"/metrics.csv")
-
+save_remote_df(os.path.join(PATH_TO_RESULTS_PREDICTIONS, "metrics.csv"), df_evaluate_metrics)
 

@@ -8,6 +8,7 @@ from tensorflow import constant
 import time, sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from logger import logging
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
 
 class DataPreprocessing():
     def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32, evaluate = False, df_dataset = None):
@@ -56,7 +57,7 @@ class DataPreprocessing():
         
     def load_dataset(self):
         if self.path_to_dataset != None:                 
-            df = pd.read_csv(self.path_to_dataset)
+            df = read_remote_df(self.path_to_dataset)
         else :
             df = self.df_dataset
         self.dataset_size = len(df)

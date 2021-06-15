@@ -130,7 +130,7 @@ class DlibPredictorTrainer:
         df_landmarks = pd.read_csv(self.path_to_landmarks_csv, index_col="frame")   
         num_img_already_done = 0
         if os.path.isdir(self.path_to_dataset_folder + "/" + self.landmarks_csv_name):
-            num_img_already_done = len(os.listdir(self.path_to_dataset_folder + "/" + self.landmarks_csv_name))
+            num_img_already_done = len(list_dir_remote(self.path_to_dataset_folder + "/" + self.landmarks_csv_name))
             
         cap = cv2.VideoCapture(self.path_to_video)
         sucess, image = cap.read()

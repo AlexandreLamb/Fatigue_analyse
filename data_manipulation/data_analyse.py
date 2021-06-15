@@ -5,16 +5,22 @@ import pandas as pd
 from scipy.signal import find_peaks
 from itertools import groupby
 from operator import itemgetter
+import os
 from utils import parse_path_to_name
 from matplotlib.figure import Figure
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from dotenv import load_dotenv
+load_dotenv("env_file/.env")
+from database_connector import read_remote_df, save_remote_df, list_dir_remote
 
-VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
+PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
+PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 
 class AnalyseData():
     def __init__(self, csv_path):
-        self.df_landmarks = pd.read_csv(csv_path).rename(columns={"Unnamed: 0" : "frame"})
+        self.df_landmarks = read_remote_df(csv_path).rename(columns={"Unnamed: 0" : "frame"})
         self.df_measure = pd.DataFrame( self.df_landmarks["frame"])
-        self.df_videos_infos = pd.read_csv(VIDEOS_INFOS_PATH)
+        self.df_videos_infos = read_remote_df(os.path.join(PATH_TO_LANDMARKS_DESFAM_F,"videos_infos.csv"))
         self.video_name = parse_path_to_name(csv_path)
         self.measures_computes = []
 
