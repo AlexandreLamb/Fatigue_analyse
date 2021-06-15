@@ -10,7 +10,7 @@ import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 
 PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
 PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")

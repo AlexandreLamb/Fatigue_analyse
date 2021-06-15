@@ -13,7 +13,7 @@ from tensorflow.python.ops.gen_io_ops import reader_read
 from utils import parse_video_name
 import time
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 PATH_TO_RESULTS = os.environ.get("PATH_TO_RESULTS")
 PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")

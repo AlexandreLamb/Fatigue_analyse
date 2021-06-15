@@ -11,7 +11,7 @@ import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
 from dotenv import load_dotenv
 
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 
 PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
 PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")

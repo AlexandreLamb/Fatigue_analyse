@@ -18,7 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_processing import DataPreprocessing
 from logger import logging
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
 PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")

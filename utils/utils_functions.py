@@ -8,7 +8,7 @@ import cv2
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
 
 def make_landmarks_header():

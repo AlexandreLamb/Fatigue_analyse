@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 from data_processing import DataPreprocessing

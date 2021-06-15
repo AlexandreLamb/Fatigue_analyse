@@ -4,7 +4,7 @@ import numpy as np
 import os, sys
 from dotenv import load_dotenv
 
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from utils import paths_to_df, parse_path_to_name, generate_columns_name

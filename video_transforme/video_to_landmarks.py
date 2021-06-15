@@ -12,7 +12,7 @@ from logger import logging
 from video_transforme.face_recognitions import FaceRecognitionHOG, FaceRecognitionMtcnn
 from utils import make_landmarks_header, parse_path_to_name
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 PATH_TO_LANDMARKS_DESFAM_F_5_MIN= os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_MIN")
 PATH_TO_LANDMARKS_DESFAM_F_FULL= os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_FULL")

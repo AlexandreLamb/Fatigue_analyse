@@ -10,7 +10,7 @@ from utils import parse_path_to_name
 from matplotlib.figure import Figure
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from dotenv import load_dotenv
-load_dotenv("env_file/.env")
+load_dotenv("env_file/.env_path")
 from database_connector import read_remote_df, save_remote_df, list_dir_remote
 
 PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
