@@ -87,7 +87,8 @@ class VideoToLandmarks:
         marks_pair = list(zip(marks[::2],marks[1::2]))
         for mark in marks_pair:
             cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
-        cv2.imwrite("data/stage_data_out/landmarks_pics/"+video_name+"_image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
+        cv2.imwrite("data/data_temp/face_landmarks_"+str(count)+".jpg", img)
+        #cv2.imwrite("data/stage_data_out/landmarks_pics/"+video_name+"_image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
 
     def progression_of_place_landmarks(self, count, video_name, frame_total_1= -1, frame_total_2 = None):
         if frame_total_1 == -1:
@@ -107,6 +108,7 @@ class VideoToLandmarks:
                 print(str(count)+ " on " + str(frame_count_2) + " frame analyse")
 
     def transoform_videos_to_landmarks(self, face_recognition_type):
+        videos = [cv2.VideoCapture("/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/DESFAM_F_H95_VENDREDI.avi")]
         for video in self.videos:
             video_name = video.get("video_name")
             video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["fps"])[0]
@@ -123,12 +125,11 @@ class VideoToLandmarks:
                 self.df_landmarks = read_remote_df(csv_path_name, index_col="frame")
                 count = len(self.df_landmarks)
             while success:
+                success, image = video.read()
                 success, img = video.get("video").read()
                 if (self.df_landmarks.index == count).any() == False :
                     if success:
-                        cv2.imwrite("data/data_temp/face_before_processing.jpg")
-                        marks = self.face_recognitions.get(face_recognition_type).place_landmarks(img, count)
-                        self.save_landmarks_pics(marks,image,face_recognition_type,count,video_name)
+                        marks = self.face_recognitions.get(face_recognition_type).place_landmarks(image, count)
                         if len(marks) > 0:             
                             self.df_landmarks.loc[count] = marks
                             save_remote_df(csv_path_name, self.df_landmarks, header=True, mode="w", index_label="frame")

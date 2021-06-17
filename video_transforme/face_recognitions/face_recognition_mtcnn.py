@@ -16,14 +16,12 @@ class FaceRecognitionMtcnn:
 
     def place_landmarks(self, img, count):
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        cv2.imwrite(img,"data/data_temp/face_in_gray_before_porcessing.jpg")
+        cv2.imwrite("data/data_temp/face_in_gray_before_porcessing"+str(count)+".jpg",img_gray)
         face_informations = self.detector.detect_faces(img_gray)
         if len(face_informations) == 1:
             logging.info("Detect 1 face on img number " +str(count))
             box = face_informations[0].get("box")
             rectangle_box = dlib.rectangle(box[0]+box[2], box[1], box[0], box[1]+box[3])
-            cv2.rectangle(img,(box[0]+box[2], box[1]), (box[0], box[1]+box[3]), (255, 0, 255), 2)
-            cv2.imwrite(img,"data/data_temp/face_with_mtccn_box.jpg")
             marks = self.predictor(img_gray, rectangle_box)
             marks = face_utils.shape_to_np(marks)
         elif len(face_informations) > 1:
