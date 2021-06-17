@@ -123,28 +123,28 @@ class DataFormator:
     
     def create_dataset_from_measure_folder(self, path_to_measure_folder, windows, path_folder_to_save):
         ##TODODATABASE: list dir methode 
-        dir_measures = self.sftp.save_remote_df( path_to_measure_folder)
+        dir_measures = self.sftp.list_dir_remote( path_to_measure_folder)
         date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
-            df_measures = df_measures.append(self.sftp.save_remote_df(path), ignore_index=False)
+            df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
         self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
     
     def generate_cross_dataset(self, path_to_measure_folder, windows, path_to_dataset_to_save):
-        dir_measures = self.sftp.save_remote_df( path_to_measure_folder)
+        dir_measures = self.sftp.list_dir_remote( path_to_measure_folder)
         date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for video_exclude in dir_measures:
             for path in [path for path in path_csv_arr if path != path_to_measure_folder+"/"+ video_exclude+"/"+video_exclude+".csv"]:
-                df_measures = df_measures.append(self.sftp.save_remote_df(path), ignore_index=False)
+                df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
             path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude)
             
             self.sftp.save_remote_df(path_folder_to_save, df_measures, index =False)
             
     def generate_dataset_debt_sleep(self, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
-        df_pvt_total = self.sftp.save_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
+        df_pvt_total = self.sftp.read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
         subject_conditions = dict(df_pvt_total.index)
         subject_to_label = video_name.split("_")[2]
         condition = subject_conditions[subject_to_label]
