@@ -1,5 +1,4 @@
 import os
-from script.create_dataset import PATH_TO_DEBT_MERGE
 import sys
 import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -72,7 +71,9 @@ class ModelTunning():
         )
         model.summary()
         if self.save_model_on_training : 
+            
             model.save("fatigue_model/model_save/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
+        
         _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(self.test)
         return binary_accuracy, binary_crossentropy, mean_squared_error
 

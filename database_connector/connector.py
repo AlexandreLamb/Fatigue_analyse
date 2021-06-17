@@ -1,10 +1,12 @@
 
 import paramiko as pm
-import paramiko as pm
+import tensorflow as tf
 import pandas as pd
+import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_credentials")
+load_dotenv("env_file/.env_path")
 
 REMOTE_HOST = os.environ.get("REMOTE_HOST")
 REMOTE_USER = os.environ.get("REMOTE_USER")
@@ -51,7 +53,21 @@ class SFTPConnector():
                 self.sftp_client.close()
                 
         else:
-            raise ValueError("Path to remote file as string required")  
+            raise ValueError("Path to remote file as string required")
+    
+    def save_remote_model(self, remote_path, model):    
+        if isinstance(remote_path, (str)):
+            try: 
+                self.makes_dir_remote(remote_path)      
+                with self.sftp_client.open(remote_path, "w") as f:
+                    f.write(model.save(remote_path))
+                self.sftp_client.chown(remote_path, REMOTE_UID, REMOTE_GID)
+            except Exception as e :
+                print(e)
+                self.sftp_client.close()
+                
+        else:
+            raise ValueError("Path to remote file as string required")          
         
     def list_dir_remote(self, remote_path):
         if isinstance(remote_path, (str)):
@@ -120,3 +136,17 @@ class SFTPConnector():
             if self.sftp_exists(path_to_test) == False:
                 self.sftp_client.mkdir(path_to_test)
                 self.sftp_client.chown(path_to_test, REMOTE_UID, REMOTE_GID)
+                
+
+PATH_TO_MODELS = os.environ.get("PATH_TO_MODELS")
+print(PATH_TO_MODELS)
+
+
+
+model_path ="/home/simeon/Desktop/Fatigue_analyse/tensorboard/old_tensorboard_logs/20210609-130433/model_lstm"
+model = tf.keras.models.load_model(model_path)
+print(model)
+""""
+sftp = SFTPConnector()
+sftp.save_remote_model(os.path.join(PATH_TO_MODELS,"lstm"), model)
+"""

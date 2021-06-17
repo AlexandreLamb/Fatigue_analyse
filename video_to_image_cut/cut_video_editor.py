@@ -10,11 +10,11 @@ def video_cut(path_to_video):
     fps = video_infos.get(cv2.CAP_PROP_FPS)
     frame_count =video_infos.get(cv2.CAP_PROP_FRAME_COUNT)
     time_to_cut_sec = 15
-    offset_sec = 30
+    offset_sec = 120
     offset_frame = int(offset_sec * fps)
     number_frame_to_cut = int(time_to_cut_sec  * fps)
     windows_to_cut_frame = [offset_frame, int(15*60*fps) , int(30*60*fps), int(frame_count - number_frame_to_cut - offset_frame) ]
-    windows_to_cut_frame_shift = [0+number_frame_to_cut, int(15*60*fps)+number_frame_to_cut , int(30*60*fps)+number_frame_to_cut, int(frame_count - number_frame_to_cut)+number_frame_to_cut ]
+    windows_to_cut_frame_shift = [offset_frame+number_frame_to_cut, int(15*60*fps)+number_frame_to_cut , int(30*60*fps)+number_frame_to_cut, int(frame_count - number_frame_to_cut - offset_frame) +number_frame_to_cut ]
     video_name = path_to_video.split("/")[-1].split(".")[0]
     subject_info = video_name.split("_")
     print("------ "+video_name+ " ------")
@@ -44,6 +44,7 @@ def video_cut(path_to_video):
                     height, width, layers = img_array[0].shape
                     size = (width,height)
                     out = cv2.VideoWriter("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+str(random_sequence_order[cmp_sequence])+".avi",cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+                    os.utime("data/stage_data_out/image_for_irba/"+video_name+"/"+video_name+"_"+str(random_sequence_order[cmp_sequence])+".avi",(0,0))
                     for i in range(len(img_array)):
                         out.write(img_array[i])
                     print(video_name+"_"+str(random_sequence_order[cmp_sequence]) + " is save")
