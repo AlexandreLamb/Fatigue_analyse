@@ -1,5 +1,4 @@
 import argparse, sys, os
-from database_connector.connector import SFTPConnector
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_manipulation import AnalyseData
 from data_manipulation import DataFormator

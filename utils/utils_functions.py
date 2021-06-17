@@ -6,7 +6,7 @@ import sys
 import os
 import cv2
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from database_connector import read_remote_df, save_remote_df, list_dir_remote
+from database_connector import SFTPConnector
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
@@ -24,9 +24,11 @@ def parse_path_to_name(path):
     return name
 
 def paths_to_df(csv_array):
+    sftp = SFTPConnector()
     df_array = []
     for path in csv_array:
-        df_array.append(read_remote_df(path).rename(columns={"Unnamed: 0" : "frame"}))
+        df_array.append(sftp.read_remote_df(path).rename(columns={"Unnamed: 0" : "frame"}))
+    del sftp
     return df_array
 
 def generate_columns_name(windows):
@@ -45,7 +47,8 @@ def make_box_from_landmarks(row, threeshold_px = 20):
 
 
 def parse_video_name(video_name_list):
-    subject_condition = list(read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1]).index)
+    sftp = SFTPConnector()
+    subject_condition = list(sftp.read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1]).index)
     jour_1_to_parse = ["LUNDI", "lundi"]
 
     string_to_remove = ["DESFAM", "DESFAM-F", "PVT", "P1", "P2", "DEBUT", "FIN", "retard","min","de" , "avant PVT", "avant", "PVT", "F", "Semaine","1", "08", "8"]
@@ -63,6 +66,7 @@ def parse_video_name(video_name_list):
             subject_list.append(subject_clean[0] +"_"+condition +  "_T1")
         else :
             subject_list.append(subject_clean[0] +"_"+condition + "_T2")
+    del sftp
     return subject_list
 
 date_id = lambda : datetime.now().strftime("%Y_%m_%d_%H_%M")
@@ -71,5 +75,7 @@ make_landmarks_pair  = lambda marks : list(zip(marks[::2],marks[1::2]))
 
 
 def get_last_date_item(path_to_folder):
-    dataset_array = list_dir_remote(path_to_folder)
+    sftp = SFTPConnector()
+    dataset_array = sftp.list_dir_remote(path_to_folder)
+    del sftp
     return dataset_array.sort()[-1]
