@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from utils import paths_to_df, parse_path_to_name, generate_columns_name
 from datetime import datetime
-from database_connector import read_remote_df, save_remote_df, list_dir_remote
+from database_connector import SFTPConnector
 import os
 import json
 PATH_TO_DATASET_NON_TEMPORAL = os.environ.get("PATH_TO_DATASET_NON_TEMPORAL")
@@ -16,18 +16,18 @@ PATH_TO_DATASET_TEMPORAL = os.environ.get("PATH_TO_DATASET_TEMPORAL")
 PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
 class DataFormator:   
-    def __init__(self, sftp_client):
-        self.sftp_client = sftp_client
+    def __init__(self):
+        self.sftp = SFTPConnector()
         #self.video_info_path("data/stage_data_out/videos_infos.csv")
     def make_label_df(self, num_min, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
-        df_video_infos = read_remote_df(self.sftp_client, os.path.join(PATH_TO_LANDMARKS_DESFAM_F, "videos_infos.csv"))
+        df_video_infos = self.sftp.save_remote_df( os.path.join(PATH_TO_LANDMARKS_DESFAM_F, "videos_infos.csv"))
         if fps == None:
             fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
         num_sec = num_min*60
         num_frame_by_num_min = int(fps*num_sec)
         #print("num frame by min : " +str(num_frame_by_num_min))
         if path != None:
-            df = read_remote_df(self.sftp_client,path)
+            df = self.sftp.save_remote_df(path)
         if not df_measure.empty:
             df = df_measure[measures]
             df_label = df.append( pd.DataFrame(columns=['Target']))
@@ -40,7 +40,7 @@ class DataFormator:
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
         remote_path = os.path.join(PATH_TO_DATASET_NON_TEMPORAL,video_name,video_name+".csv")
         print("saving non temporal")
-        save_remote_df(self.sftp_client,remote_path, df)
+        self.sftp.save_remote_df(remote_path, df)
         
         return df_label
     ##TODO : find why there is 6000 frame isntead of 3000 frame
@@ -100,9 +100,9 @@ class DataFormator:
     def save_df(self, df, video_name, dataset_path, measure=""):
         print("saving")
         if measure == "":
-            save_remote_df(self.sftp_client,os.path.join(dataset_path,video_name,video_name+".csv"),df, index = False)
+            self.sftp.save_remote_df(os.path.join(dataset_path,video_name,video_name+".csv"),df, index = False)
         else : 
-            save_remote_df(self.sftp_client,os.path.join(dataset_path,video_name,video_name+"_"+str(measure)+".csv"), df, index =False)
+            self.sftp.save_remote_df(os.path.join(dataset_path,video_name,video_name+"_"+str(measure)+".csv"), df, index =False)
              
     def concat_dataset(self, dataset_array):
         #[df.pop("target") for index, df in enumerate(dataset_array) if index !=len(dataset_array)-1]
@@ -123,33 +123,33 @@ class DataFormator:
     
     def create_dataset_from_measure_folder(self, path_to_measure_folder, windows, path_folder_to_save):
         ##TODODATABASE: list dir methode 
-        dir_measures = list_dir_remote(self.sftp_client, path_to_measure_folder)
+        dir_measures = self.sftp.save_remote_df( path_to_measure_folder)
         date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
-            df_measures = df_measures.append(read_remote_df(self.sftp_client,path), ignore_index=False)
-        save_remote_df(self.sftp_client,os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
+            df_measures = df_measures.append(self.sftp.save_remote_df(path), ignore_index=False)
+        self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
     
     def generate_cross_dataset(self, path_to_measure_folder, windows, path_to_dataset_to_save):
-        dir_measures = list_dir_remote(self.sftp_client, path_to_measure_folder)
+        dir_measures = self.sftp.save_remote_df( path_to_measure_folder)
         date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for video_exclude in dir_measures:
             for path in [path for path in path_csv_arr if path != path_to_measure_folder+"/"+ video_exclude+"/"+video_exclude+".csv"]:
-                df_measures = df_measures.append(read_remote_df(self.sftp_client,path), ignore_index=False)
+                df_measures = df_measures.append(self.sftp.save_remote_df(path), ignore_index=False)
             path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude)
             
-            save_remote_df(self.sftp_client,path_folder_to_save, df_measures, index =False)
+            self.sftp.save_remote_df(path_folder_to_save, df_measures, index =False)
             
     def generate_dataset_debt_sleep(self, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
-        df_pvt_total = read_remote_df(self.sftp_client,os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
+        df_pvt_total = self.sftp.save_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
         subject_conditions = dict(df_pvt_total.index)
         subject_to_label = video_name.split("_")[2]
         condition = subject_conditions[subject_to_label]
         if path != None:
-            df = read_remote_df(self.sftp_client,path)
+            df = self.sftp.save_remote_df(path)
         if not df_measure.empty:
             df = df_measure[measures]
             df_label = df.append( pd.DataFrame(columns=['Target']))

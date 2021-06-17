@@ -1,4 +1,5 @@
 import argparse, sys, os
+from database_connector.connector import SFTPConnector
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_manipulation import AnalyseData
 from data_manipulation import DataFormator
@@ -6,7 +7,7 @@ import json
 import os
 import pandas as pd
 import time
-from database_connector import  get_sftp_client, list_dir_remote, close_sftp_client
+from database_connector import  SFTPConnector
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 
@@ -20,14 +21,15 @@ PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_
 WINDOWS_SIZE = int(os.environ.get("WINDOWS_SIZE"))
 
 def create_dataset(dataset_path, path_folder_to_save, dataset_type):
-    sftp_client = get_sftp_client()
-    csv_array_name  = list_dir_remote(sftp_client, PATH_TO_LANDMARKS_DESFAM_F_5_MIN)
+    sftp = SFTPConnector()
+    csv_array_name  = sftp.list_dir_remote(PATH_TO_LANDMARKS_DESFAM_F_5_MIN)
     csv_array_path = [PATH_TO_LANDMARKS_DESFAM_F_5_MIN + "/" +  name for name in csv_array_name]
-    dataformat = DataFormator(sftp_client)
+    dataformat = DataFormator()
+    analyse_data = AnalyseData()
     measure_full = ["frame","ear","eyebrow_nose","eye_area","jaw_dropping","eyebrow_eye"]
     for index, csv_landmarks_path in enumerate(csv_array_path) :
+        analyse_data.load_csv(csv_landmarks_path)
         video_name = csv_array_name[index].split("_mtcnn")[0]
-        analyse_data = AnalyseData(sftp_client ,csv_landmarks_path)
         #TODO: make a function who take a json file of meaurec
         analyse_data.measure_ear()
         analyse_data.measure_eyebrow_nose()
@@ -45,8 +47,8 @@ def create_dataset(dataset_path, path_folder_to_save, dataset_type):
             dataformat.save_df(df_to_save, video_name, dataset_path, measure= df_to_save.columns[0])
         dataformat.save_df(df_merge, video_name, dataset_path)
     dataformat.create_dataset_from_measure_folder(dataset_path, [WINDOWS_SIZE], path_folder_to_save = path_folder_to_save)
-    close_sftp_client(sftp_client)
-    
+    del dataformat 
+    del analyse_data
 
 create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, dataset_type="time_on_task")
 create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, dataset_type="debt")
