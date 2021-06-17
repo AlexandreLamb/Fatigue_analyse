@@ -20,7 +20,7 @@ class DataFormator:
         self.sftp = SFTPConnector()
         #self.video_info_path("data/stage_data_out/videos_infos.csv")
     def make_label_df(self, num_min, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
-        df_video_infos = self.sftp.save_remote_df( os.path.join(PATH_TO_LANDMARKS_DESFAM_F, "videos_infos.csv"))
+        df_video_infos = self.sftp.read_remote_df(os.path.join(PATH_TO_LANDMARKS_DESFAM_F, "videos_infos.csv"))
         if fps == None:
             fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
         num_sec = num_min*60

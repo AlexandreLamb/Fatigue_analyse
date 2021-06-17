@@ -42,7 +42,7 @@ class SFTPConnector():
     def save_remote_df(self, remote_path, df, index = True, mode='w', index_label = None, header = True):    
         if isinstance(remote_path, (str)):
             try: 
-                self.makes_dir_remote(self.sftp_client, remote_path)      
+                self.makes_dir_remote(remote_path)      
                 with self.sftp_client.open(remote_path, "w") as f:
                     f.write(df.to_csv(index = index, mode = mode, index_label = index_label, header = header))
                 self.sftp_client.chown(remote_path, REMOTE_UID, REMOTE_GID)
@@ -105,7 +105,7 @@ class SFTPConnector():
     # https://stackoverflow.com/questions/850749/check-whether-a-path-exists-on-a-remote-host-using-paramiko         
     def sftp_exists(self, path):
         try:
-            self.sftp.stat(path)
+            self.sftp_client.stat(path)
             return True
         except FileNotFoundError:
             return False
@@ -117,6 +117,6 @@ class SFTPConnector():
             folders =path.split("/")
         for number in range(2,len(folders)+1):
             path_to_test = "/".join(folders[0:number])
-            if self.sftp_exists(self.sftp, path_to_test) == False:
-                self.sftp.mkdir(path_to_test)
-                self.sftp.chown(path_to_test, REMOTE_UID, REMOTE_GID)
+            if self.sftp_exists(path_to_test) == False:
+                self.sftp_client.mkdir(path_to_test)
+                self.sftp_client.chown(path_to_test, REMOTE_UID, REMOTE_GID)
