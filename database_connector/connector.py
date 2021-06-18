@@ -137,16 +137,12 @@ class SFTPConnector():
                 self.sftp_client.mkdir(path_to_test)
                 self.sftp_client.chown(path_to_test, REMOTE_UID, REMOTE_GID)
                 
-
-PATH_TO_MODELS = os.environ.get("PATH_TO_MODELS")
-print(PATH_TO_MODELS)
-
-
-
-model_path ="/home/simeon/Desktop/Fatigue_analyse/tensorboard/old_tensorboard_logs/20210609-130433/model_lstm"
-model = tf.keras.models.load_model(model_path)
-print(model)
-""""
-sftp = SFTPConnector()
-sftp.save_remote_model(os.path.join(PATH_TO_MODELS,"lstm"), model)
-"""
+    def remove_file_remote(self, path):
+        self.sftp_client.remove(path)
+        
+    def remove_dir_remote(self, path):
+        try :
+            self.sftp_client.rmdir(path)
+        except Exception as e:
+            print(e)
+            
