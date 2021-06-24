@@ -1,0 +1,11 @@
+cmake
+imutils
+dlib
+opencv-python
+numpy
+argparse
+pandas
+scipy
+matplotlib
+sklearn
+tensorflow

@@ -73,18 +73,18 @@ class Pannel_import(tk.Frame):
     def add_item(self):
         state = tk.IntVar()
         file_path = tk.filedialog.askopenfilename(title="Choose the file to open", filetypes=[("Only video", "*.mp4 *.avi *.mov")])
-        
-        if (parse_path_to_name(file_path) in list(self.video_analyse)) == False:
-            self.check_buttons_to_analyse_state.append({"file_path" : file_path, "state" : state})     
-        
-            item_text = tk.StringVar()
-            item_text.set(parse_path_to_name(file_path))
-            item_label = tk.Checkbutton(self.contenaire_videos_to_analyse, variable= state, textvariable=item_text)
-        
-            self.contenaire_videos_to_analyse.create_window(150,25*len(self.check_buttons_to_analyse_state), window = item_label)
+        if (type(file_path) == type(str())) and (file_path != ""):
+            if (parse_path_to_name(file_path) in list(self.video_analyse)) == False:
+                self.check_buttons_to_analyse_state.append({"file_path" : file_path, "state" : state})     
+            
+                item_text = tk.StringVar()
+                item_text.set(parse_path_to_name(file_path))
+                item_label = tk.Checkbutton(self.contenaire_videos_to_analyse, variable= state, textvariable=item_text)
+            
+                self.contenaire_videos_to_analyse.create_window(150,25*len(self.check_buttons_to_analyse_state), window = item_label)
 
-        if (parse_path_to_name(file_path) in list(self.video_analyse)) == True:
-            messagebox.showinfo(title="Alert", message="Video already imported")
+            if (parse_path_to_name(file_path) in list(self.video_analyse)) == True:
+                messagebox.showinfo(title="Alert", message="Video already imported")
 
     
     def get_videos_analyse(self):
@@ -100,11 +100,11 @@ class Pannel_import(tk.Frame):
             self.contenaire_videos_analyse.create_window(150,25*len(self.check_buttons_analyse_state), window = item_label)
         
     def upadte_video_analyse(self):
-        data_path = "/home/simeon/Documents/ING5/PFE/Fatigue_analyse/data/data_in/videos/"
+        data_path = "data/data_out/"
         video_analyse_update = pd.read_csv("data/data_out/videos_infos.csv")["video_name"]
 
         for video_name in video_analyse_update:
-            if (video_name in self.video_analyse) == False:
+            if (video_name in list(self.video_analyse)) == False:
                 state = tk.IntVar()
                 self.check_buttons_analyse_state.append({"file_path" : data_path + video_name, "state" : state})     
             

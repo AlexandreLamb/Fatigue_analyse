@@ -1,5 +1,8 @@
 data/data_in/
 data/data_out/landmarks_pics
+data/stage_data_out
+data/
+data/data_out
 code_test/
 test_space.py
 __pycache__/
@@ -7,3 +10,13 @@ coment.txt
 loggin.log
 fatigue_analysis.code-workspace
 log/
+data/shape_predictor
+tensorboard/
+.vscode/
+dlib_trainer/dataset
+fatigue_model/model_save/
+fatigue_analyse.code-workspace/
+.vscode/settings.json
+fatigue_analyse.code-workspace
+utils_file/
+env_file/

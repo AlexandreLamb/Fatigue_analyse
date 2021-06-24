@@ -37,7 +37,10 @@ class MainWindows(tk.Frame):
         if(len(video_paths) >=2):
             data_format = DataFormator()
             messagebox.showinfo(title="Alert", message="Fusion of all video, this can take time")
-            self.path_video_analyse = data_format.merge_csv(video_paths)
+            print([path + ".csv" for path in video_paths])
+            self.path_video_analyse = data_format.merge_csv([path + ".csv" for path in video_paths])
+            messagebox.showinfo(title="Alert", message="Fusion of all video finish")
+            pannel.upadte_video_analyse()
         else : 
             self.path_video_analyse = video_paths[0]
             
@@ -56,4 +59,6 @@ class MainWindows(tk.Frame):
 root = tk.Tk()
 window = MainWindows(root).pack(side="top", fill="both", expand=True)
 root.geometry("1500x900")
+
+root.title("Tiredeness analysis")
 root.mainloop()

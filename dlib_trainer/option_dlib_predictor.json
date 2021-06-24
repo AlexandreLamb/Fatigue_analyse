@@ -1,0 +1,11 @@
+{
+        "oversampling_amount" : 8 ,
+        "nu" : 0.1,
+        "tree_depth" : 6,
+        "cascade_depth" : 15,
+        "feature_pool_size" : 400,
+        "num_test_splits" : 50,
+        "oversampling_translation_jitter" : 0.1,
+        "be_verbose" : 1,
+        "num_threads" : 4  
+}
