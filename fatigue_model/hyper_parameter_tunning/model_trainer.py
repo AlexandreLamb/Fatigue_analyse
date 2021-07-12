@@ -53,6 +53,7 @@ class ModelTunning():
                 hparams=self.hparams_discrete + self.hparams_real_inerval,
                 metrics=list(self.hpmetrics.values()),
             )
+        
      
     def train_test_model(self, hparams, session_num):
         model = self.model_generator.get_model(self.all_features, self.all_inputs, hparams, self.number_of_target)
@@ -97,6 +98,7 @@ class ModelTunning():
         session_num = 0
         for hparams in self.hparams_combined:    
             run_name = "run-%d" % session_num
+            hparams.update({"session_num" : session_num})
             print('--- Starting trial: %s' % run_name)
             print({h.name: hparams[h] for h in hparams})
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
@@ -104,10 +106,21 @@ class ModelTunning():
         self.sftp.put_dir(os.path.join(PATH_TO_TENSORBOARD, self.date_id), self.logdir)         
                  
     
-json_path = "fatigue_model/model_parameter/hparms_lstm_copy.json"
+json_path = "fatigue_model/model_parameter/hparms_lstm.json"
+
 path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
 
 mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
 mt.initialize_model("LSTM")
 mt.tune_model()
+del mt
+
+path_to_merge_dataset_folder = PATH_TO_DEBT_MERGE
+
+mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
+mt.initialize_model("LSTM")
+mt.tune_model()
+del mt
+
+
 ## TODO : make global variable across module for path

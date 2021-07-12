@@ -14,7 +14,7 @@ import datetime
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import time
-import os
+import os, sys
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))

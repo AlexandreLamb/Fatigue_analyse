@@ -12,14 +12,16 @@ load_dotenv("env_file/.env_path")
 
 PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
 PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
+PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
 
 PATH_TO_DEBT_VIDEO = os.environ.get("PATH_TO_DEBT_VIDEO")
 PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
+PATH_TO_DEBT_CROSS = os.environ.get("PATH_TO_DEBT_CROSS")
 
 PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_MIN")
 WINDOWS_SIZE = int(os.environ.get("WINDOWS_SIZE"))
 
-def create_dataset(dataset_path, path_folder_to_save, dataset_type):
+def create_dataset(dataset_path, path_folder_to_save, path_folder_cross, dataset_type):
     sftp = SFTPConnector()
     csv_array_name  = sftp.list_dir_remote(PATH_TO_LANDMARKS_DESFAM_F_5_MIN)
     csv_array_path = [PATH_TO_LANDMARKS_DESFAM_F_5_MIN + "/" +  name for name in csv_array_name]
@@ -46,8 +48,10 @@ def create_dataset(dataset_path, path_folder_to_save, dataset_type):
             dataformat.save_df(df_to_save, video_name, dataset_path, measure= df_to_save.columns[0])
         dataformat.save_df(df_merge, video_name, dataset_path)
     dataformat.create_dataset_from_measure_folder(dataset_path, [WINDOWS_SIZE], path_folder_to_save = path_folder_to_save)
+    dataformat.generate_cross_dataset(dataset_path, path_folder_cross)
     del dataformat 
     del analyse_data
 
-create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, dataset_type="time_on_task")
-create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, dataset_type="debt")
+create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, PATH_TO_TIME_ON_TASK_CROSS, dataset_type="time_on_task")
+create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, PATH_TO_DEBT_CROSS, dataset_type="debt")
+
