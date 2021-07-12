@@ -190,7 +190,13 @@ def show_cross_validation_resutlt():
                         dict_pred[video_exclude][measure_combination] =  df_csv
                         #print(confusion_matrix(df_csv["target_real"],df_csv["target_pred_mean"]))
                         #df_pred = df_pred.append(df_csv)
-    print(df_metrics.loc["DESFAM_F_H95_VENDREDI"].sort_values("binary_accuracy", ascending=False))
+    
+        
+    print(df_metrics.loc[(slice(None), 'ear_30_eye_area_30_jaw_dropping_30_eyebrow_eye_30'), :].sort_index(level="video_exclude").sort_values("binary_accuracy", ascending=True))
+    print(df_metrics[df_metrics["binary_accuracy"]>= 0.85].sort_values("binary_accuracy", ascending=False))
+    df_metrics.loc[(slice(None), 'ear_30_eye_area_30_jaw_dropping_30_eyebrow_eye_30'), :].sort_index(level="video_exclude").sort_values("binary_accuracy", ascending=True).to_excel("results.xlsx")
+    #df_metrics[df_metrics["binary_accuracy"]>= 0.85].sort_values("binary_accuracy", ascending=False).to_excel("result.xlsx")
+    #print(df_metrics.loc["DESFAM_F_H95_VENDREDI"].sort_values("binary_accuracy", ascending=False))
     intersting_mertics = df_metrics[df_metrics["binary_accuracy"]>= 0.85].sort_values("binary_accuracy", ascending=False).index.values
     #print(df_metrics.sort_values("binary_accuracy", ascending=False))
     """for metrics in intersting_mertics:
@@ -198,7 +204,7 @@ def show_cross_validation_resutlt():
         print(confusion_matrix(dict_pred[metrics[0]][metrics[1]]["target_real"],dict_pred[metrics[0]][metrics[1]]["target_pred_mean"]))
     """
     #print(dict_pred["DESFAM_F_H95_VENDREDI"])
-    #print(df_metrics.)
+   
 
 
 
