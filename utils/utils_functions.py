@@ -5,17 +5,14 @@ import re
 import sys
 import os
 import cv2
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from database_connector import SFTPConnector
+
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
 
-"""
-main.py
-====================================
-The core module of my example project
-"""
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from database_connector import SFTPConnector
+
 
 def make_landmarks_header():
     """Function who generate a colcumns header for the landamrks dataframe

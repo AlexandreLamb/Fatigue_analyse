@@ -1,8 +1,6 @@
 
 import paramiko as pm
-import tensorflow as tf
 import pandas as pd
-import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_credentials")
@@ -11,8 +9,8 @@ load_dotenv("env_file/.env_path")
 REMOTE_HOST = os.environ.get("REMOTE_HOST")
 REMOTE_USER = os.environ.get("REMOTE_USER")
 REMOTE_GROUP = os.environ.get("REMOTE_GROUP")
-REMOTE_UID = int(os.environ.get("REMOTE_UID"))
-REMOTE_GID = int(os.environ.get("REMOTE_GID"))
+REMOTE_UID = int(os.environ.get("REMOTE_UID")) if os.environ.get("REMOTE_UID") != None else ""
+REMOTE_GID = int(os.environ.get("REMOTE_GID")) if os.environ.get("REMOTE_GID") != None else ""
 REMOTE_PASSWORD = os.environ.get("REMOTE_PASSWORD")
 
 class SFTPConnector():
