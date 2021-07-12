@@ -115,6 +115,20 @@ class SFTPConnector():
                 print(e)
                 self.sftp_client.close()
                 
+    # https://stackoverflow.com/questions/4409502/directory-transfers-with-paramiko              
+    def put_dir(self, remote_path, local_path):
+        self.makes_dir_remote(remote_path)
+        for element in os.listdir(local_path):
+            print(element)
+            local_element = os.path.join(local_path, element)
+            remote_element = os.path.join(remote_path, element)
+            if os.path.isfile(local_element):
+                self.sftp_client.put(local_element, remote_element)
+            else:
+                print("not file")
+                self.makes_dir_remote(remote_element)
+                self.put_dir(remote_element, local_element)   
+                
     # https://stackoverflow.com/questions/850749/check-whether-a-path-exists-on-a-remote-host-using-paramiko         
     def sftp_exists(self, path):
         try:
@@ -142,20 +156,3 @@ class SFTPConnector():
             self.sftp_client.rmdir(path)
         except Exception as e:
             print(e)
-            
-
-PATH_TO_MODELS = os.environ.get("PATH_TO_MODELS")
-print(PATH_TO_MODELS)
-
-
-
-model_path = "/home/simeon/Documents/Fatigue_analyse/tensorboard/model/20210504-154102/model_lstm"
-model = tf.keras.models.load_model(model_path)
-model.save("test.h5")
-
-
-sftp = SFTPConnector()
-
-sftp.sftp_client.put("test.h5", PATH_TO_MODELS+"/test_upload.h5")
-#sftp.save_remote_df(PATH_TO_MODELS+"/test.csv",pd.DataFrame([0,1,2]))
-#sftp.save_remote_model(PATH_TO_MODELS+"/test.h5", model)

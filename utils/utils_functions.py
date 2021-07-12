@@ -77,5 +77,6 @@ make_landmarks_pair  = lambda marks : list(zip(marks[::2],marks[1::2]))
 def get_last_date_item(path_to_folder):
     sftp = SFTPConnector()
     dataset_array = sftp.list_dir_remote(path_to_folder)
+    dataset_array.sort()
     del sftp
-    return dataset_array.sort()[-1]
+    return os.path.join(path_to_folder,dataset_array[-1])

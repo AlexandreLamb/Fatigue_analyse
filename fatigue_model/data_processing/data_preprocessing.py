@@ -13,6 +13,7 @@ from database_connector import SFTPConnector
 
 class DataPreprocessing():
     def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32, evaluate = False, df_dataset = None):
+        print(path_to_dataset)
         self.path_to_dataset = path_to_dataset
         self.df_dataset = df_dataset
         self.dataset = None
