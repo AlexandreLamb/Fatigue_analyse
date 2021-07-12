@@ -1,6 +1,7 @@
 
 import pandas as pd 
 import numpy as np
+from paramiko.sftp_client import SFTP
 import tensorflow as tf
 from tensorflow.keras.layers import Embedding
 from tensorflow import constant
@@ -8,9 +9,11 @@ from tensorflow import constant
 import time, sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from logger import logging
+from database_connector import SFTPConnector
 
 class DataPreprocessing():
     def __init__(self, path_to_dataset, isTimeSeries=False, batch_size=32, evaluate = False, df_dataset = None):
+        print(path_to_dataset)
         self.path_to_dataset = path_to_dataset
         self.df_dataset = df_dataset
         self.dataset = None
@@ -55,8 +58,9 @@ class DataPreprocessing():
 
         
     def load_dataset(self):
+        sftp = SFTPConnector()
         if self.path_to_dataset != None:                 
-            df = pd.read_csv(self.path_to_dataset)
+            df = sftp.read_remote_df(self.path_to_dataset)
         else :
             df = self.df_dataset
         self.dataset_size = len(df)

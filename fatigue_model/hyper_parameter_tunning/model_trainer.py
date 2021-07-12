@@ -2,18 +2,28 @@ import os
 import sys
 import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from model_trainning import DenseAnn, LSTMAnn
+from model_parameter import DenseAnn, LSTMAnn
 from data_processing import DataPreprocessing
 from hparams import Hparams
+from utils import get_last_date_item
 import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
+from database_connector import SFTPConnector
 
+from dotenv import load_dotenv
+
+load_dotenv("env_file/.env_path")
+
+PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
+PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
+PATH_TO_TENSORBOARD = os.environ.get("PATH_TO_TENSORBOARD")
+PATH_TO_MODELS = os.environ.get("PATH_TO_MODELS")
 class ModelTunning():
-    def __init__(self, json_path, path_to_dataset, isTimeSeries, batch_size =32,):      
+    def __init__(self, json_path, path_to_merge_dataset_folder, isTimeSeries, batch_size =32,):      
         self.save_model_on_training = True
         self.model_generator = None
         
-        self.preprocessing = DataPreprocessing(path_to_dataset, isTimeSeries = isTimeSeries, batch_size = batch_size)
+        self.preprocessing = DataPreprocessing(get_last_date_item(path_to_merge_dataset_folder), isTimeSeries = isTimeSeries, batch_size = batch_size)
         self.all_features = self.preprocessing.all_features
         self.all_inputs = self.preprocessing.all_inputs
         self.val = self.preprocessing.val
@@ -27,8 +37,10 @@ class ModelTunning():
         self.hpmetrics = self.hptuner.hpmetrics
         self.number_of_target = self.hptuner.other_params.get("num_of_target")
         self.epochs = self.hptuner.other_params.get("epochs")
-        self.logdir = "tensorboard/logs/fit/tunning/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+"/"
+        self. date_id = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        self.logdir = "tensorboard/logs/fit/tunning/" + self.date_id +"/"
 
+        self.sftp = SFTPConnector()
     def initialize_model(self, model_name):
         if model_name == "Dense" :
             self.model_generator = DenseAnn()
@@ -64,7 +76,11 @@ class ModelTunning():
         )
         model.summary()
         if self.save_model_on_training : 
-            model.save("fatigue_model/model_save/"+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + "/model_" + str(session_num))
+            model_path = "fatigue_model/model_save/"+ self.date_id + "/model_" + str(session_num)
+            model.save(model_path)
+            #self.sftp.put_dir(PATH_TO_MODELS, model_path)         
+            self.sftp.put_dir(os.path.join(PATH_TO_MODELS, self.date_id, "/model_" + str(session_num)), model_path)         
+            
         _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(self.test)
         return binary_accuracy, binary_crossentropy, mean_squared_error
 
@@ -84,11 +100,14 @@ class ModelTunning():
             print('--- Starting trial: %s' % run_name)
             print({h.name: hparams[h] for h in hparams})
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
-            session_num += 1          
-                    
-json_path = "fatigue_model/model_trainning/hparms_lstm.json"
-dataset_path = "data/stage_data_out/dataset_temporal/Merge_Dataset_Debt/dataset_merge_30_16_16_08_06_2021.csv"
-mt = ModelTunning(json_path, dataset_path, isTimeSeries = True, batch_size=32)
+            session_num += 1  
+        self.sftp.put_dir(os.path.join(PATH_TO_TENSORBOARD, self.date_id), self.logdir)         
+                 
+    
+json_path = "fatigue_model/model_parameter/hparms_lstm_copy.json"
+path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
+
+mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
 mt.initialize_model("LSTM")
 mt.tune_model()
 ## TODO : make global variable across module for path

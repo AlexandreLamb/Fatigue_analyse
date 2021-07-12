@@ -1,0 +1,11 @@
+{
+    "hp.Discrete" : {
+        "num_units_1" : [32],
+        "number_of_lstm_layer" : [1],
+        "optimizer" : ["adam"],
+        "activation_output" : ["sigmoid"]
+    },
+    "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
+    "num_of_target" : 1,
+    "epochs" : 1
+}

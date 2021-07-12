@@ -5,19 +5,28 @@ import pandas as pd
 from scipy.signal import find_peaks
 from itertools import groupby
 from operator import itemgetter
+import os, sys
 from utils import parse_path_to_name
 from matplotlib.figure import Figure
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from dotenv import load_dotenv
+load_dotenv("env_file/.env_path")
+from database_connector import SFTPConnector
 
-VIDEOS_INFOS_PATH = "data/stage_data_out/videos_infos.csv"
+PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
+PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 
 class AnalyseData():
-    def __init__(self, csv_path):
-        self.df_landmarks = pd.read_csv(csv_path).rename(columns={"Unnamed: 0" : "frame"})
-        self.df_measure = pd.DataFrame( self.df_landmarks["frame"])
-        self.df_videos_infos = pd.read_csv(VIDEOS_INFOS_PATH)
-        self.video_name = parse_path_to_name(csv_path)
+    def __init__(self):
+        self.sftp = SFTPConnector()
+        self.df_videos_infos = self.sftp.read_remote_df(os.path.join(PATH_TO_LANDMARKS_DESFAM_F,"videos_infos.csv"))
         self.measures_computes = []
-
+    
+    def load_csv(self, csv_path):
+        self.df_landmarks = self.sftp.read_remote_df(csv_path).rename(columns={"Unnamed: 0" : "frame"})
+        self.df_measure = pd.DataFrame(self.df_landmarks["frame"])
+        self.video_name = parse_path_to_name(csv_path)
+    
     def measure_euclid_dist(self, landmarks_1, landmarks_2):
         x_1 = "landmarks_"+str(landmarks_1)+"_x"
         y_1 = "landmarks_"+str(landmarks_1)+"_y"
