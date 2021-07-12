@@ -113,14 +113,6 @@ class DataFormator:
         #print(df_concat)
         return df_concat
     
-    def convert_df_temporal_array_into_df(self, dataset_to_convert):
-        df = pd.DataFrame(columns = generate_columns_name(10))
-        for i, row in dataset_to_convert.iterrows():
-            array = json.loads(row["ear_10"])
-            df.loc[i] = array
-        df["target"] = dataset_to_convert["target"]
-        return df
-    
     def create_dataset_from_measure_folder(self, path_to_measure_folder, windows, path_folder_to_save):
         ##TODODATABASE: list dir methode 
         dir_measures = self.sftp.list_dir_remote( path_to_measure_folder)

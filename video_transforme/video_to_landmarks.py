@@ -22,6 +22,11 @@ SHAPE_PREDICTOR_PATH ="data/data_in/models/shape_predictor_68_face_landmarks.dat
 
 class VideoToLandmarks:
     def __init__(self, path):
+        """ init function of class VideoToLandmarks
+
+        :param path: path to video folder to transform into Landmarks
+        :type path: string (file path)
+        """
         self.sftp = SFTPConnector()
         self.df_landmarks = pd.DataFrame(columns = make_landmarks_header()).rename(index={0 : "frame"})
         self.df_videos_infos = pd.DataFrame(columns = ["video_name","fps","frame_count"])
@@ -35,6 +40,13 @@ class VideoToLandmarks:
         }
 
     def check_if_video_already_exists(self, name):
+        """Function for check if a video already exists in file video_infos, that's mean the videos already transform into landamrks
+
+        :param name: name of videos file to check
+        :type name: string
+        :return: boolean value, True if not in video info file, False otherwise
+        :rtype: Boolean
+        """
         if os.path.exists(self.video_infos_path):
             video_infos = self.sftp.read_remote_df(self.video_infos_path)
             if name in list(video_infos["video_name"]):
@@ -46,6 +58,8 @@ class VideoToLandmarks:
     ##TODO: save filepaht in video infos csv
     ##TODO: Blindage video infos a tester 
     def load_data_video(self):
+        """Load video information like name, fps, frame count. Usefull information for transformation, the informations are sae into a csv file
+        """
         logging.info("loading at path : "  + str(self.path))
         if(os.path.isdir(self.path)):
             for video_name in self.sftp.list_dir_remote(self.path):
@@ -84,7 +98,17 @@ class VideoToLandmarks:
             self.sftp.save_remote_df(self.video_infos_path, self.df_videos_infos, mode="w")
             
         self.df_videos_infos =self.sftp.read_remote_df(self.video_infos_path)
-    def save_landmarks_pics(self, marks, img, face_recognition_type, count, video_name):
+        
+    def save_landmarks_pics(self, marks, img, count):
+        """Add landmarks into a the current image who is analyse and save into data_temp folder localy
+
+        :param marks: An array of landmarks positions (x,y)
+        :type marks: Array (int)
+        :param img: Numpy image array who is place the landmarks
+        :type img: Numpy Array (int)
+        :param count: The index number of the frame who is analyse
+        :type count: int
+        """
         marks_pair = list(zip(marks[::2],marks[1::2]))
         for mark in marks_pair:
             cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
@@ -92,6 +116,17 @@ class VideoToLandmarks:
         #cv2.imwrite("data/stage_data_out/landmarks_pics/"+video_name+"_image_"+str(face_recognition_type)+"_"+str(count)+".jpg", img)
 
     def progression_of_place_landmarks(self, count, video_name, frame_total_1= -1, frame_total_2 = None):
+        """Function to print in the console the current index (frame) of videos analysis 
+
+        :param count: The index number of the frame who is analyse
+        :type count: int
+        :param video_name: Name of the video, which useful for find total frame count in csv video info file
+        :type video_name: str
+        :param frame_total_1: if the video analyse is split into n first min and n last min to show coherent porgression , defaults to -1
+        :type frame_total_1: int, optional
+        :param frame_total_2: if the video analyse is split into n first min and n last min to show coherent porgression, defaults to None
+        :type frame_total_2: int , optional
+        """
         if frame_total_1 == -1:
             frame_count = self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["frame_count"]
             os.system("clear")
@@ -109,7 +144,11 @@ class VideoToLandmarks:
                 print(str(count)+ " on " + str(frame_count_2) + " frame analyse")
 
     def transoform_videos_to_landmarks(self, face_recognition_type):
-        videos = [cv2.VideoCapture("/mnt/7b914d1c-f145-4023-9f2f-2cd288d7db76/DESFAM-F/DESFAM_F_H95_VENDREDI.avi")]
+        """Transforms all the video that are load into attibute self.videos into a csv of landmarks
+
+        :param face_recognition_type: Arguments for choose wich face recognition algorithmes to use ("mtcnn" or "hog")
+        :type face_recognition_type: str
+        """
         for video in self.videos:
             video_name = video.get("video_name")
             video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["fps"])[0]
@@ -139,7 +178,15 @@ class VideoToLandmarks:
                         self.progression_of_place_landmarks(count, video_name)
                         count += 1
             self.sftp.save_remote_df(csv_path_name, self.df_landmarks, header=True, mode="w")
+            
     def transoform_videos_with_sec_to_landmarks(self, face_recognition_type, sec):
+        """Transforms all the video that are load into attibute self.videos into a csv of landmarks between specified range (in sec)
+        
+        :param face_recognition_type: Arguments for choose wich face recognition algorithmes to use ("mtcnn" or "hog")
+        :type face_recognition_type: str
+        :param sec: number of sec to analyze on the beginning and ending of the video
+        :type sec: int
+        """
         for video in self.videos:
             video_name = video.get("video_name")
             video_fps = list(self.df_videos_infos[self.df_videos_infos["video_name"] == video_name]["fps"])[0]
@@ -178,28 +225,24 @@ class VideoToLandmarks:
 
              
     def load_and_transform(self, detector):
+        """Function who regroups 2 main action, load video and transform video
+
+        :param detector: Wich kind of face detector to use ("mtcnn" or "hog")
+        :type detector: str
+        """
         self.load_data_video()
         self.transoform_videos_to_landmarks(detector)
         
     def load_and_transform_with_sec(self, detector, minutes):
+        """Function who regroups 2 main action, load video and transform video between range in minutes
+
+        :param detector: Wich kind of face detector to use ("mtcnn" or "hog")
+        :type detector: str
+        :param minutes: range (in min) to analyse in the beginning and ending of the video.
+        :type minutes: int
+        """
         self.load_data_video()
         self.transoform_videos_with_sec_to_landmarks(detector, minutes*60)
 
-    def load_and_transform_mtcnn(self):
-        cap = cv2.VideoCapture(self.path)
-        success, img = cap.read()     
-         
-        mtcnn = FaceRecognitionMtcnn()
-        count = 0
-        while success:  
-            marks = mtcnn.place_landmarks(img, count)
-            marks_pair = list(zip(marks[::2],marks[1::2]))
-            np.savetxt("data/stage_data_out/marks_pair",marks_pair)
-            for mark in marks_pair:
-                cv2.circle(img, (mark[0], mark[1]), 2, (0,255,0), -1, cv2.LINE_AA)
-            cv2.imwrite("data/stage_data_out/landmarks_pics_mtcnn/image_"+str(count)+".jpg", img)
-
-            success, img = cap.read()
-            count = count + 1
 
 
