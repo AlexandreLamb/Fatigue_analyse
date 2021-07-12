@@ -57,14 +57,11 @@ class SFTPConnector():
     
     def save_remote_model(self, remote_path, model):    
         if isinstance(remote_path, (str)):
-            try: 
-                self.makes_dir_remote(remote_path)      
-                with self.sftp_client.open(remote_path, "w") as f:
-                    f.write(model.save(remote_path))
-                self.sftp_client.chown(remote_path, REMOTE_UID, REMOTE_GID)
-            except Exception as e :
-                print(e)
-                self.sftp_client.close()
+            self.makes_dir_remote(remote_path)   
+            with self.sftp_client.open(remote_path, "w") as f:   
+                f.write(model.save(remote_path))
+                
+            self.sftp_client.chown(remote_path, REMOTE_UID, REMOTE_GID)
                 
         else:
             raise ValueError("Path to remote file as string required")          
@@ -143,10 +140,13 @@ print(PATH_TO_MODELS)
 
 
 
-model_path ="/home/simeon/Desktop/Fatigue_analyse/tensorboard/old_tensorboard_logs/20210609-130433/model_lstm"
+model_path = "/home/simeon/Documents/Fatigue_analyse/tensorboard/model/20210504-154102/model_lstm"
 model = tf.keras.models.load_model(model_path)
-print(model)
-""""
+model.save("test.h5")
+
+
 sftp = SFTPConnector()
-sftp.save_remote_model(os.path.join(PATH_TO_MODELS,"lstm"), model)
-"""
+
+sftp.sftp_client.put("test.h5", PATH_TO_MODELS+"/test_upload.h5")
+#sftp.save_remote_df(PATH_TO_MODELS+"/test.csv",pd.DataFrame([0,1,2]))
+#sftp.save_remote_model(PATH_TO_MODELS+"/test.h5", model)
