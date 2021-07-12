@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from utils import paths_to_df, parse_path_to_name, generate_columns_name
+from utils import paths_to_df, parse_path_to_name
 from datetime import datetime
 from database_connector import SFTPConnector
 import os
@@ -123,13 +123,13 @@ class DataFormator:
             df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
         self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
     
-    def generate_cross_dataset(self, path_to_measure_folder, windows, path_to_dataset_to_save):
-        dir_measures = self.sftp.list_dir_remote( path_to_measure_folder)
+    def generate_cross_dataset(self, path_to_dataset, path_to_dataset_to_save):
+        dir_measures = self.sftp.list_dir_remote(path_to_dataset)
         date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
-        path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
+        path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for video_exclude in dir_measures:
-            for path in [path for path in path_csv_arr if path != path_to_measure_folder+"/"+ video_exclude+"/"+video_exclude+".csv"]:
+            for path in [path for path in path_csv_arr if path != path_to_dataset+"/"+ video_exclude+"/"+video_exclude+".csv"]:
                 df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
             path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude)
             
