@@ -1,0 +1,53 @@
+gui package
+===========
+
+Submodules
+----------
+
+gui.gui\_help module
+--------------------
+
+.. automodule:: gui.gui_help
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gui.main\_windows module
+------------------------
+
+.. automodule:: gui.main_windows
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gui.pannel\_import module
+-------------------------
+
+.. automodule:: gui.pannel_import
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gui.pannel\_measure module
+--------------------------
+
+.. automodule:: gui.pannel_measure
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gui.pannel\_results module
+--------------------------
+
+.. automodule:: gui.pannel_results
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: gui
+   :members:
+   :undoc-members:
+   :show-inheritance:

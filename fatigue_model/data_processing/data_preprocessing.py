@@ -8,7 +8,6 @@ from tensorflow import constant
 
 import time, sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from logger import logging
 from database_connector import SFTPConnector
 
 class DataPreprocessing():
@@ -32,7 +31,6 @@ class DataPreprocessing():
         t = time.process_time()
         self.initialize()
         elapsed_time = time.process_time() - t
-        logging.info("time function : initialize : " + str(elapsed_time))
 
     
     def make_train_val_test_dataset(self):
@@ -70,7 +68,6 @@ class DataPreprocessing():
             t = time.process_time()
             time_series = np.array(self.parse_time_series_fast(df), dtype=np.float32)
             elapsed_time = time.process_time() - t
-            logging.info("time to parse time serie : " +str(elapsed_time))
             #time_series = np.squeeze(time_series)
             #self.dataset = tf.keras.preprocessing.timeseries_dataset_from_array(time_series, time_label, sequence_length = 1, batch_size=self.batch_size)
             #self.append_additional_features(time_series,[[1],[2]])
@@ -88,12 +85,10 @@ class DataPreprocessing():
         t = time.process_time()
         self.load_dataset()
         elapsed_time = time.process_time() - t
-        logging.info("time to load_dataset function : " +str(elapsed_time))
         if self.evaluate == False:
             t = time.process_time()
             self.make_train_val_test_dataset()
             elapsed_time = time.process_time() - t
-            logging.info("time to make_train_val_test_dataset function : " +str(elapsed_time))
         else : 
             self.dataset.batch(self.batch_size)
         if self.isTimeSeries == False :

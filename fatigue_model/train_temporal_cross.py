@@ -15,11 +15,11 @@ import os, sys
 from itertools import combinations
 from tensorflow.python.keras.activations import sigmoid 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from data_processing import DataPreprocessing
-from logger import logging
+from fatigue_model.data_processing import DataPreprocessing
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
-from database_connector import read_remote_df, save_remote_df, list_dir_remote
+
+from database_connector import SFTPConnector
 PATH_TO_RESULTS_CROSS_PREDICTIONS = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS")
 PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
 PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
@@ -40,8 +40,6 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train, df, date_id):
     video_exclude = path_to_dataset.split("/")[-2].split("exclude_")[-1]
     measure_combinaition = [measure for measure in list(df) if measure != "target"]
     dp = DataPreprocessing(path_to_dataset = None,batch_size= 32, isTimeSeries = True, df_dataset = df) 
-    logging.info("path to dataset")
-    logging.info(path_to_dataset)
     train = dp.train
     test = dp.test 
     val = dp.val
@@ -50,7 +48,6 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train, df, date_id):
               loss=tf.losses.BinaryCrossentropy(),
               metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
     model.summary()
-    logging.info("start fit model")
     model.fit(
         train, 
         validation_data= val,
@@ -60,9 +57,7 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train, df, date_id):
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='auto')]) 
     path_to_model_to_save = "tensorboard/model/"+date_id+ "/model_lstm_exclude_"+video_exclude
    
-    logging.info("SAVING... into " + path_to_model_to_save)
     model.save(path_to_model_to_save)
-    logging.info("SAVE !")
 
     _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
     
@@ -72,14 +67,11 @@ def train_evaluate_model(path_to_dataset, df_metrics_model_train, df, date_id):
     
     
 def evaluate_model(model_path, video_exclude): 
+    sftp = SFTPConnector()
     model = tf.keras.models.load_model(model_path)
-    logging.info("model_path")
-    logging.info(model_path)
-    logging.info("video_exclude")
-    logging.info(video_exclude)
-    
+        
     df_evaluate_metrics = pd.DataFrame(columns=["video_exclude", "measure_combination", "binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index(["video_exclude","measure_combination"])
-    df = read_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO, video_exclude, video_exclude+".csv"))
+    df = sftp.read_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO, video_exclude, video_exclude+".csv"))
     preprocessing = DataPreprocessing(path_to_dataset = None, isTimeSeries = True, batch_size = 1, evaluate = True, df_dataset=df)
     preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
     
@@ -101,41 +93,37 @@ def evaluate_model(model_path, video_exclude):
     
     path_to_csv_pred =os.join(PATH_TO_RESULTS_CROSS_PREDICTIONS, video_exclude, "/pred.csv") 
     path_to_csv_metrics =os.join(PATH_TO_RESULTS_CROSS_PREDICTIONS, video_exclude, "/metrics.csv") 
-    logging.info("SAVING...")
-    save_remote_df(path_to_csv_pred, df_pred, index = False)
-    save_remote_df(path_to_csv_metrics, df_evaluate_metrics)
-    logging.info("SAVE !")
+    sftp.save_remote_df(path_to_csv_pred, df_pred, index = False)
+    sftp.save_remote_df(path_to_csv_metrics, df_evaluate_metrics)
    
 def train_cross_measure_model():
+    sftp = SFTPConnector()
     cross_combinations = lambda df : sum([list(map(list, combinations(df, i))) for i in range(len(df) + 1) if i != 0],[])
     cross_dataset_path = PATH_TO_TIME_ON_TASK_CROSS
-    folder_dataset = list_dir_remote(cross_dataset_path)
+    folder_dataset = sftp.list_dir_remote(cross_dataset_path)
     path_dataset = [ cross_dataset_path + folder + "/dataset.csv" for folder in  folder_dataset ]
     date_id = str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     df_metrics_model_train = pd.DataFrame(columns=["video_exclude","measure_combination","binary_accuracy","binary_crossentropy","mean_squared_error"]).set_index(["video_exclude","measure_combination"])
     for dataset in path_dataset:
-        df = read_remote_df(dataset)
+        df = sftp.read_remote_df(dataset)
         cross_combinations_measure = cross_combinations([measure for measure in list(df) if measure != "target"])
         for measures in cross_combinations_measure:
             sub_df = df[measures + ["target"]]
-            logging.info("start with  :" + dataset)
-            logging.info("start with comniation of measure : " + str(measures))
             path_to_model, video_to_exclude, df_metrics_model_train = train_evaluate_model(dataset, df_metrics_model_train, sub_df, date_id)
             evaluate_model(path_to_model, video_to_exclude, measures)
     path_to_csv_metrics_model_train = os.path.join(PATH_TO_RESULTS_CROSS_PREDICTIONS,"metrics_train_model.csv")
-    save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)
+    sftp.save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)
 
 def train_cross_model():
+    sftp = SFTPConnector()
     cross_dataset_path = PATH_TO_TIME_ON_TASK_CROSS
-    folder_dataset = list_dir_remote(cross_dataset_path)
+    folder_dataset = sftp.list_dir_remote(cross_dataset_path)
     path_dataset = [ cross_dataset_path + folder + "/dataset.csv" for folder in  folder_dataset ]
     date_id = str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     df_metrics_model_train = pd.DataFrame(columns=["video_exclude","binary_accuracy","binary_crossentropy","mean_squared_error"]).set_index(["video_exclude"])
     for dataset in path_dataset:
-        df = read_remote_df(dataset)
-        logging.info("start with  :" + dataset)
+        df = sftp.read_remote_df(dataset)
         path_to_model, video_to_exclude, df_metrics_model_train = train_evaluate_model(dataset, df_metrics_model_train, df, date_id)
         evaluate_model(path_to_model, video_to_exclude)
     path_to_csv_metrics_model_train = os.path.join(PATH_TO_RESULTS_CROSS_PREDICTIONS,"metrics_train_model.csv")
-    save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)
-train_cross_model()
+    sftp.save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)

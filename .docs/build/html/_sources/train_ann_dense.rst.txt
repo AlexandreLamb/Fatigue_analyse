@@ -1,0 +1,7 @@
+train\_ann\_dense module
+========================
+
+.. automodule:: train_ann_dense
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -2,9 +2,9 @@ import os
 import sys
 import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from model_parameter import DenseAnn, LSTMAnn
-from data_processing import DataPreprocessing
-from hparams import Hparams
+from fatigue_model.model_parameter import DenseAnn, LSTMAnn
+from fatigue_model.data_processing import DataPreprocessing
+from fatigue_model.hyper_parameter_tunning import Hparams
 from utils import get_last_date_item
 import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
@@ -104,23 +104,24 @@ class ModelTunning():
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)
             session_num += 1  
         self.sftp.put_dir(os.path.join(PATH_TO_TENSORBOARD, self.date_id), self.logdir)         
-                 
-    
-json_path = "fatigue_model/model_parameter/hparms_lstm.json"
 
-path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
+                
+def train():    
+    json_path = "fatigue_model/model_parameter/hparms_lstm.json"
 
-mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
-mt.initialize_model("LSTM")
-mt.tune_model()
-del mt
+    path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
 
-path_to_merge_dataset_folder = PATH_TO_DEBT_MERGE
+    mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
+    mt.initialize_model("LSTM")
+    mt.tune_model()
+    del mt
 
-mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
-mt.initialize_model("LSTM")
-mt.tune_model()
-del mt
+    path_to_merge_dataset_folder = PATH_TO_DEBT_MERGE
+
+    mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
+    mt.initialize_model("LSTM")
+    mt.tune_model()
+    del mt
 
 
 ## TODO : make global variable across module for path

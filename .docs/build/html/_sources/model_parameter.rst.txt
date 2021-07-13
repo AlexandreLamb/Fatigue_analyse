@@ -1,0 +1,29 @@
+model\_parameter package
+========================
+
+Submodules
+----------
+
+model\_parameter.dense\_model module
+------------------------------------
+
+.. automodule:: model_parameter.dense_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+model\_parameter.lstm\_model module
+-----------------------------------
+
+.. automodule:: model_parameter.lstm_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: model_parameter
+   :members:
+   :undoc-members:
+   :show-inheritance:

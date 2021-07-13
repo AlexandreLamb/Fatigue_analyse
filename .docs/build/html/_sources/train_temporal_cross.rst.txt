@@ -1,0 +1,7 @@
+train\_temporal\_cross module
+=============================
+
+.. automodule:: train_temporal_cross
+   :members:
+   :undoc-members:
+   :show-inheritance:
