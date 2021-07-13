@@ -130,9 +130,10 @@ class DataFormator:
         path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for video_exclude in dir_measures:
+            print(video_exclude)
             for path in [path for path in path_csv_arr if path != path_to_dataset+"/"+ video_exclude+"/"+video_exclude+".csv"]:
                 df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
-            path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude)
+            path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude+".csv")
             
             self.sftp.save_remote_df(path_folder_to_save, df_measures, index =False)
             
