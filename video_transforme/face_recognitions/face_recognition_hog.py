@@ -1,6 +1,5 @@
 import dlib
 import cv2
-from logger import logging
 from imutils import face_utils
 import imutils
 import numpy as np
@@ -26,7 +25,6 @@ class FaceRecognitionHOG:
         :return: Array of landamrks position (x,y)
         :rtype: Array (int)
         """
-        logging.info("place landmarks on image " + str(count))
         if img_size != None:
             image = imutils.resize(image, width=img_size)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -38,7 +36,6 @@ class FaceRecognitionHOG:
             marks = self.predictor(gray, rects[0])
             marks = face_utils.shape_to_np(marks)            
         elif len(rects) >= 1:
-            logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
             marks = self.predictor(gray, rects[0])
             marks = face_utils.shape_to_np(marks)
         else :
@@ -57,7 +54,6 @@ class FaceRecognitionHOG:
         :return: Array of landamrks position (x,y)
         :rtype: Array (int)
         """
-        logging.info("place landmarks on image " + str(count))
         if img_size != None:
             image = imutils.resize(image, width=img_size)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -69,7 +65,6 @@ class FaceRecognitionHOG:
             marks = self.predictor(gray, rects[0])
             marks = face_utils.shape_to_np(marks)            
         elif len(rects) >= 1:
-            logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
             marks = self.predictor(gray, rects[0])
             marks = face_utils.shape_to_np(marks)
         else :

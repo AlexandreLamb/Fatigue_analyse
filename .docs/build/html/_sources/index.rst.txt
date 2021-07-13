@@ -10,7 +10,7 @@ Welcome to Intelligent Fatigue Detection System's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   modules
 
 Indices and tables
 ==================
@@ -18,15 +18,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-Utils Module
-==================
-.. automodule:: utils.utils_functions
-   :members:
-
-
-
-Video Landmarks Module
-======================
-.. automodule:: video_transforme.video_to_landmarks
-   :members:

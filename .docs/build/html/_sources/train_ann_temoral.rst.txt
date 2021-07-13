@@ -1,0 +1,7 @@
+train\_ann\_temoral module
+==========================
+
+.. automodule:: train_ann_temoral
+   :members:
+   :undoc-members:
+   :show-inheritance:

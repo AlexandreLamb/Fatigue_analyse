@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>fatigue_model.hyper_parameter_tunning package &mdash; Intelligent Fatigue Detection System 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Intelligent Fatigue Detection System
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">fatigue_model.hyper_parameter_tunning package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-fatigue_model.hyper_parameter_tunning.hparams">fatigue_model.hyper_parameter_tunning.hparams module</a></li>
+<li><a class="reference internal" href="#module-fatigue_model.hyper_parameter_tunning.model_trainer">fatigue_model.hyper_parameter_tunning.model_trainer module</a></li>
+<li><a class="reference internal" href="#module-fatigue_model.hyper_parameter_tunning">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Intelligent Fatigue Detection System</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>fatigue_model.hyper_parameter_tunning package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/fatigue_model.hyper_parameter_tunning.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="fatigue-model-hyper-parameter-tunning-package">
+<h1>fatigue_model.hyper_parameter_tunning package<a class="headerlink" href="#fatigue-model-hyper-parameter-tunning-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-fatigue_model.hyper_parameter_tunning.hparams">
+<span id="fatigue-model-hyper-parameter-tunning-hparams-module"></span><h2>fatigue_model.hyper_parameter_tunning.hparams module<a class="headerlink" href="#module-fatigue_model.hyper_parameter_tunning.hparams" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.hparams.Hparams">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">fatigue_model.hyper_parameter_tunning.hparams.</span></span><span class="sig-name descname"><span class="pre">Hparams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.hparams.Hparams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.hparams.Hparams.create_hparam_combination">
+<span class="sig-name descname"><span class="pre">create_hparam_combination</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.hparams.Hparams.create_hparam_combination" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.hparams.Hparams.json_to_hparams">
+<span class="sig-name descname"><span class="pre">json_to_hparams</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.hparams.Hparams.json_to_hparams" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.hparams.Hparams.read_json">
+<span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.hparams.Hparams.read_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.hparams.Hparams.tune_model">
+<span class="sig-name descname"><span class="pre">tune_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.hparams.Hparams.tune_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-fatigue_model.hyper_parameter_tunning.model_trainer">
+<span id="fatigue-model-hyper-parameter-tunning-model-trainer-module"></span><h2>fatigue_model.hyper_parameter_tunning.model_trainer module<a class="headerlink" href="#module-fatigue_model.hyper_parameter_tunning.model_trainer" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">fatigue_model.hyper_parameter_tunning.model_trainer.</span></span><span class="sig-name descname"><span class="pre">ModelTunning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_to_merge_dataset_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isTimeSeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.create_file_logger">
+<span class="sig-name descname"><span class="pre">create_file_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.create_file_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.initialize_model">
+<span class="sig-name descname"><span class="pre">initialize_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.initialize_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.train_test_model">
+<span class="sig-name descname"><span class="pre">train_test_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.train_test_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.tune_model">
+<span class="sig-name descname"><span class="pre">tune_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.ModelTunning.tune_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fatigue_model.hyper_parameter_tunning.model_trainer.train">
+<span class="sig-prename descclassname"><span class="pre">fatigue_model.hyper_parameter_tunning.model_trainer.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fatigue_model.hyper_parameter_tunning.model_trainer.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-fatigue_model.hyper_parameter_tunning">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fatigue_model.hyper_parameter_tunning" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lambert.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

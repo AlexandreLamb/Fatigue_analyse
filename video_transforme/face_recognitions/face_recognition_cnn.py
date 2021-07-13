@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import keras
 import cv2
 import numpy as np
-from logger import logging
 
 class FaceRecognitionCNN:
     def __init__(self):
@@ -83,13 +82,11 @@ class FaceRecognitionCNN:
         return marks
 
     def place_landmarks(self, img, count) :
-        logging.info("place landmarks on image "+str(count))
         rects = self.face_detection_dnn(img)
         if len(rects) == 1 :
             marks = self.detect_landmarks_cnn(img,rects[0])
             return marks.ravel()
         elif len(rects) >= 1:
-            logging.info("Detect more than 1 face on img number " +str(count) + " get default first face detect")
             marks = self.detect_landmarks_cnn(img,rects[0])
             return marks.ravel()
         else :

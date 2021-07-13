@@ -2,7 +2,7 @@ import json
 from tensorboard.plugins.hparams import api as hp
 import numpy as np
 import itertools
-
+import time 
 class Hparams():
     def __init__(self, json_path):
         self.json_path = json_path

@@ -23,4 +23,4 @@ def check_dataset_label_mean(path_base):
             sftp.remove_dir_remote(base_path)
 
 
-check_dataset_label_mean("/home/fatigue_database/fatigue_database/dataset/temporal/DESFAM_F/time_on_task/video")
+#check_dataset_label_mean("/home/fatigue_database/fatigue_database/dataset/temporal/DESFAM_F/time_on_task/video")

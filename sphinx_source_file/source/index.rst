@@ -20,11 +20,20 @@ Indices and tables
 * :ref:`search`
 
 Utils Module
-============
+==================
 .. automodule:: utils.utils_functions
    :members:
 
-Video Landmarks Module
+
+
+Video Landmarks Class
 ======================
-.. automodule:: video_transforme.video_to_landmarks
+.. autoclass:: video_transforme.VideoToLandmarks
+   :members:
+   :undoc-members:
+   :special-members: __init__, __name__
+
+MTCNN
+=====
+.. autoclass: face_recognitions.FaceRecognitionMtcnn
    :members:
