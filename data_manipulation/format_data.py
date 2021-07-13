@@ -118,14 +118,15 @@ class DataFormator:
         dir_measures = self.sftp.list_dir_remote( path_to_measure_folder)
         date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
         path_csv_arr = [path_to_measure_folder+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
+        print(path_csv_arr)
         df_measures = pd.DataFrame()
         for path in path_csv_arr:
+            print(path)
             df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
         self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
     
     def generate_cross_dataset(self, path_to_dataset, path_to_dataset_to_save):
         dir_measures = self.sftp.list_dir_remote(path_to_dataset)
-        date_id = datetime.now().strftime("%Y_%m_%d_%H_%M")
         path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         df_measures = pd.DataFrame()
         for video_exclude in dir_measures:
