@@ -19,7 +19,12 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Utils
+Utils Module
 ==================
 .. automodule:: utils.utils_functions
+   :members:
+
+Video to Landmarks Module
+==========================
+.. module:: video_transforme.video_to_landmarks
    :members:
