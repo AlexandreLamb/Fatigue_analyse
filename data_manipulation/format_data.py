@@ -15,7 +15,8 @@ PATH_TO_DATASET_NON_TEMPORAL = os.environ.get("PATH_TO_DATASET_NON_TEMPORAL")
 PATH_TO_DATASET_TEMPORAL = os.environ.get("PATH_TO_DATASET_TEMPORAL")
 PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
-class DataFormator:   
+class DataFormator:  
+    
     def __init__(self):
         self.sftp = SFTPConnector()
         #self.video_info_path("data/stage_data_out/videos_infos.csv")
@@ -127,14 +128,17 @@ class DataFormator:
     
     def generate_cross_dataset(self, path_to_dataset, path_to_dataset_to_save):
         dir_measures = self.sftp.list_dir_remote(path_to_dataset)
+        print(dir_measures)
         path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
+        print(path_csv_arr)
         df_measures = pd.DataFrame()
         for video_exclude in dir_measures:
             print(video_exclude)
             for path in [path for path in path_csv_arr if path != path_to_dataset+"/"+ video_exclude+"/"+video_exclude+".csv"]:
+                print(path)
                 df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
-            path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude+".csv")
-            
+            path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude,"dataset.csv")
+            print(path_folder_to_save)
             self.sftp.save_remote_df(path_folder_to_save, df_measures, index =False)
             
     def generate_dataset_debt_sleep(self, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 

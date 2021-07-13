@@ -2,10 +2,7 @@ import argparse, sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from data_manipulation import AnalyseData
 from data_manipulation import DataFormator
-import json
-import os
 import pandas as pd
-import time
 from database_connector import  SFTPConnector
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
@@ -49,9 +46,17 @@ def create_dataset(dataset_path, path_folder_to_save, path_folder_cross, dataset
         dataformat.save_df(df_merge, video_name, dataset_path)
     dataformat.create_dataset_from_measure_folder(dataset_path, [WINDOWS_SIZE], path_folder_to_save = path_folder_to_save)
     dataformat.generate_cross_dataset(dataset_path, path_folder_cross)
-    del dataformat 
+    del dataformat
     del analyse_data
 
-create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, PATH_TO_TIME_ON_TASK_CROSS, dataset_type="time_on_task")
-create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, PATH_TO_DEBT_CROSS, dataset_type="debt")
+#create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, PATH_TO_TIME_ON_TASK_CROSS, dataset_type="time_on_task")
+#create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, PATH_TO_DEBT_CROSS, dataset_type="debt")
 
+
+def generate_cross():
+    """[summary]
+    """
+    dataformat = DataFormator()
+    dataformat.generate_cross_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_CROSS)
+
+generate_cross()
