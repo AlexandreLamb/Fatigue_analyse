@@ -23,8 +23,3 @@ Utils Module
 ==================
 .. automodule:: utils.utils_functions
    :members:
-
-Video to Landmarks Module
-==========================
-.. automodule:: video_transforme.video_to_landmarks
-   :members:

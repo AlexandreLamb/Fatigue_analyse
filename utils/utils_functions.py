@@ -4,7 +4,6 @@ import numpy as np
 import re
 import sys
 import os
-import cv2
 
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
