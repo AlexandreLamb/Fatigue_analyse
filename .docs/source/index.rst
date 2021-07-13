@@ -20,9 +20,11 @@ Indices and tables
 * :ref:`search`
 
 Utils Module
-============
+==================
 .. automodule:: utils.utils_functions
    :members:
+
+
 
 Video Landmarks Module
 ======================
