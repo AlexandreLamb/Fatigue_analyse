@@ -1,5 +1,5 @@
 # Fatigue_analyse
-
+[![Documentation Status](https://readthedocs.org/projects/fatigue-analyse/badge/?version=latest)](https://fatigue-analyse.readthedocs.io/en/latest/?badge=latest)
 ## 1. Install project dependancie 
 
 ```bash
