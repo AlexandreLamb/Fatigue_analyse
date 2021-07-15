@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import os, sys, time
+import os, sys, timeit
 from dotenv import load_dotenv
 
 load_dotenv("env_file/.env_path")
@@ -127,28 +127,24 @@ class DataFormator:
         self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
     
     def generate_cross_dataset(self, path_to_dataset, path_to_dataset_to_save):
-        t =time.process_time()
         dir_measures = self.sftp.list_dir_remote(path_to_dataset)
-        elapsed_time = time.process_time() - t
-        print(elapsed_time)
-        print(dir_measures)
-        
         path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
         
-        print(path_csv_arr)
-        
+        dataframe_dict = {}    
+        for path in path_csv_arr:
+            video_name = path.split("/")[-2]
+            dataframe = self.sftp.read_remote_df(path)
+            dataframe_dict.update({video_name : dataframe})
+                 
         df_measures = pd.DataFrame()
-        """"
-        for video_exclude in dir_measures:
-            print(video_exclude)
-            
-            for path in [path for path in path_csv_arr if path != path_to_dataset +"/"+ video_exclude +"/"+ video_exclude + ".csv"]:
-                print(path)
-                df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
+        for video_exclude in dir_measures:            
+            for video_name in [path.split(sep="/")[-2] for path in path_csv_arr if path != path_to_dataset +"/"+ video_exclude +"/"+ video_exclude + ".csv"]:
+                df_measures = df_measures.append(dataframe_dict[video_name], ignore_index=False)
             path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude,"dataset.csv")
-            print(path_folder_to_save)
-            self.sftp.save_remote_df(path_folder_to_save, df_measures, index =False)
-        """     
+            df_measures.to_csv("temp/temp.csv", index=False)
+            self.sftp.sftp_client.put("temp/temp.csv",path_folder_to_save)
+            os.remove("temp/temp.csv")
+            df_measures = pd.DataFrame()
     def generate_dataset_debt_sleep(self, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
         df_pvt_total = self.sftp.read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
         subject_conditions = dict(df_pvt_total.index)
