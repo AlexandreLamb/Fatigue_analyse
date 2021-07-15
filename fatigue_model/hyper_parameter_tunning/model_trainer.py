@@ -80,7 +80,7 @@ class ModelTunning():
             model_path = "fatigue_model/model_save/"+ self.date_id + "/model_" + str(session_num)
             model.save(model_path)
             #self.sftp.put_dir(PATH_TO_MODELS, model_path)         
-            self.sftp.put_dir(os.path.join(PATH_TO_MODELS, self.date_id, "/model_" + str(session_num)), model_path)         
+            self.sftp.put_dir(os.path.join(PATH_TO_MODELS, self.date_id, "model_" + str(session_num)), model_path)         
             
         _, binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(self.test)
         return binary_accuracy, binary_crossentropy, mean_squared_error
@@ -98,7 +98,7 @@ class ModelTunning():
         session_num = 0
         for hparams in self.hparams_combined:    
             run_name = "run-%d" % session_num
-            hparams.update({"session_num" : session_num})
+            #hparams.update({"session_num" : session_num})
             print('--- Starting trial: %s' % run_name)
             print({h.name: hparams[h] for h in hparams})
             self.run(self.logdir + run_name, {h.name: hparams[h] for h in hparams}, session_num)

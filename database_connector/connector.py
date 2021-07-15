@@ -116,6 +116,8 @@ class SFTPConnector():
     # https://stackoverflow.com/questions/4409502/directory-transfers-with-paramiko              
     def put_dir(self, remote_path, local_path):
         self.makes_dir_remote(remote_path)
+        print(remote_path)
+        print(local_path)
         for element in os.listdir(local_path):
             print(element)
             local_element = os.path.join(local_path, element)
