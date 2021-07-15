@@ -26,19 +26,25 @@ class DataFormator:
             fps = list(df_video_infos[df_video_infos["video_name"] == video_name]["fps"])[0]
         num_sec = num_min*60
         num_frame_by_num_min = int(fps*num_sec)
+        frame_threeshold = 3 * 60 * fps
+        
         #print("num frame by min : " +str(num_frame_by_num_min))
         if path != None:
             df = self.sftp.save_remote_df(path)
         if not df_measure.empty:
+            
             df = df_measure[measures]
-            df_label = df.append( pd.DataFrame(columns=['Target']))
+            df_label = df.append(pd.DataFrame(columns=['Target']))
             #print(df_label[df_label["frame"].between(0,num_frame_by_num_min*2)])
-            df_label.loc[lambda df_label: df_label["frame"] <= num_frame_by_num_min*2,"Target"] = 0
+            df_label.loc[lambda df_label: df_label["frame"].between(frame_threeshold,num_frame_by_num_min + frame_threeshold),"Target"] = 0
 
-            df_label.loc[lambda df_label: df_label["frame"] > num_frame_by_num_min*2,"Target"] = 1
+            df_label.loc[lambda df_label: df_label["frame"].between(len(df_label) -num_frame_by_num_min -frame_threeshold, len(df_label) - frame_threeshold),"Target"] = 1
+            df_label.dropna(inplace=True)
+
         df_label = df_label.set_index("frame")
         columns_measures = [col for col in df_label.columns if col !=  "Target"]
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
+        print(df_label)       
         remote_path = os.path.join(PATH_TO_DATASET_NON_TEMPORAL,video_name,video_name+".csv")
         print("saving non temporal")
         self.sftp.save_remote_df(remote_path, df)
@@ -99,7 +105,7 @@ class DataFormator:
         return df_tab
 
     def save_df(self, df, video_name, dataset_path, measure=""):
-        print("saving")
+        print("saving " + video_name)
         if measure == "":
             self.sftp.save_remote_df(os.path.join(dataset_path,video_name,video_name+".csv"),df, index = False)
         else : 
