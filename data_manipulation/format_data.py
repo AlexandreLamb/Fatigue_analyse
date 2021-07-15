@@ -143,7 +143,8 @@ class DataFormator:
             path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude,"dataset.csv")
             df_measures.to_csv("temp/temp.csv", index=False)
             self.sftp.sftp_client.put("temp/temp.csv",path_folder_to_save)
-            os.remove("temp/temp.csv")
+            if os.path.exists("temp/temp.csv"):
+                os.remove("temp/temp.csv")
             df_measures = pd.DataFrame()
     def generate_dataset_debt_sleep(self, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
         df_pvt_total = self.sftp.read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
