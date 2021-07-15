@@ -5,8 +5,6 @@ import itertools
 import numpy as np 
 import json
 from tensorflow import feature_column
-from tensorflow.keras import layers
-from tensorflow.keras.layers.experimental import preprocessing
 from tensorboard.plugins.hparams import api as hp
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
