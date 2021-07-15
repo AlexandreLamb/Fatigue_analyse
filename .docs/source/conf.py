@@ -15,7 +15,7 @@ import os
 import sys
 #from dotenv import load_dotenv
 
-MOCK_MODULES = ["dlib"]
+MOCK_MODULES = ["dlib","numpy","tensorflow","paramiko"]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 
