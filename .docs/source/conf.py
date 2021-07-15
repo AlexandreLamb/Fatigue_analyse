@@ -15,7 +15,7 @@ import os
 import sys
 #from dotenv import load_dotenv
 
-MOCK_MODULES = ["dlib","numpy","tensorflow","paramiko","pandas","matplotlib","imutils","matplotlib.pyplot","dotenv","'tensorflow.keras","cv2","scipy","sklearn","mtcnn","sklearn.model_selection"]
+MOCK_MODULES = ["dlib","numpy","tensorflow","paramiko","pandas","matplotlib","imutils","matplotlib.pyplot","dotenv","'tensorflow.keras","cv2","scipy","sklearn","mtcnn","sklearn.model_selection","scipy.signal"]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 
