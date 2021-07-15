@@ -19,7 +19,7 @@ MOCK_MODULES = ["dlib","numpy","tensorflow","paramiko","pandas","matplotlib","im
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 """
-autodoc_mock_imports = ["dlib","numpy","tensorflow","paramiko","pandas","matplotlib","imutils","matplotlib.pyplot","dotenv","'tensorflow.keras","cv2","scipy","sklearn","mtcnn","sklearn.model_selection","scipy.signal","matplotlib.figure"]
+autodoc_mock_imports = ["tensorboard","dlib","numpy","tensorflow","paramiko","pandas","matplotlib","imutils","matplotlib.pyplot","dotenv","'tensorflow.keras","cv2","scipy","sklearn","mtcnn","sklearn.model_selection","scipy.signal","matplotlib.figure"]
 
 sys.path.insert(0, os.path.abspath('../..'))
 #load_dotenv("env_file/.env_credentials")
