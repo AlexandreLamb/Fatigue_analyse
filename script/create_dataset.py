@@ -49,14 +49,5 @@ def create_dataset(dataset_path, path_folder_to_save, path_folder_cross, dataset
     del dataformat
     del analyse_data
 
-#create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, PATH_TO_TIME_ON_TASK_CROSS, dataset_type="time_on_task")
-#create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, PATH_TO_DEBT_CROSS, dataset_type="debt")
-
-
-def generate_cross():
-    """[summary]
-    """
-    dataformat = DataFormator()
-    dataformat.generate_cross_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_CROSS)
-
-generate_cross()
+create_dataset(PATH_TO_TIME_ON_TASK_VIDEO, PATH_TO_TIME_ON_TASK_MERGE, PATH_TO_TIME_ON_TASK_CROSS, dataset_type="time_on_task")
+create_dataset(PATH_TO_DEBT_VIDEO, PATH_TO_DEBT_MERGE, PATH_TO_DEBT_CROSS, dataset_type="debt")
