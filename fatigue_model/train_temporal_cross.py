@@ -59,7 +59,7 @@ class CrossValidation:
         model.fit(
             train, 
             validation_data= val,
-            epochs=1,
+            epochs=1000,
             shuffle=True,
             verbose =1,
             callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='auto')]) 
@@ -111,7 +111,7 @@ class CrossValidation:
         folder_dataset = self.sftp.list_dir_remote(self.cross_dataset_path)
         path_dataset = [ os.path.join(self.cross_dataset_path, folder, "dataset.csv") for folder in  folder_dataset ]
         df_metrics_model_train = pd.DataFrame(columns=["video_exclude","binary_accuracy","binary_crossentropy","mean_squared_error"]).set_index(["video_exclude"])
-        for dataset in path_dataset[0:2]:
+        for dataset in path_dataset:
             df = self.sftp.read_remote_df(dataset)
             path_to_model, video_to_exclude, df_metrics_model_train = self.train_evaluate_model(dataset, df_metrics_model_train, df, self.date_id)
             self.test_model(path_to_model, video_to_exclude)
