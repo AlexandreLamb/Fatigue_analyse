@@ -10,11 +10,13 @@ from utils import paths_to_df, parse_path_to_name
 from datetime import datetime
 from database_connector import SFTPConnector
 import os
+import re
 import json
 PATH_TO_DATASET_NON_TEMPORAL = os.environ.get("PATH_TO_DATASET_NON_TEMPORAL")
 PATH_TO_DATASET_TEMPORAL = os.environ.get("PATH_TO_DATASET_TEMPORAL")
 PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
+
 class DataFormator:  
     
     def __init__(self):
@@ -132,6 +134,22 @@ class DataFormator:
             df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
         self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
     
+    def generate_cross_dataset_by_week(self, path_to_dataset):
+        dir_measures = self.sftp.list_dir_remote(path_to_dataset)
+        path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
+        
+        dataframe_lundi = pd.DataFrame()   
+        for path in path_csv_arr:
+            video_name = path.split("/")[-2]
+            dataframe = self.sftp.read_remote_df(path)
+            print(video_name + " read")
+            if "LUNDI" in re.split("_| ", video_name) : 
+                dataframe_lundi = dataframe_lundi.append(dataframe, ignore_index=False)
+            else:
+                self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","test",video_name,"dataset.csv"), dataframe)
+        self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","train","dataset.csv"), dataframe_lundi)
+        
+       
     def generate_cross_dataset(self, path_to_dataset, path_to_dataset_to_save):
         dir_measures = self.sftp.list_dir_remote(path_to_dataset)
         path_csv_arr = [path_to_dataset+"/"+ dir_name+"/"+dir_name+".csv" for dir_name in dir_measures]
@@ -155,6 +173,7 @@ class DataFormator:
             if os.path.exists("temp/temp.csv"):
                 os.remove("temp/temp.csv")
             df_measures = pd.DataFrame()
+            
     def generate_dataset_debt_sleep(self, video_name, measures, df_measure= pd.DataFrame(), path = None, fps =None): 
         df_pvt_total = self.sftp.read_remote_df(os.path.join(PATH_TO_IRBA_DATA_PVT,"sujets_data_pvt_perf.csv"), sep=";", index_col = [0,1])
         subject_conditions = dict(df_pvt_total.index)
