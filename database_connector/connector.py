@@ -129,6 +129,10 @@ class SFTPConnector():
                 self.makes_dir_remote(remote_element)
                 self.put_dir(remote_element, local_element)   
                 
+    def put_file(self, remote_path, local_path):
+        self.makes_dir_remote(remote_path)
+        self.sftp_client.put(local_path, remote_path)
+                
     # https://stackoverflow.com/questions/850749/check-whether-a-path-exists-on-a-remote-host-using-paramiko         
     def sftp_exists(self, path):
         try:

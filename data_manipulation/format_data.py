@@ -147,8 +147,11 @@ class DataFormator:
             for video_name in [path.split(sep="/")[-2] for path in path_csv_arr if path != path_to_dataset +"/"+ video_exclude +"/"+ video_exclude + ".csv"]:
                 df_measures = df_measures.append(dataframe_dict[video_name], ignore_index=False)
             path_folder_to_save = os.path.join(path_to_dataset_to_save,"exclude_"+video_exclude,"dataset.csv")
+            print(path_folder_to_save)
+            if os.path.isdir("temp") == False :
+                    os.makedirs("temp" )
             df_measures.to_csv("temp/temp.csv", index=False)
-            self.sftp.sftp_client.put("temp/temp.csv",path_folder_to_save)
+            self.sftp.put_file(path_folder_to_save, os.getcwd()+"/temp/temp.csv")
             if os.path.exists("temp/temp.csv"):
                 os.remove("temp/temp.csv")
             df_measures = pd.DataFrame()
@@ -176,4 +179,3 @@ class DataFormator:
 ## TODO: make mother class for herite some commun variable (csv_infos ect...)
 
 ## TODO: fiw 'Unnamed: 0' columns  (coreseponding to frame) in df_temporal
-

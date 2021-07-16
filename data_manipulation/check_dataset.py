@@ -2,13 +2,19 @@ from genericpath import isdir
 import os, sys
 import pandas as pd
 from dotenv import load_dotenv
+from paramiko import sftp
 
 load_dotenv("env_file/.env_path")
 PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
 PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_FULL")
 PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
+PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
+PATH_TO_DEBT_VIDEO = os.environ.get("PATH_TO_DEBT_VIDEO")
+
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from database_connector import SFTPConnector
+from utils import get_last_date_item
 
 def check_landmarks_len(path_base):
     sftp = SFTPConnector()        
@@ -39,8 +45,14 @@ def check_dataset_len(path_base):
         print(" length is " + str(len(df)))
         print("mean is "+  str(df.describe().loc["mean"]))
         print("----------------")
-
-
+        
+        
+def check_merge_dataset(path_base):
+    sftp = SFTPConnector()
+    print(get_last_date_item(path_base))
+    df = sftp.read_remote_df(get_last_date_item(path_base))
+    print(df.describe())
+          
 def check_dataset_label_mean(path_base):
     sftp = SFTPConnector()        
     dir =  sftp.list_dir_remote(path_base)
@@ -59,4 +71,4 @@ def check_dataset_label_mean(path_base):
             sftp.remove_dir_remote(base_path)"""
 
 
-check_landmarks_len(PATH_TO_LANDMARKS_DESFAM_F_5_MIN)
+#check_dataset_len(PATH_TO_DEBT_VIDEO)
