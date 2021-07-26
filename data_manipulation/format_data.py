@@ -146,6 +146,7 @@ class DataFormator:
             if "LUNDI" in re.split("_| ", video_name) : 
                 dataframe_lundi = dataframe_lundi.append(dataframe, ignore_index=False)
             else:
+                ##TODO save dataframe and put it instead of thath :
                 self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","test",video_name,"dataset.csv"), dataframe)
         self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","train","dataset.csv"), dataframe_lundi)
         
