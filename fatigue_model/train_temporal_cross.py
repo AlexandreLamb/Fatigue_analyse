@@ -26,9 +26,11 @@ PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
 PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
 
 class CrossValidation:
-    def __init__(self, cross_dataset_path):
+    def __init__(self, cross_dataset_path, video_dataset_path, prediction_dataset_path):
         self.sftp = SFTPConnector()
         self.cross_dataset_path = cross_dataset_path
+        self.video_dataset_path = video_dataset_path
+        self.prediction_dataset_path = prediction_dataset_path
         self.date_id = str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
 
@@ -78,7 +80,7 @@ class CrossValidation:
         model = tf.keras.models.load_model(model_path)
             
         df_evaluate_metrics = pd.DataFrame(columns=["video_exclude", "measure_combination", "binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index(["video_exclude","measure_combination"])
-        df = self.sftp.read_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO, video_exclude, video_exclude+".csv"))
+        df = self.sftp.read_remote_df(os.path.join(self.video_dataset_path, video_exclude, video_exclude+".csv"))
         df_copy = copy.copy(df)
         preprocessing = DataPreprocessing(path_to_dataset = None, isTimeSeries = True, batch_size = 1, evaluate = True, df_dataset=df)
         preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
@@ -100,8 +102,8 @@ class CrossValidation:
         df_pred.loc[lambda df_pred: df_pred["pred_max"] >= 0.5,"target_pred_max"] = 1
         df_pred["target_real"] = df_copy["target"]
         
-        path_to_csv_pred =os.path.join(PATH_TO_RESULTS_CROSS_PREDICTIONS_TIME_ON_TASK, self.date_id, video_exclude, "pred.csv") 
-        path_to_csv_metrics =os.path.join(PATH_TO_RESULTS_CROSS_PREDICTIONS_TIME_ON_TASK, self.date_id, video_exclude, "metrics.csv") 
+        path_to_csv_pred =os.path.join(self.prediction_dataset_path, self.date_id, video_exclude, "pred.csv") 
+        path_to_csv_metrics =os.path.join(self.prediction_dataset_path, self.date_id, video_exclude, "metrics.csv") 
         print(path_to_csv_pred)
         print(path_to_csv_metrics)
         self.sftp.save_remote_df(path_to_csv_pred, df_pred, index = False)
@@ -115,7 +117,7 @@ class CrossValidation:
             df = self.sftp.read_remote_df(dataset)
             path_to_model, video_to_exclude, df_metrics_model_train = self.train_evaluate_model(dataset, df_metrics_model_train, df, self.date_id)
             self.test_model(path_to_model, video_to_exclude)
-        path_to_csv_metrics_model_train = os.path.join(PATH_TO_RESULTS_CROSS_PREDICTIONS_TIME_ON_TASK, self.date_id, "metrics_train_model.csv")
+        path_to_csv_metrics_model_train = os.path.join(self.prediction_dataset_path, self.date_id, "metrics_train_model.csv")
         self.sftp.save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)
         
     """   
