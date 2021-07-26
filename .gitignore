@@ -19,5 +19,5 @@ fatigue_analyse.code-workspace/
 .vscode/settings.json
 fatigue_analyse.code-workspace
 utils_file/
-env_file/
+env_file/.env_credentials
 temp/
