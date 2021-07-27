@@ -8,11 +8,11 @@ PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
 PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
 
 json_path = "fatigue_model/model_parameter/hparms_lstm.json"
-"""path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
+path_to_merge_dataset_folder = PATH_TO_TIME_ON_TASK_MERGE
 mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
 mt.initialize_model("LSTM")
 mt.tune_model()
-del mt"""
+del mt
 path_to_merge_dataset_folder = PATH_TO_DEBT_MERGE
 mt = ModelTunning(json_path, path_to_merge_dataset_folder, isTimeSeries = True, batch_size=32)
 mt.initialize_model("LSTM")

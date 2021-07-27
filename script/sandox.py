@@ -7,19 +7,18 @@ from database_connector import  SFTPConnector
 from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 
-PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
-PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
-PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
+PATH_TO_IRBA_DATA_VAS = os.environ.get("PATH_TO_IRBA_DATA_VAS")
+sftp = SFTPConnector()
 
-PATH_TO_DEBT_VIDEO = os.environ.get("PATH_TO_DEBT_VIDEO")
-PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
-PATH_TO_DEBT_CROSS = os.environ.get("PATH_TO_DEBT_CROSS")
+df = sftp.read_remote_df(PATH_TO_IRBA_DATA_VAS, index_col="Subject", usecols=["Subject", "Fatigue (Apres PVT)", "Fatigue (Avant PVT)"])
 
-PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_MIN")
-PATH_TO_LANDMARKS_DESFAM_F_FULL = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_FULL")
+df.loc[lambda df: df["Fatigue (Apres PVT)"].between(0, 25), "Fatigue (Apres PVT)"] = 0
+df.loc[lambda df: df["Fatigue (Apres PVT)"].between(25, 50), "Fatigue (Apres PVT)"] = 1
+df.loc[lambda df: df["Fatigue (Apres PVT)"].between(50, 75), "Fatigue (Apres PVT)"] = 2
+df.loc[lambda df: df["Fatigue (Apres PVT)"].between(75, 100), "Fatigue (Apres PVT)"] = 3
 
-dataformat = DataFormator()
-
-dataformat.generate_cross_dataset_by_week(PATH_TO_DEBT_VIDEO)
-
-del dataformat
+df.loc[lambda df: df["Fatigue (Avant PVT)"].between(0, 25), "Fatigue (Avant PVT)"] = 0
+df.loc[lambda df: df["Fatigue (Avant PVT)"].between(25, 50), "Fatigue (Avant PVT)"] = 1
+df.loc[lambda df: df["Fatigue (Avant PVT)"].between(50, 75), "Fatigue (Avant PVT)"] = 2
+df.loc[lambda df: df["Fatigue (Avant PVT)"].between(75, 100), "Fatigue (Avant PVT)"] = 3
+print(df)

@@ -36,11 +36,11 @@ class CrossValidation:
 
     def define_model(self, measure_len) :
         return tf.keras.models.Sequential([
-        tf.keras.layers.LSTM(128,input_shape=(measure_len,30) , return_sequences=True),
-        #tf.keras.layers.Dense(units=32, activation = "relu"),
-        tf.keras.layers.LSTM(32,input_shape=(measure_len,30) , return_sequences=True),
-        #tf.keras.layers.Dense(units=64, activation = "relu"),
         tf.keras.layers.LSTM(256,input_shape=(measure_len,30) , return_sequences=True),
+        #tf.keras.layers.Dense(units=32, activation = "relu"),
+        tf.keras.layers.LSTM(256,input_shape=(measure_len,30) , return_sequences=True),
+        #tf.keras.layers.Dense(units=64, activation = "relu"),
+        tf.keras.layers.LSTM(128,input_shape=(measure_len,30) , return_sequences=True),
         tf.keras.layers.Dense(units=1, activation = "sigmoid")
         ])
 
