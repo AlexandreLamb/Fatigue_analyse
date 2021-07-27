@@ -60,8 +60,8 @@ class CrossValidation:
         model.summary()
         model.fit(
             train, 
-            validation_data= val,
             epochs=1000,
+            validation_data= val,
             shuffle=True,
             verbose =1,
             callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='auto')]) 
