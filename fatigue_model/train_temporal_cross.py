@@ -72,6 +72,7 @@ class CrossValidation:
         _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
         
         df_metrics_model_train.loc[(video_exclude),["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+        
         return path_to_model_to_save, video_exclude, df_metrics_model_train
         
         
@@ -91,7 +92,6 @@ class CrossValidation:
         predictions = model.predict(preprocessing.dataset)
         
         measure_list = list(df_copy)
-        print(list(df_copy))
         df_pred = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
         for idx in df_pred.index:
             df_pred.loc[idx, "pred_mean"] = df_pred.loc[idx].mean() 
@@ -119,6 +119,70 @@ class CrossValidation:
             self.test_model(path_to_model, video_to_exclude)
         path_to_csv_metrics_model_train = os.path.join(self.prediction_dataset_path, self.date_id, "metrics_train_model.csv")
         self.sftp.save_remote_df(path_to_csv_metrics_model_train, df_metrics_model_train)
+        
+    def train_cross_model_debt_by_week(self, path_to_train_dataset, path_to_test_folder):
+        print(path_to_train_dataset)
+        df = self.sftp.read_remote_df(path_to_train_dataset)
+        print(df)
+        df_metrics_model_train = pd.DataFrame(columns=["binary_accuracy","binary_crossentropy","mean_squared_error"])
+        measure_combinaition = [measure for measure in list(df) if measure != "target"]
+        
+        dp = DataPreprocessing(path_to_dataset = None,batch_size= 32, isTimeSeries = True, df_dataset = df) 
+        train = dp.train
+        test = dp.test 
+        val = dp.val
+        model = self.define_model(len(measure_combinaition))
+        model.compile(optimizer='adam',
+                loss=tf.losses.BinaryCrossentropy(),
+                metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
+        model.summary()
+        model.fit(
+            train, 
+            validation_data= val,
+            epochs=1000,
+            shuffle=True,
+            verbose =1,
+            callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, mode='auto')]) 
+        path_to_model_to_save = "tensorboard/model/"+self.date_id+ "/model_lstm_debt_week_train"
+    
+        model.save(path_to_model_to_save)
+
+        _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
+        metrics = {"binary_accuracy" : binary_accuracy, "binary_crossentropy" : binary_crossentropy, "mean_squared_error" : mean_squared_error}
+        df_metrics_model_train = df_metrics_model_train.append(metrics, ignore_index=True)
+        
+        model = tf.keras.models.load_model(path_to_model_to_save)
+            
+        df_evaluate_metrics = pd.DataFrame(columns=["video_test", "binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index(["video_test"])
+        
+        video_to_test = self.sftp.list_dir_remote(path_to_test_folder)
+        
+        for video in video_to_test:
+            df = self.sftp.read_remote_df(os.path.join(path_to_test_folder, video, "dataset.csv"))
+            df_copy = copy.copy(df)
+            preprocessing = DataPreprocessing(path_to_dataset = None, isTimeSeries = True, batch_size = 1, evaluate = True, df_dataset=df)
+            preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
+            
+            _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
+            df_evaluate_metrics.loc[(video), ["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+            
+            predictions = model.predict(preprocessing.dataset)
+            
+            measure_list = list(df_copy)
+            df_pred = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
+            for idx in df_pred.index:
+                df_pred.loc[idx, "pred_mean"] = df_pred.loc[idx].mean() 
+                df_pred.loc[idx, "pred_max"] = df_pred.loc[idx].max() 
+            df_pred.loc[lambda df_pred: df_pred["pred_mean"] < 0.5,"target_pred_mean"] = 0
+            df_pred.loc[lambda df_pred: df_pred["pred_mean"] >= 0.5,"target_pred_mean"] = 1
+            df_pred.loc[lambda df_pred: df_pred["pred_max"] < 0.5,"target_pred_max"] = 0
+            df_pred.loc[lambda df_pred: df_pred["pred_max"] >= 0.5,"target_pred_max"] = 1
+            df_pred["target_real"] = df_copy["target"]
+            
+            path_to_csv_pred =os.path.join(self.prediction_dataset_path, self.date_id, video, "pred.csv") 
+            path_to_csv_metrics =os.path.join(self.prediction_dataset_path, self.date_id, video, "metrics.csv") 
+            self.sftp.save_remote_df(path_to_csv_pred, df_pred, index = False)
+            self.sftp.save_remote_df(path_to_csv_metrics, df_evaluate_metrics)
         
     """   
     def train_cross_measure_model(self):
