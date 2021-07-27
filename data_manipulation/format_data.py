@@ -147,8 +147,14 @@ class DataFormator:
                 dataframe_lundi = dataframe_lundi.append(dataframe, ignore_index=False)
             else:
                 ##TODO save dataframe and put it instead of thath :
-                self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","test",video_name,"dataset.csv"), dataframe)
-        self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","train","dataset.csv"), dataframe_lundi)
+                self.sftp.save_remote_df(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","test",video_name,"dataset.csv"), dataframe, index=False)
+        
+        if os.path.isdir("temp") == False :
+            os.makedirs("temp" )
+        dataframe_lundi.to_csv("temp/temp.csv", index=False)
+        self.sftp.put_file(os.path.join(PATH_TO_DATASET_TEMPORAL,"debt","cross_dataset_week","train","dataset.csv"), os.getcwd()+"/temp/temp.csv")
+        if os.path.exists("temp/temp.csv"):
+            os.remove("temp/temp.csv")
         
        
     def generate_cross_dataset(self, path_to_dataset, path_to_dataset_to_save):

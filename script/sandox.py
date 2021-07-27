@@ -1,7 +1,25 @@
+import argparse, sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from data_manipulation.check_dataset import check_landmarks_len
+from data_manipulation import DataFormator
 import pandas as pd
+from database_connector import  SFTPConnector
+from dotenv import load_dotenv
+load_dotenv("env_file/.env_path")
 
-df_metrics_model_train = pd.DataFrame(columns=["binary_accuracy","binary_crossentropy","mean_squared_error"])
+PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
+PATH_TO_TIME_ON_TASK_MERGE = os.environ.get("PATH_TO_TIME_ON_TASK_MERGE")
+PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
 
-df_metricsmodel_train = df_metrics_model_train.append({"binary_accuracy":1,"binary_crossentropy":1,"mean_squared_error":1}, ignore_index=True)
+PATH_TO_DEBT_VIDEO = os.environ.get("PATH_TO_DEBT_VIDEO")
+PATH_TO_DEBT_MERGE = os.environ.get("PATH_TO_DEBT_MERGE")
+PATH_TO_DEBT_CROSS = os.environ.get("PATH_TO_DEBT_CROSS")
 
-print(df_metrics_model_train)
+PATH_TO_LANDMARKS_DESFAM_F_5_MIN = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_5_MIN")
+PATH_TO_LANDMARKS_DESFAM_F_FULL = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F_FULL")
+
+dataformat = DataFormator()
+
+dataformat.generate_cross_dataset_by_week(PATH_TO_DEBT_VIDEO)
+
+del dataformat
