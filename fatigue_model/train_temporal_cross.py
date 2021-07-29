@@ -41,6 +41,7 @@ class CrossValidation:
         tf.keras.layers.LSTM(256,input_shape=(measure_len,30) , return_sequences=True),
         #tf.keras.layers.Dense(units=64, activation = "relu"),
         tf.keras.layers.LSTM(128,input_shape=(measure_len,30) , return_sequences=True),
+        tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(units=1, activation = "sigmoid")
         ])
 
@@ -92,14 +93,11 @@ class CrossValidation:
         predictions = model.predict(preprocessing.dataset)
         
         measure_list = list(df_copy)
-        df_pred = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
-        for idx in df_pred.index:
-            df_pred.loc[idx, "pred_mean"] = df_pred.loc[idx].mean() 
-            df_pred.loc[idx, "pred_max"] = df_pred.loc[idx].max() 
-        df_pred.loc[lambda df_pred: df_pred["pred_mean"] < 0.5,"target_pred_mean"] = 0
-        df_pred.loc[lambda df_pred: df_pred["pred_mean"] >= 0.5,"target_pred_mean"] = 1
-        df_pred.loc[lambda df_pred: df_pred["pred_max"] < 0.5,"target_pred_max"] = 0
-        df_pred.loc[lambda df_pred: df_pred["pred_max"] >= 0.5,"target_pred_max"] = 1
+        df_pred = pd.DataFrame(np.squeeze(predictions), columns = ["target_pred"])
+        
+        df_pred.loc[lambda df_pred: df_pred["target_pred"] < 0.5,"target_round"] = 0
+        df_pred.loc[lambda df_pred: df_pred["target_pred"] >= 0.5,"target_round"] = 1
+        
         df_pred["target_real"] = df_copy["target"]
         
         path_to_csv_pred =os.path.join(self.prediction_dataset_path, self.date_id, video_exclude, "pred.csv") 
@@ -169,14 +167,11 @@ class CrossValidation:
             predictions = model.predict(preprocessing.dataset)
             
             measure_list = list(df_copy)
-            df_pred = pd.DataFrame(np.squeeze(predictions), columns = [measure for measure in measure_list if measure != "target"])
-            for idx in df_pred.index:
-                df_pred.loc[idx, "pred_mean"] = df_pred.loc[idx].mean() 
-                df_pred.loc[idx, "pred_max"] = df_pred.loc[idx].max() 
-            df_pred.loc[lambda df_pred: df_pred["pred_mean"] < 0.5,"target_pred_mean"] = 0
-            df_pred.loc[lambda df_pred: df_pred["pred_mean"] >= 0.5,"target_pred_mean"] = 1
-            df_pred.loc[lambda df_pred: df_pred["pred_max"] < 0.5,"target_pred_max"] = 0
-            df_pred.loc[lambda df_pred: df_pred["pred_max"] >= 0.5,"target_pred_max"] = 1
+            df_pred = pd.DataFrame(np.squeeze(predictions), columns = ["target_pred"])
+        
+            df_pred.loc[lambda df_pred: df_pred["target_pred"] < 0.5,"target_round"] = 0
+            df_pred.loc[lambda df_pred: df_pred["target_pred"] >= 0.5,"target_round"] = 1
+        
             df_pred["target_real"] = df_copy["target"]
             
             path_to_csv_pred =os.path.join(self.prediction_dataset_path, self.date_id, video, "pred.csv") 
