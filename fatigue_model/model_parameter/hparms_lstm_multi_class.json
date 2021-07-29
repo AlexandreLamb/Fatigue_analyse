@@ -5,7 +5,7 @@
         "optimizer" : ["adam"],
         "activation_output" : ["sigmoid"]
     },
-    "metrics": ["binary_accuracy","binary_crossentropy","mean_squared_error"],
-    "num_of_target" : 1,
+    "metrics": ["sparse_categorical_accuracy"],
+    "num_of_target" : 4,
     "epochs" : 1
 }

@@ -16,6 +16,9 @@ PATH_TO_DATASET_NON_TEMPORAL = os.environ.get("PATH_TO_DATASET_NON_TEMPORAL")
 PATH_TO_DATASET_TEMPORAL = os.environ.get("PATH_TO_DATASET_TEMPORAL")
 PATH_TO_LANDMARKS_DESFAM_F = os.environ.get("PATH_TO_LANDMARKS_DESFAM_F")
 PATH_TO_IRBA_DATA_PVT = os.environ.get("PATH_TO_IRBA_DATA_PVT")
+PATH_TO_IRBA_DATA_VAS = os.environ.get("PATH_TO_IRBA_DATA_VAS")
+PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
+PATH_TO_TIME_ON_TASK_VIDEO_VAS = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO_VAS")
 
 class DataFormator:  
     
@@ -132,7 +135,13 @@ class DataFormator:
         for path in path_csv_arr:
             print(path)
             df_measures = df_measures.append(self.sftp.read_remote_df(path), ignore_index=False)
-        self.sftp.save_remote_df(os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv"), df_measures, index= False)
+        if os.path.isdir("temp") == False :
+                    os.makedirs("temp" )
+        df_measures.to_csv("temp/temp.csv", index=False)
+        path_folder_to_put = os.path.join(path_folder_to_save,"dataset_merge_"+str(windows[0])+"_"+date_id+".csv")
+        self.sftp.put_file(path_folder_to_put, os.getcwd()+"/temp/temp.csv")
+        if os.path.exists("temp/temp.csv"):
+            os.remove("temp/temp.csv")
     
     def generate_cross_dataset_by_week(self, path_to_dataset):
         dir_measures = self.sftp.list_dir_remote(path_to_dataset)
@@ -200,6 +209,40 @@ class DataFormator:
         columns_measures = [col for col in df_label.columns if col !=  "Target"]
         df_label[columns_measures] = (df_label[columns_measures]-df_label[columns_measures].min())/(df_label[columns_measures].max()-df_label[columns_measures].min())
         return df_label
+    
+    def create_VAS_dataset(self):
+                
+        df = self.sftp.read_remote_df(PATH_TO_IRBA_DATA_VAS, usecols=["Subject", "Fatigue (Apres PVT)", "Fatigue (Avant PVT)", "Date"])
+
+        df.loc[lambda df: df["Fatigue (Apres PVT)"].between(0, 25), "Fatigue (Apres PVT)"] = 0
+        df.loc[lambda df: df["Fatigue (Apres PVT)"].between(25, 50), "Fatigue (Apres PVT)"] = 1
+        df.loc[lambda df: df["Fatigue (Apres PVT)"].between(50, 75), "Fatigue (Apres PVT)"] = 2
+        df.loc[lambda df: df["Fatigue (Apres PVT)"].between(75, 100), "Fatigue (Apres PVT)"] = 3
+
+        df.loc[lambda df: df["Fatigue (Avant PVT)"].between(0, 25), "Fatigue (Avant PVT)"] = 0
+        df.loc[lambda df: df["Fatigue (Avant PVT)"].between(25, 50), "Fatigue (Avant PVT)"] = 1
+        df.loc[lambda df: df["Fatigue (Avant PVT)"].between(50, 75), "Fatigue (Avant PVT)"] = 2
+        df.loc[lambda df: df["Fatigue (Avant PVT)"].between(75, 100), "Fatigue (Avant PVT)"] = 3
+        
+        df.loc[lambda df: df["Date"].apply(lambda el: pd.to_datetime(el,dayfirst=True).day_name()) == "Monday", "Day"] = "LUNDI"
+        df.loc[lambda df: df["Date"].apply(lambda el: pd.to_datetime(el,dayfirst=True).day_name()) == "Friday", "Day"] = "VENDREDI"
+        df.pop("Date")
+        df["Subject_Day"] = df["Subject"] + "_" + df["Day"]
+        df.set_index("Subject_Day", inplace=True)
+        
+        videos_names = self.sftp.list_dir_remote(PATH_TO_TIME_ON_TASK_VIDEO)
+        subject_list = df
+        for name in videos_names:
+            name_sanitize = "_".join(re.split("_| ", name)[2:4])
+            if name_sanitize in list(df.index):
+                df_dataset = self.sftp.read_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO, name, name+".csv"))
+                df_dataset.loc[lambda df: df["target"] == 0, "target"] = df.loc[name_sanitize, "Fatigue (Avant PVT)"] 
+                df_dataset.loc[lambda df: df["target"] == 1, "target"] = df.loc[name_sanitize, "Fatigue (Apres PVT)"] 
+                self.sftp.save_remote_df(os.path.join(PATH_TO_TIME_ON_TASK_VIDEO_VAS,name_sanitize,name_sanitize+".csv"),df_dataset, index=False )
+            else:
+                print("Not")
+        
+        
 ## TODO:  add video anme and stuff in csv video infos
 
 ## TODO: make mother class for herite some commun variable (csv_infos ect...)

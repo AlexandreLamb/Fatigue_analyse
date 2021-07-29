@@ -1,2 +1,3 @@
 from .hparams import Hparams
 from .model_trainer import ModelTunning
+from.model_trainer_multi_class import ModelTunningMultiClass
