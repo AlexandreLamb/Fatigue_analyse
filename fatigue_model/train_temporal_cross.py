@@ -36,11 +36,11 @@ class CrossValidation:
 
     def define_model(self, measure_len) :
         return tf.keras.models.Sequential([
-        tf.keras.layers.LSTM(256,input_shape=(measure_len,30) , return_sequences=True),
+        tf.keras.layers.LSTM(32,input_shape=(measure_len,30) , return_sequences=True),
         #tf.keras.layers.Dense(units=32, activation = "relu"),
-        tf.keras.layers.LSTM(256,input_shape=(measure_len,30) , return_sequences=True),
+        tf.keras.layers.LSTM(32,input_shape=(measure_len,30) , return_sequences=True),
         #tf.keras.layers.Dense(units=64, activation = "relu"),
-        tf.keras.layers.LSTM(128,input_shape=(measure_len,30) , return_sequences=True),
+        tf.keras.layers.LSTM(32,input_shape=(measure_len,30) , return_sequences=True),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(units=1, activation = "sigmoid")
         ])
@@ -85,6 +85,8 @@ class CrossValidation:
         df = self.sftp.read_remote_df(os.path.join(self.video_dataset_path, video_exclude, video_exclude+".csv"))
         df_copy = copy.copy(df)
         preprocessing = DataPreprocessing(path_to_dataset = None, isTimeSeries = True, batch_size = 1, evaluate = True, df_dataset=df)
+        
+        preprocessing.dataset = preprocessing.dataset.shuffle(buffer_size = preprocessing.batch_size)
         preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
         
         _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
