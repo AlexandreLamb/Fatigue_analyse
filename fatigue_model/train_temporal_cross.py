@@ -86,7 +86,7 @@ class CrossValidation:
         df_copy = copy.copy(df)
         preprocessing = DataPreprocessing(path_to_dataset = None, isTimeSeries = True, batch_size = 1, evaluate = True, df_dataset=df)
         
-        preprocessing.dataset = preprocessing.dataset.shuffle(buffer_size = preprocessing.batch_size)
+        #preprocessing.dataset = preprocessing.dataset.shuffle(buffer_size = preprocessing.batch_size)
         preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
         
         _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
