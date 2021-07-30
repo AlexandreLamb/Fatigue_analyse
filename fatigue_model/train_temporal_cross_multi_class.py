@@ -21,11 +21,8 @@ from dotenv import load_dotenv
 load_dotenv("env_file/.env_path")
 
 from database_connector import SFTPConnector
-PATH_TO_RESULTS_CROSS_PREDICTIONS_TIME_ON_TASK = os.environ.get("PATH_TO_RESULTS_CROSS_PREDICTIONS_TIME_ON_TASK")
-PATH_TO_TIME_ON_TASK_VIDEO = os.environ.get("PATH_TO_TIME_ON_TASK_VIDEO")
-PATH_TO_TIME_ON_TASK_CROSS = os.environ.get("PATH_TO_TIME_ON_TASK_CROSS")
 
-class CrossValidation:
+class CrossValidationMultiClass:
     def __init__(self, cross_dataset_path, video_dataset_path, prediction_dataset_path):
         self.sftp = SFTPConnector()
         self.cross_dataset_path = cross_dataset_path
