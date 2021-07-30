@@ -59,8 +59,8 @@ class CrossValidation:
         val = dp.val
         model = self.define_model(len(measure_combinaition))
         model.compile(optimizer='adam',
-                loss=tf.losses.BinaryCrossentropy(),
-                metrics=["binary_accuracy","binary_crossentropy","mean_squared_error"])
+                loss=tf.losses.SparseCategoricalCrossentropy(),
+                metrics=[tf.metrics.SparseCategoricalAccuracy(), tf.metrics.SparseCategoricalCrossentropy()])
         model.summary()
         model.fit(
             train, 
@@ -73,9 +73,9 @@ class CrossValidation:
     
         model.save(path_to_model_to_save)
 
-        _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(test)
+        _ , sparse_categorical_accuracy, sparse_categorical_crossentropy = model.evaluate(test)
         
-        df_metrics_model_train.loc[(video_exclude),["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+        df_metrics_model_train.loc[(video_exclude),["sparse_categorical_accuracy", "sparse_categorical_crossentropy"]] = [sparse_categorical_accuracy, sparse_categorical_crossentropy]
         
         return path_to_model_to_save, video_exclude, df_metrics_model_train
         
@@ -93,16 +93,16 @@ class CrossValidation:
         #shuffle_dataset = shuffle_dataset.shuffle(buffer_size = preprocessing.batch_size)
         preprocessing.dataset = preprocessing.dataset.batch(preprocessing.batch_size)
         
-        _ ,binary_accuracy, binary_crossentropy, mean_squared_error = model.evaluate(preprocessing.dataset)
-        df_evaluate_metrics.loc[(video_exclude), ["binary_accuracy", "binary_crossentropy", "mean_squared_error"]] = [binary_accuracy, binary_crossentropy, mean_squared_error]
+        _ , sparse_categorical_accuracy, sparse_categorical_crossentropy = model.evaluate(preprocessing.dataset)
+        df_evaluate_metrics.loc[(video_exclude), ["sparse_categorical_accuracy", "sparse_categorical_crossentropy"]] = [sparse_categorical_accuracy, sparse_categorical_crossentropy]
         predictions = model.predict(preprocessing.dataset)
-        
+        print(predictions)
         measure_list = list(df_copy)
         df_pred = pd.DataFrame(np.squeeze(predictions), columns = ["target_pred"])
-        
+        """ 
         df_pred.loc[lambda df_pred: df_pred["target_pred"] < 0.5,"target_round"] = 0
         df_pred.loc[lambda df_pred: df_pred["target_pred"] >= 0.5,"target_round"] = 1
-        
+        """
         df_pred["target_real"] = df_copy["target"]
         
         path_to_csv_pred =os.path.join(self.prediction_dataset_path, self.date_id, video_exclude, "pred.csv") 
@@ -113,8 +113,8 @@ class CrossValidation:
         folder_dataset = self.sftp.list_dir_remote(self.cross_dataset_path)
         path_dataset = [ os.path.join(self.cross_dataset_path, folder, "dataset.csv") for folder in  folder_dataset ]
         
-        df_metrics_model_train = pd.DataFrame(columns=["video_exclude","binary_accuracy","binary_crossentropy","mean_squared_error"]).set_index(["video_exclude"])
-        df_evaluate_metrics = pd.DataFrame(columns=["video_exclude", "binary_accuracy", "binary_crossentropy", "mean_squared_error"]).set_index(["video_exclude"])
+        df_metrics_model_train = pd.DataFrame(columns=["sparse_categorical_accuracy", "sparse_categorical_crossentropy"]).set_index(["video_exclude"])
+        df_evaluate_metrics = pd.DataFrame(columns=["sparse_categorical_accuracy", "sparse_categorical_crossentropy"]).set_index(["video_exclude"])
     
         for dataset in path_dataset:
             df = self.sftp.read_remote_df(dataset)
